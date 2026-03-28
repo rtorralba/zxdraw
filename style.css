@@ -148,6 +148,20 @@ button.tool svg {
     fill: currentColor;
 }
 
+/* Header button icons */
+.controls button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.controls button svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    flex-shrink: 0;
+}
+
 /* Canvas Area */
 #canvas-container {
     flex: 1;

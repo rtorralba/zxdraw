@@ -1,13 +1,15 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+let mainWindow;
+
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 900,
-    title: 'ZX-Draw',
-    icon: path.join(__dirname, 'icon.png'), // Placeholder icon
+    title: 'ZXDraw',
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -15,8 +17,46 @@ function createWindow() {
     },
   });
 
-  win.loadFile('index.html');
-  // win.webContents.openDevTools(); // Uncomment for debugging
+  mainWindow.loadFile('index.html');
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'File',
+      submenu: [
+        { label: 'New',      accelerator: 'CmdOrCtrl+N',       click: () => mainWindow.webContents.send('menu-new') },
+        { label: 'Open…',   accelerator: 'CmdOrCtrl+O',       click: () => mainWindow.webContents.send('menu-open') },
+        { type: 'separator' },
+        { label: 'Save',     accelerator: 'CmdOrCtrl+S',       click: () => mainWindow.webContents.send('menu-save') },
+        { label: 'Save As…', accelerator: 'CmdOrCtrl+Shift+S', click: () => mainWindow.webContents.send('menu-saveas') },
+        { type: 'separator' },
+        {
+          label: 'Export',
+          submenu: [
+            { label: 'PNG…', click: () => mainWindow.webContents.send('menu-export-png') },
+          ],
+        },
+        { type: 'separator' },
+        { role: 'quit' },
+      ],
+    },
+    {
+      label: 'Edit',
+      submenu: [
+        { label: 'Undo',  accelerator: 'CmdOrCtrl+Z',       click: () => mainWindow.webContents.send('menu-undo') },
+        { label: 'Redo',  accelerator: 'CmdOrCtrl+Y',       click: () => mainWindow.webContents.send('menu-redo') },
+        { type: 'separator' },
+        { label: 'Copy',  accelerator: 'CmdOrCtrl+C',       click: () => mainWindow.webContents.send('menu-copy') },
+        { label: 'Paste', accelerator: 'CmdOrCtrl+V',       click: () => mainWindow.webContents.send('menu-paste') },
+      ],
+    },
+    {
+      label: 'Help',
+      submenu: [
+        { label: 'About ZX-Draw', click: () => mainWindow.webContents.send('menu-about') },
+      ],
+    },
+  ]);
+  Menu.setApplicationMenu(menu);
 }
 
 app.whenReady().then(() => {
@@ -41,6 +81,25 @@ ipcMain.handle('save-file', async (event, content, defaultName) => {
 
   if (filePath) {
     fs.writeFileSync(filePath, content, 'utf8');
+    return filePath;
+  }
+  return null;
+});
+
+ipcMain.handle('save-file-direct', async (event, filePath, content) => {
+  fs.writeFileSync(filePath, content, 'utf8');
+  return filePath;
+});
+
+ipcMain.handle('export-png', async (event, dataURL) => {
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Export as PNG',
+    defaultPath: 'image.png',
+    filters: [{ name: 'PNG Image', extensions: ['png'] }],
+  });
+  if (filePath) {
+    const base64 = dataURL.replace(/^data:image\/png;base64,/, '');
+    fs.writeFileSync(filePath, Buffer.from(base64, 'base64'));
     return filePath;
   }
   return null;

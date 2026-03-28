@@ -12,21 +12,20 @@
         <header>
             <div class="logo">ZX<span>Draw</span></div>
             <div class="controls">
-                <button id="new-btn" title="New Image">New</button>
-                <button id="load-btn" title="Open .zxp">Open</button>
-                <button id="save-btn" title="Save .zxp">Save</button>
-                <div class="divider"></div>
-                <button id="zoom-in" title="Zoom In">+</button>
+                <!-- hidden functional buttons targeted by menu/keyboard shortcuts -->
+                <button id="new-btn" style="display:none"></button>
+                <button id="load-btn" style="display:none"></button>
+                <button id="save-btn" style="display:none"></button>
+                <button id="saveas-btn" style="display:none"></button>
+                <button id="undo-btn" style="display:none"></button>
+                <button id="redo-btn" style="display:none"></button>
+                <button id="copy-btn" style="display:none"></button>
+                <button id="paste-btn" style="display:none"></button>
+                <button id="zoom-in" title="Zoom In"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zm.5-7H9v2H7v1h2v2h1v-2h2V9h-2z"/></svg></button>
                 <span id="zoom-level">100%</span>
-                <button id="zoom-out" title="Zoom Out">-</button>
+                <button id="zoom-out" title="Zoom Out"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"/></svg></button>
                 <div class="divider"></div>
-                <button id="grid-toggle" class="active" title="Toggle Grid (G)">Grid</button>
-                <div class="divider"></div>
-                <button id="undo-btn" title="Undo (Ctrl+Z)">Undo</button>
-                <button id="redo-btn" title="Redo (Ctrl+Y)">Redo</button>
-                <div class="divider"></div>
-                <button id="copy-btn" title="Copy (Ctrl+C)">Copy</button>
-                <button id="paste-btn" title="Paste (Ctrl+V)">Paste</button>
+                <button id="grid-toggle" class="active" title="Toggle Grid (G)"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg> Grid</button>
             </div>
         </header>
 
@@ -172,6 +171,18 @@
                 <div class="modal-actions">
                     <button id="text-cancel">Cancel</button>
                     <button id="text-apply" style="background:var(--accent);border-color:var(--accent)">Stamp</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Modal -->
+        <div id="about-modal" class="modal hidden">
+            <div class="modal-content" style="width:340px;text-align:center">
+                <div class="logo" style="font-size:48px;margin-bottom:8px">ZX<span>Draw</span></div>
+                <p style="color:#a0a0a0;margin-bottom:20px;font-size:13px">ZX Spectrum-inspired pixel art editor</p>
+                <p style="color:#e0e0e0;font-size:14px">&copy; Ra&uuml;l Torrala <em>AKA</em> Juntelart</p>
+                <div class="modal-actions" style="justify-content:center;margin-top:24px">
+                    <button id="about-close">Close</button>
                 </div>
             </div>
         </div>

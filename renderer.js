@@ -24,6 +24,9 @@ class ZXDraw {
         this.undoStack = [];
         this.redoStack = [];
 
+        // Current file
+        this.currentFilePath = null;
+
         // Animation viewer
         this.animInterval = null;
         this.animCurrentFrame = 0;
@@ -276,14 +279,25 @@ class ZXDraw {
         // File I/O
         document.getElementById('save-btn').onclick = async () => {
             const zxpContent = this.exportToZXP();
-            const filePath = await window.electronAPI.saveFile(zxpContent, 'my_graphic.zxp');
-            if(filePath) console.log('Saved to', filePath);
+            if (this.currentFilePath) {
+                await window.electronAPI.saveFileDirect(this.currentFilePath, zxpContent);
+            } else {
+                const filePath = await window.electronAPI.saveFile(zxpContent, 'my_graphic.zxp');
+                if (filePath) this.currentFilePath = filePath;
+            }
+        };
+
+        document.getElementById('saveas-btn').onclick = async () => {
+            const zxpContent = this.exportToZXP();
+            const filePath = await window.electronAPI.saveFile(zxpContent, this.currentFilePath || 'my_graphic.zxp');
+            if (filePath) this.currentFilePath = filePath;
         };
 
         document.getElementById('load-btn').onclick = async () => {
             const file = await window.electronAPI.loadFile();
             if (file) {
                 this.importFromZXP(file.content);
+                this.currentFilePath = file.filePath;
                 this.render();
             }
         };
@@ -291,13 +305,37 @@ class ZXDraw {
         document.getElementById('new-btn').onclick = () => {
             if(confirm('Start a new image? Progress will be lost.')) {
                 this.resetData(this.width, this.height);
+                this.currentFilePath = null;
                 this.render();
             }
         };
 
+        // About modal
+        document.getElementById('about-close').onclick = () => {
+            document.getElementById('about-modal').classList.add('hidden');
+        };
+
+        // Native menu events from main process
+        window.electronAPI.onMenuEvent('menu-new',    () => document.getElementById('new-btn').click());
+        window.electronAPI.onMenuEvent('menu-open',   () => document.getElementById('load-btn').click());
+        window.electronAPI.onMenuEvent('menu-save',   () => document.getElementById('save-btn').click());
+        window.electronAPI.onMenuEvent('menu-saveas', () => document.getElementById('saveas-btn').click());
+        window.electronAPI.onMenuEvent('menu-about',  () => document.getElementById('about-modal').classList.remove('hidden'));
+        window.electronAPI.onMenuEvent('menu-undo',   () => this.undo());
+        window.electronAPI.onMenuEvent('menu-redo',   () => this.redo());
+        window.electronAPI.onMenuEvent('menu-copy',   () => this.copySelection());
+        window.electronAPI.onMenuEvent('menu-paste',  () => this.startPaste());
+        window.electronAPI.onMenuEvent('menu-export-png', () => this.exportPng());
+
         // Shortcuts
         window.onkeydown = (e) => {
-            if (e.ctrlKey && e.code === 'KeyC') {
+            if (e.ctrlKey && e.code === 'KeyS' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('save-btn').click();
+            } else if (e.ctrlKey && e.shiftKey && e.code === 'KeyS') {
+                e.preventDefault();
+                document.getElementById('saveas-btn').click();
+            } else if (e.ctrlKey && e.code === 'KeyC') {
                 e.preventDefault();
                 this.copySelection();
             } else if (e.ctrlKey && e.code === 'KeyV') {
@@ -919,6 +957,11 @@ class ZXDraw {
     }
 
     // .zxp Format Logic
+    async exportPng() {
+        const dataURL = this.canvas.toDataURL('image/png');
+        await window.electronAPI.exportPng(dataURL);
+    }
+
     exportToZXP() {
         let lines = ['ZX-Paintbrush image', ''];
         
