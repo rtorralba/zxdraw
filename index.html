@@ -40,6 +40,9 @@
                     <button id="tool-select" class="tool" title="Select Blocks (S)">
                         <svg viewBox="0 0 24 24"><path d="M7 2h10c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zM7 4v16h10V4H7z"/></svg>
                     </button>
+                    <button id="tool-text" class="tool" title="Text Tool (T)">
+                        <svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
+                    </button>
                 </div>
                 <div class="tool-group">
                     <button id="size-settings" class="tool" title="Resize">
@@ -126,6 +129,52 @@
             <div id="status-block">Block: 0, 0</div>
             <div id="status-size">Size: 256x192</div>
         </footer>
+
+        <!-- Text Modal -->
+        <div id="text-modal" class="modal hidden">
+            <div class="modal-content" style="width:380px">
+                <h2>Insert Text</h2>
+                <div class="input-row">
+                    <label>Text</label>
+                    <input type="text" id="text-input" placeholder="Hello World" style="width:200px">
+                </div>
+                <div class="input-row">
+                    <label>Font</label>
+                    <select id="text-font" style="width:200px;background:#121212;border:1px solid #444;color:white;padding:6px;border-radius:4px">
+                        <option>monospace</option>
+                        <option>sans-serif</option>
+                        <option>serif</option>
+                        <option>Arial</option>
+                        <option>Courier New</option>
+                        <option>Times New Roman</option>
+                        <option>Impact</option>
+                        <option>Georgia</option>
+                        <option>Verdana</option>
+                    </select>
+                </div>
+                <div class="input-row">
+                    <label>Size (px)</label>
+                    <input type="number" id="text-size" value="16" min="4" max="256" style="width:80px">
+                </div>
+                <div class="input-row">
+                    <label>Style</label>
+                    <div style="display:flex;gap:8px">
+                        <label style="color:#e0e0e0"><input type="checkbox" id="text-bold"> Bold</label>
+                        <label style="color:#e0e0e0"><input type="checkbox" id="text-italic"> Italic</label>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <label>Threshold</label>
+                    <input type="range" id="text-threshold" min="1" max="254" value="128" style="width:140px">
+                    <span id="text-threshold-val" style="font-size:12px;color:#a0a0a0;min-width:30px">128</span>
+                </div>
+                <canvas id="text-preview-canvas" style="display:block;margin:12px 0;image-rendering:pixelated;border:1px solid #444;background:#000;max-width:100%"></canvas>
+                <div class="modal-actions">
+                    <button id="text-cancel">Cancel</button>
+                    <button id="text-apply" style="background:var(--accent);border-color:var(--accent)">Stamp</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Size Modal -->
         <div id="size-modal" class="modal hidden">

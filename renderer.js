@@ -137,6 +137,7 @@ class ZXDraw {
         // Tools
         document.getElementById('tool-draw').onclick = () => this.setTool('draw');
         document.getElementById('tool-select').onclick = () => this.setTool('select');
+        document.getElementById('tool-text').onclick = () => this.setTool('text');
         
         document.getElementById('copy-btn').onclick = () => this.copySelection();
         document.getElementById('paste-btn').onclick = () => this.startPaste();
@@ -223,6 +224,13 @@ class ZXDraw {
             };
             if (e.button === 2) e.preventDefault();
             isDrawing = true;
+            if (this.currentTool === 'text' && e.button === 0) {
+                isDrawing = false;
+                const px = Math.floor((e.clientX - rect.left) / this.zoom);
+                const py = Math.floor((e.clientY - rect.top) / this.zoom);
+                this.openTextModal(px, py);
+                return;
+            }
             if (this.currentTool === 'draw' && !this.isPasting) this.saveHistory();
             handlePaint(e); 
         };
@@ -305,6 +313,8 @@ class ZXDraw {
                 this.flipSelection('h');
             } else if (!e.ctrlKey && e.key.toLowerCase() === 'v') {
                 this.flipSelection('v');
+            } else if (!e.ctrlKey && e.key.toLowerCase() === 't') {
+                this.setTool('text');
             } else if (e.key === 'Escape') {
                 this.isPasting = false;
                 this.selection = null;
@@ -317,6 +327,106 @@ class ZXDraw {
             }
         };
     }
+
+    // ── Text Tool ────────────────────────────────────────────────────────────
+    openTextModal(px, py) {
+        this._textStampX = px;
+        this._textStampY = py;
+        const modal = document.getElementById('text-modal');
+        modal.classList.remove('hidden');
+
+        const updatePreview = () => {
+            const text      = document.getElementById('text-input').value || 'A';
+            const size      = parseInt(document.getElementById('text-size').value) || 16;
+            const font      = document.getElementById('text-font').value;
+            const bold      = document.getElementById('text-bold').checked ? 'bold ' : '';
+            const italic    = document.getElementById('text-italic').checked ? 'italic ' : '';
+            const threshold = parseInt(document.getElementById('text-threshold').value);
+            document.getElementById('text-threshold-val').textContent = threshold;
+
+            const offscreen = document.createElement('canvas');
+            const octx = offscreen.getContext('2d');
+            octx.font = `${italic}${bold}${size}px ${font}`;
+            const metrics = octx.measureText(text);
+            const w = Math.ceil(metrics.width) + 2;
+            const h = size + 4;
+            offscreen.width  = w;
+            offscreen.height = h;
+            octx.fillStyle = '#000';
+            octx.fillRect(0, 0, w, h);
+            octx.font = `${italic}${bold}${size}px ${font}`;
+            octx.fillStyle = '#fff';
+            octx.textBaseline = 'top';
+            octx.fillText(text, 1, 1);
+
+            // Binarize preview
+            const prev = document.getElementById('text-preview-canvas');
+            const scale = Math.max(1, Math.floor(220 / w));
+            prev.width  = w * scale;
+            prev.height = h * scale;
+            const pctx = prev.getContext('2d');
+            const imgD = octx.getImageData(0, 0, w, h);
+            const out  = pctx.createImageData(prev.width, prev.height);
+            for (let j = 0; j < h; j++) {
+                for (let i = 0; i < w; i++) {
+                    const r = imgD.data[(j * w + i) * 4];     // red = brightness
+                    const on = r > threshold;
+                    const v = on ? 255 : 0;
+                    for (let sy = 0; sy < scale; sy++) {
+                        for (let sx = 0; sx < scale; sx++) {
+                            const idx = ((j * scale + sy) * prev.width + (i * scale + sx)) * 4;
+                            out.data[idx] = v; out.data[idx+1] = v; out.data[idx+2] = v; out.data[idx+3] = 255;
+                        }
+                    }
+                }
+            }
+            pctx.putImageData(out, 0, 0);
+            this._textOffscreen = offscreen;
+        };
+
+        // Wire live preview inputs
+        ['text-input','text-size','text-font','text-bold','text-italic','text-threshold'].forEach(id => {
+            document.getElementById(id).oninput = updatePreview;
+            document.getElementById(id).onchange = updatePreview;
+        });
+        updatePreview();
+
+        document.getElementById('text-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        document.getElementById('text-apply').onclick = () => {
+            modal.classList.add('hidden');
+            const threshold = parseInt(document.getElementById('text-threshold').value);
+            this.stampText(this._textOffscreen, this._textStampX, this._textStampY, threshold);
+        };
+    }
+
+    stampText(offscreen, startX, startY, threshold) {
+        if (!offscreen) return;
+        this.saveHistory();
+        const octx = offscreen.getContext('2d');
+        const w = offscreen.width;
+        const h = offscreen.height;
+        const imgD = octx.getImageData(0, 0, w, h);
+        const cols = this.width / 8;
+        const attr = this.getCurrentAttrByte();
+
+        for (let j = 0; j < h; j++) {
+            for (let i = 0; i < w; i++) {
+                const tx = startX + i;
+                const ty = startY + j;
+                if (tx < 0 || tx >= this.width || ty < 0 || ty >= this.height) continue;
+                const r = imgD.data[(j * w + i) * 4];  // red = brightness
+                if (r > threshold) {
+                    this.pixels[ty * this.width + tx] = 1;
+                    this.attributes[Math.floor(ty / 8) * cols + Math.floor(tx / 8)] = attr;
+                }
+            }
+        }
+        this.render();
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     // ── Flip ─────────────────────────────────────────────────────────────────
     flipSelection(dir) {
@@ -569,7 +679,8 @@ class ZXDraw {
         }
         
         // Update cursor
-        this.canvasWrapper.style.cursor = (tool === 'select') ? 'cell' : 'crosshair';
+        const cursorMap = { select: 'cell', text: 'text' };
+        this.canvasWrapper.style.cursor = cursorMap[tool] || 'crosshair';
         
         this.drawSelection();
     }
