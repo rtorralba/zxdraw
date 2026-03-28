@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZX-Draw</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+    <div id="app">
+        <!-- Header -->
+        <header>
+            <div class="logo">ZX<span>Draw</span></div>
+            <div class="controls">
+                <button id="new-btn" title="New Image">New</button>
+                <button id="load-btn" title="Open .zxp">Open</button>
+                <button id="save-btn" title="Save .zxp">Save</button>
+                <div class="divider"></div>
+                <button id="zoom-in" title="Zoom In">+</button>
+                <span id="zoom-level">100%</span>
+                <button id="zoom-out" title="Zoom Out">-</button>
+                <div class="divider"></div>
+                <button id="grid-toggle" class="active" title="Toggle Grid (G)">Grid</button>
+                <div class="divider"></div>
+                <button id="undo-btn" title="Undo (Ctrl+Z)">Undo</button>
+                <button id="redo-btn" title="Redo (Ctrl+Y)">Redo</button>
+                <div class="divider"></div>
+                <button id="copy-btn" title="Copy (Ctrl+C)">Copy</button>
+                <button id="paste-btn" title="Paste (Ctrl+V)">Paste</button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main>
+            <aside id="toolbar-left">
+                <div class="tool-group">
+                    <button id="tool-draw" class="tool active" title="Draw Mode (P)">
+                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
+                    </button>
+                    <button id="tool-select" class="tool" title="Select Blocks (S)">
+                        <svg viewBox="0 0 24 24"><path d="M7 2h10c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zM7 4v16h10V4H7z"/></svg>
+                    </button>
+                </div>
+                <div class="tool-group">
+                    <button id="size-settings" class="tool" title="Resize">
+                        <svg viewBox="0 0 24 24"><path d="M7 14H5v5l5-5H7v-3zm3 3v2h5l-5-5v3zm3-3h2V9l-5 5h3v3zm-3-3V7H5l5 5V9zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
+                    </button>
+                </div>
+                <div class="tool-group">
+                    <button id="flip-h-btn" class="tool" title="Flip Horizontal (H)">
+                        <svg viewBox="0 0 24 24"><path d="M11 2h2v20h-2zM15 8l5 4-5 4V8zM9 16l-5-4 5-4v8z"/></svg>
+                    </button>
+                    <button id="flip-v-btn" class="tool" title="Flip Vertical (V)">
+                        <svg viewBox="0 0 24 24"><path d="M2 11v2h20v-2H2zM16 9L12 4 8 9h8zM8 15l4 5 4-5H8z"/></svg>
+                    </button>
+                    <button id="invert-pixels-btn" class="tool" title="Invert Pixels">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18V4c4.42 0 8 3.58 8 8s-3.58 8-8 8z"/></svg>
+                    </button>
+                    <button id="invert-attrs-btn" class="tool" title="Invert Attributes (swap ink/paper)">
+                        <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                    </button>
+                </div>
+            </aside>
+
+            <section id="canvas-container">
+                <div id="canvas-wrapper">
+                    <canvas id="main-canvas"></canvas>
+                    <canvas id="grid-canvas"></canvas>
+                    <canvas id="selection-canvas"></canvas>
+                </div>
+            </section>
+
+            <aside id="toolbar-right">
+                <!-- Color Palette -->
+                <div class="panel">
+                    <h3>Ink Color</h3>
+                    <div id="ink-palette" class="palette-grid">
+                        <!-- Colors inserted by JS -->
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>Paper Color</h3>
+                    <div id="paper-palette" class="palette-grid">
+                        <!-- Colors inserted by JS -->
+                    </div>
+                </div>
+
+                <div class="panel settings">
+                    <label>
+                        <input type="checkbox" id="bright-toggle"> Bright
+                    </label>
+                    <label>
+                        <input type="checkbox" id="flash-toggle"> Flash
+                    </label>
+                </div>
+
+                <div class="panel" id="anim-panel">
+                    <h3>Animation Preview</h3>
+                    <div class="anim-controls">
+                        <div class="anim-row">
+                            <label>Frame W <small>(blocks)</small></label>
+                            <input type="number" id="anim-frame-w" value="2" min="1" max="64">
+                        </div>
+                        <div class="anim-row">
+                            <label>FPS</label>
+                            <input type="number" id="anim-fps" value="8" min="1" max="50">
+                        </div>
+                    </div>
+                    <canvas id="anim-canvas"></canvas>
+                    <div id="anim-info" class="anim-info">Copy a selection to preview</div>
+                    <button id="anim-play-btn" style="width:100%;margin-top:6px">▶ Play</button>
+                </div>
+
+                <div class="panel preview-box">
+                    <h3>Current Attribute</h3>
+                    <div id="current-attr-preview"></div>
+                    <div id="attr-info">Ink: 7, Paper: 0, B: 0, F: 0</div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Status Bar -->
+        <footer>
+            <div id="status-coords">X: 0 Y: 0</div>
+            <div id="status-block">Block: 0, 0</div>
+            <div id="status-size">Size: 256x192</div>
+        </footer>
+
+        <!-- Size Modal -->
+        <div id="size-modal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Set Canvas Size</h2>
+                <div class="input-row">
+                    <label>Width:</label>
+                    <input type="number" id="width-input" value="256" step="8" min="8">
+                </div>
+                <div class="input-row">
+                    <label>Height:</label>
+                    <input type="number" id="height-input" value="192" step="8" min="8">
+                </div>
+                <p class="hint">Sizes must be multiples of 8.</p>
+                <div class="modal-actions">
+                    <button id="modal-cancel">Cancel</button>
+                    <button id="modal-apply">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
