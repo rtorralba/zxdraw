@@ -32,7 +32,30 @@ jobs:
           name: dist-windows
           path: dist/*.exe
 
-  build-mac:
+  build-mac-intel:
+    runs-on: macos-13
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build macOS Intel x64
+        run: npm run build -- --mac --x64 --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-mac-intel
+          path: dist/*.dmg
+
+  build-mac-arm:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,15 +67,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build macOS (bundle + obfuscate + package)
-        run: npm run build -- --mac --publish never
+      - name: Build macOS Apple Silicon arm64
+        run: npm run build -- --mac --arm64 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-mac
+          name: dist-mac-arm
           path: dist/*.dmg
 
   build-linux:
@@ -79,7 +102,7 @@ jobs:
           path: dist/*.AppImage
 
   release:
-    needs: [build-windows, build-mac, build-linux]
+    needs: [build-windows, build-mac-intel, build-mac-arm, build-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
