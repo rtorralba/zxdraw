@@ -53,7 +53,7 @@ function createWindow() {
     {
       label: 'Help',
       submenu: [
-        { label: 'About ZX Draw', click: () => mainWindow.webContents.send('menu-about') },
+        { label: 'About ZXDraw', click: () => mainWindow.webContents.send('menu-about') },
       ],
     },
   ]);

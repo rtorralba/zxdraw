@@ -1,5 +1,5 @@
 /**
- * ZX Draw Renderer Logic
+ * ZXDraw Renderer Logic
  */
 
 const SPECTRUM_PALETTE = [

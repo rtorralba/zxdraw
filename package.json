@@ -1,6 +1,6 @@
 {
   "name": "zx-draw",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Simplified ZX Spectrum graphics editor with .zxp support.",
   "main": "main.js",
   "author": "Raül Torralba",
@@ -13,7 +13,7 @@
   },
   "build": {
     "appId": "com.zxdraw.app",
-    "productName": "ZX Draw",
+    "productName": "ZXDraw",
     "artifactName": "ZXDraw-${version}.${ext}",
     "forceCodeSigning": false,
     "files": [
@@ -29,8 +29,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "ZX Draw",
-      "menuCategory": "ZX Draw",
+      "shortcutName": "ZXDraw",
+      "menuCategory": "ZXDraw",
       "installerHeaderIcon": "icon.png"
     },
     "mac": {
