@@ -54,6 +54,11 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
+      - name: List dist contents for debugging
+        run: |
+          echo "Listing dist directory contents:" 
+          ls -R dist || true
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

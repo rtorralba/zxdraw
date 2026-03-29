@@ -1,6 +1,6 @@
 {
   "name": "zx-draw",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Simplified ZX Spectrum graphics editor with .zxp support.",
   "main": "main.js",
   "author": "Raül Torralba",
@@ -15,7 +15,7 @@
   "build": {
     "appId": "com.zxdraw.app",
     "productName": "ZXDraw",
-    "artifactName": "ZXDraw-${version}.${ext}",
+    "artifactName": "ZXDraw-${version}-${os}-${arch}.${ext}",
     "forceCodeSigning": false,
     "asar": true,
     "files": [
