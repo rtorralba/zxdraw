@@ -296,8 +296,14 @@ class ZXDraw {
         document.getElementById('load-btn').onclick = async () => {
             const file = await window.electronAPI.loadFile();
             if (file) {
-                this.importFromZXP(file.content);
-                this.currentFilePath = file.filePath;
+                if (file.type === 'scr') {
+                    this.importFromSCR(file.content);
+                    // Don't set currentFilePath for SCR so first save prompts for ZXP location
+                    this.currentFilePath = null;
+                } else {
+                    this.importFromZXP(file.content);
+                    this.currentFilePath = file.filePath;
+                }
                 this.render();
             }
         };
@@ -954,6 +960,35 @@ class ZXDraw {
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
         return { r, g, b };
+    }
+
+    // .scr Format Logic (ZX Spectrum screen dump, 6912 bytes)
+    importFromSCR(bytes) {
+        if (bytes.length < 6912) {
+            alert('Invalid .scr file (must be 6912 bytes).');
+            return;
+        }
+        this.resetData(256, 192);
+
+        // Bitmap: 6144 bytes stored in ZX Spectrum display file layout
+        // Address bits: [12:11]=third [10:8]=pixel_row_in_char [7:5]=char_row_in_third [4:0]=col_byte
+        for (let i = 0; i < 6144; i++) {
+            const third    = (i >> 11) & 0x03;
+            const pixelRow = (i >> 8)  & 0x07;
+            const charRow  = (i >> 5)  & 0x07;
+            const colByte  = i & 0x1F;
+            const y = third * 64 + charRow * 8 + pixelRow;
+            const xStart = colByte * 8;
+            const b = bytes[i];
+            for (let bit = 0; bit < 8; bit++) {
+                this.pixels[y * 256 + xStart + bit] = (b >> (7 - bit)) & 1;
+            }
+        }
+
+        // Attributes: 768 bytes, sequential row by row (32 cols × 24 rows)
+        for (let i = 0; i < 768; i++) {
+            this.attributes[i] = bytes[6144 + i];
+        }
     }
 
     // .zxp Format Logic

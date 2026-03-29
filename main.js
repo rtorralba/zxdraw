@@ -107,14 +107,24 @@ ipcMain.handle('export-png', async (event, dataURL) => {
 
 ipcMain.handle('load-file', async () => {
   const { filePaths } = await dialog.showOpenDialog({
-    title: 'Open .zxp Image',
-    filters: [{ name: 'ZX-Paintbrush (.zxp)', extensions: ['zxp'] }],
+    title: 'Open Image',
+    filters: [
+      { name: 'ZX Images', extensions: ['zxp', 'scr'] },
+      { name: 'ZX-Paintbrush (.zxp)', extensions: ['zxp'] },
+      { name: 'ZX Spectrum Screen (.scr)', extensions: ['scr'] },
+    ],
     properties: ['openFile'],
   });
 
   if (filePaths && filePaths.length > 0) {
-    const content = fs.readFileSync(filePaths[0], 'utf8');
-    return { content, filePath: filePaths[0] };
+    const ext = path.extname(filePaths[0]).toLowerCase();
+    if (ext === '.scr') {
+      const buffer = fs.readFileSync(filePaths[0]);
+      return { content: Array.from(buffer), filePath: filePaths[0], type: 'scr' };
+    } else {
+      const content = fs.readFileSync(filePaths[0], 'utf8');
+      return { content, filePath: filePaths[0], type: 'zxp' };
+    }
   }
   return null;
 });
