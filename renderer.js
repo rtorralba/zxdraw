@@ -202,6 +202,9 @@ class ZXDraw {
         // Flip
         document.getElementById('flip-h-btn').onclick = () => this.flipSelection('h');
         document.getElementById('flip-v-btn').onclick = () => this.flipSelection('v');
+        // Rotate selection 90 degrees clockwise
+        const rotBtn = document.getElementById('rotate-btn');
+        if (rotBtn) rotBtn.onclick = () => this.rotateSelection90();
 
         // Invert
         document.getElementById('invert-pixels-btn').onclick = () => this.invertPixels();
@@ -573,6 +576,92 @@ class ZXDraw {
         }
 
         this.render();
+    }
+
+    rotateSelection90() {
+        if (!this.selection) {
+            alert('No selection to rotate.');
+            return;
+        }
+        this.saveHistory();
+        const { x: selX, y: selY, w: selW, h: selH } = this.selection;
+        const oldPW = selW * 8, oldPH = selH * 8;
+
+        // Read original pixels into temp
+        const src = new Uint8Array(oldPW * oldPH);
+        for (let j = 0; j < oldPH; j++) {
+            for (let i = 0; i < oldPW; i++) {
+                const gx = selX * 8 + i;
+                const gy = selY * 8 + j;
+                if (gx >= 0 && gx < this.width && gy >= 0 && gy < this.height) {
+                    src[j * oldPW + i] = this.pixels[gy * this.width + gx];
+                } else {
+                    src[j * oldPW + i] = 0;
+                }
+            }
+        }
+
+        // Destination dims (rotated)
+        const dstW = oldPH, dstH = oldPW;
+        const dst = new Uint8Array(dstW * dstH);
+        // Map: original (i,j) -> new (ni = j, nj = oldPW-1 - i)
+        for (let j = 0; j < oldPH; j++) {
+            for (let i = 0; i < oldPW; i++) {
+                const v = src[j * oldPW + i];
+                const ni = j;
+                const nj = (oldPW - 1) - i;
+                if (ni >= 0 && ni < dstW && nj >= 0 && nj < dstH) dst[nj * dstW + ni] = v;
+            }
+        }
+
+        // Write dst back into canvas at same block origin, cropping if necessary
+        const writeW = Math.min(dstW, this.width - selX * 8);
+        const writeH = Math.min(dstH, this.height - selY * 8);
+        for (let j = 0; j < writeH; j++) {
+            for (let i = 0; i < writeW; i++) {
+                const gx = selX * 8 + i;
+                const gy = selY * 8 + j;
+                this.pixels[gy * this.width + gx] = dst[j * dstW + i];
+            }
+        }
+
+        // Rotate attributes grid (blocks)
+        const oldCols = selW, oldRows = selH;
+        const newCols = oldRows, newRows = oldCols;
+        const srcAttrs = new Uint8Array(oldCols * oldRows);
+        for (let by = 0; by < oldRows; by++) for (let bx = 0; bx < oldCols; bx++) {
+            const gx = selX + bx;
+            const gy = selY + by;
+            srcAttrs[by * oldCols + bx] = this.attributes[gy * (this.width / 8) + gx];
+        }
+        const dstAttrs = new Uint8Array(newCols * newRows);
+        for (let by = 0; by < oldRows; by++) {
+            for (let bx = 0; bx < oldCols; bx++) {
+                const attr = srcAttrs[by * oldCols + bx];
+                const nbx = by;
+                const nby = (oldCols - 1) - bx;
+                dstAttrs[nby * newCols + nbx] = attr;
+            }
+        }
+
+        // Write rotated attributes back (clamp to canvas blocks)
+        const totalCols = this.width / 8;
+        for (let nby = 0; nby < newRows; nby++) {
+            for (let nbx = 0; nbx < newCols; nbx++) {
+                const gx = selX + nbx;
+                const gy = selY + nby;
+                if (gx >= 0 && gx < totalCols && gy >= 0 && gy < (this.height/8)) {
+                    this.attributes[gy * totalCols + gx] = dstAttrs[nby * newCols + nbx] || 0;
+                }
+            }
+        }
+
+        // Update selection dimensions (blocks) to swapped
+        this.selection.w = newCols;
+        this.selection.h = newRows;
+
+        this.render();
+        this.drawSelection();
     }
 
     invertPixels() {
