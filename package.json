@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Simplified ZX Spectrum graphics editor with .zxp support.",
   "main": "main.js",
-  "autor": "Raül Torralba",
+  "author": "Raül Torralba",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder --win --mac --linux",
