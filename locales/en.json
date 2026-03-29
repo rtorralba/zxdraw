@@ -17,4 +17,21 @@
   "opt.off": "Off",
   "panel.animation": "Animation Preview",
   "panel.currentAttr": "Current Attribute"
+  ,
+  "menu.file": "File",
+  "menu.new": "New",
+  "menu.open": "Open…",
+  "menu.import_image": "Import Image…",
+  "menu.save": "Save",
+  "menu.saveas": "Save As…",
+  "menu.export": "Export",
+  "menu.export_png": "PNG…",
+  "menu.quit": "Quit",
+  "menu.edit": "Edit",
+  "menu.undo": "Undo",
+  "menu.redo": "Redo",
+  "menu.copy": "Copy",
+  "menu.paste": "Paste",
+  "menu.help": "Help",
+  "menu.about": "About ZXDraw"
 }

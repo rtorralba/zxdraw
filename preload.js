@@ -23,4 +23,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
       return null;
     }
   }
+  ,
+  setAppLanguage: (lang) => ipcRenderer.send('set-language', lang)
 });

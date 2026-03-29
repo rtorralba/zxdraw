@@ -4,6 +4,67 @@ const fs = require('fs');
 
 let mainWindow;
 
+function loadTranslations(lang) {
+  try {
+    const p = path.join(__dirname, 'locales', `${lang}.json`);
+    if (fs.existsSync(p)) {
+      const raw = fs.readFileSync(p, 'utf8');
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.error('Failed to load translations', lang, e);
+  }
+  // fallback to english
+  try {
+    const p = path.join(__dirname, 'locales', `en.json`);
+    const raw = fs.readFileSync(p, 'utf8');
+    return JSON.parse(raw);
+  } catch (e) {
+    return {};
+  }
+}
+
+function buildMenuTemplate(t) {
+  return [
+    {
+      label: t['menu.file'] || 'File',
+      submenu: [
+        { label: t['menu.new'] || 'New', accelerator: 'CmdOrCtrl+N', click: () => mainWindow.webContents.send('menu-new') },
+        { label: t['menu.open'] || 'Open…', accelerator: 'CmdOrCtrl+O', click: () => mainWindow.webContents.send('menu-open') },
+        { label: t['menu.import_image'] || 'Import Image…', click: () => mainWindow.webContents.send('menu-import-image') },
+        { type: 'separator' },
+        { label: t['menu.save'] || 'Save', accelerator: 'CmdOrCtrl+S', click: () => mainWindow.webContents.send('menu-save') },
+        { label: t['menu.saveas'] || 'Save As…', accelerator: 'CmdOrCtrl+Shift+S', click: () => mainWindow.webContents.send('menu-saveas') },
+        { type: 'separator' },
+        {
+          label: t['menu.export'] || 'Export',
+          submenu: [
+            { label: t['menu.export_png'] || 'PNG…', click: () => mainWindow.webContents.send('menu-export-png') },
+          ],
+        },
+        { type: 'separator' },
+        { label: t['menu.quit'] || 'Quit', role: 'quit' },
+      ],
+    },
+    {
+      label: t['menu.edit'] || 'Edit',
+      submenu: [
+        { label: t['menu.undo'] || 'Undo', accelerator: 'CmdOrCtrl+Z', click: () => mainWindow.webContents.send('menu-undo') },
+        { label: t['menu.redo'] || 'Redo', accelerator: 'CmdOrCtrl+Y', click: () => mainWindow.webContents.send('menu-redo') },
+        { type: 'separator' },
+        { label: t['menu.copy'] || 'Copy', accelerator: 'CmdOrCtrl+C', click: () => mainWindow.webContents.send('menu-copy') },
+        { label: t['menu.paste'] || 'Paste', accelerator: 'CmdOrCtrl+V', click: () => mainWindow.webContents.send('menu-paste') },
+      ],
+    },
+    {
+      label: t['menu.help'] || 'Help',
+      submenu: [
+        { label: t['menu.about'] || 'About ZXDraw', click: () => mainWindow.webContents.send('menu-about') },
+      ],
+    },
+  ];
+}
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -19,45 +80,11 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
-
-  const menu = Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: [
-        { label: 'New',      accelerator: 'CmdOrCtrl+N',       click: () => mainWindow.webContents.send('menu-new') },
-        { label: 'Open…',   accelerator: 'CmdOrCtrl+O',       click: () => mainWindow.webContents.send('menu-open') },
-        { label: 'Import Image…', click: () => mainWindow.webContents.send('menu-import-image') },
-        { type: 'separator' },
-        { label: 'Save',     accelerator: 'CmdOrCtrl+S',       click: () => mainWindow.webContents.send('menu-save') },
-        { label: 'Save As…', accelerator: 'CmdOrCtrl+Shift+S', click: () => mainWindow.webContents.send('menu-saveas') },
-        { type: 'separator' },
-        {
-          label: 'Export',
-          submenu: [
-            { label: 'PNG…', click: () => mainWindow.webContents.send('menu-export-png') },
-          ],
-        },
-        { type: 'separator' },
-        { role: 'quit' },
-      ],
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        { label: 'Undo',  accelerator: 'CmdOrCtrl+Z',       click: () => mainWindow.webContents.send('menu-undo') },
-        { label: 'Redo',  accelerator: 'CmdOrCtrl+Y',       click: () => mainWindow.webContents.send('menu-redo') },
-        { type: 'separator' },
-        { label: 'Copy',  accelerator: 'CmdOrCtrl+C',       click: () => mainWindow.webContents.send('menu-copy') },
-        { label: 'Paste', accelerator: 'CmdOrCtrl+V',       click: () => mainWindow.webContents.send('menu-paste') },
-      ],
-    },
-    {
-      label: 'Help',
-      submenu: [
-        { label: 'About ZXDraw', click: () => mainWindow.webContents.send('menu-about') },
-      ],
-    },
-  ]);
+  // Build localized menu
+  const sysLang = (app.getLocale && app.getLocale().slice(0,2)) || 'en';
+  const translations = loadTranslations(sysLang);
+  const menuTpl = buildMenuTemplate(translations);
+  const menu = Menu.buildFromTemplate(menuTpl);
   Menu.setApplicationMenu(menu);
 }
 
@@ -149,4 +176,15 @@ ipcMain.handle('load-file', async () => {
     }
   }
   return null;
+});
+
+// Rebuild menu when renderer requests language change
+ipcMain.on('set-language', (event, lang) => {
+  try {
+    const translations = loadTranslations(lang);
+    const menu = Menu.buildFromTemplate(buildMenuTemplate(translations));
+    Menu.setApplicationMenu(menu);
+  } catch (e) {
+    console.error('Failed to set language menu', e);
+  }
 });

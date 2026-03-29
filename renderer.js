@@ -647,7 +647,11 @@ class ZXDraw {
         select.onchange = (e) => {
             const l = e.target.value;
             localStorage.setItem('zxdraw_lang', l);
-            this.loadLocale(l).then(map => this.applyTranslationsMap(map));
+            this.loadLocale(l).then(map => {
+                this.applyTranslationsMap(map);
+                // notify main process to rebuild native menu
+                try { if (window.electronAPI && typeof window.electronAPI.setAppLanguage === 'function') window.electronAPI.setAppLanguage(l); } catch (err) { console.warn('setAppLanguage failed', err); }
+            });
         };
     }
     async loadLocale(lang) {
