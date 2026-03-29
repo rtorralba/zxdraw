@@ -455,9 +455,10 @@ class ZXDraw {
             octx.textBaseline = 'top';
             octx.fillText(text, 1, 1);
 
-            // Binarize preview
+            // Binarize preview. Compute scale based on available preview width so it fits responsively.
             const prev = document.getElementById('text-preview-canvas');
-            const scale = Math.max(1, Math.floor(220 / w));
+            const panelW = (prev.clientWidth && prev.clientWidth > 0) ? prev.clientWidth : 220;
+            const scale = Math.max(1, Math.floor(panelW / w));
             prev.width  = w * scale;
             prev.height = h * scale;
             const pctx = prev.getContext('2d');
@@ -892,18 +893,23 @@ class ZXDraw {
     }
 
     updateUI() {
-        const preview = document.getElementById('current-attr-preview');
         const brightIndex = (this.bright != null) ? this.bright : 0;
         const normalPalette = SPECTRUM_PALETTE[brightIndex];
 
         const paperIndex = (this.paper != null) ? this.paper : 0;
         const inkIndex = (this.ink != null) ? this.ink : 7;
 
-        preview.style.backgroundColor = normalPalette[paperIndex];
-        preview.style.color = normalPalette[inkIndex];
-        preview.innerText = 'Aa';
+        const preview = document.getElementById('current-attr-preview');
+        if (preview) {
+            preview.style.backgroundColor = normalPalette[paperIndex];
+            preview.style.color = normalPalette[inkIndex];
+            preview.innerText = 'Aa';
+        }
 
-        document.getElementById('attr-info').innerText = `Ink: ${this.ink != null ? this.ink : '-'}, Paper: ${this.paper != null ? this.paper : '-'}, B: ${this.bright != null ? this.bright : '-'}, F: ${this.flash != null ? this.flash : '-'}`;
+        const attrInfoEl = document.getElementById('attr-info');
+        if (attrInfoEl) {
+            attrInfoEl.innerText = `Ink: ${this.ink != null ? this.ink : '-'}, Paper: ${this.paper != null ? this.paper : '-'}, B: ${this.bright != null ? this.bright : '-'}, F: ${this.flash != null ? this.flash : '-'}`;
+        }
         
         if (this.isPasting) {
             this.drawSelection();

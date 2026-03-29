@@ -255,17 +255,7 @@ button.tool svg {
     gap: 10px;
 }
 
-#current-attr-preview {
-    width: 64px;
-    height: 64px;
-    border: 2px solid #fff;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 24px;
-}
+#current-attr-preview { display: none; }
 
 #attr-info {
     font-size: 12px;

@@ -132,11 +132,7 @@
                     <button id="anim-play-btn" style="width:100%;margin-top:6px">▶ Play</button>
                 </div>
 
-                <div class="panel preview-box">
-                    <h3 data-i18n="panel.currentAttr">Current Attribute</h3>
-                    <div id="current-attr-preview"></div>
-                    <div id="attr-info">Ink: 7, Paper: 0, B: 0, F: 0</div>
-                </div>
+                <!-- Current attribute preview removed per user request -->
             </aside>
         </main>
 
@@ -149,44 +145,51 @@
 
         <!-- Text Modal -->
         <div id="text-modal" class="modal hidden">
-            <div class="modal-content" style="width:380px">
+            <div class="modal-content" style="width:680px;max-height:70vh;overflow:auto;">
                 <h2>Insert Text</h2>
-                <div class="input-row">
-                    <label>Text</label>
-                    <input type="text" id="text-input" placeholder="Hello World" style="width:200px">
-                </div>
-                <div class="input-row">
-                    <label>Font</label>
-                    <select id="text-font" style="width:200px;background:#121212;border:1px solid #444;color:white;padding:6px;border-radius:4px">
-                        <option>monospace</option>
-                        <option>sans-serif</option>
-                        <option>serif</option>
-                        <option>Arial</option>
-                        <option>Courier New</option>
-                        <option>Times New Roman</option>
-                        <option>Impact</option>
-                        <option>Georgia</option>
-                        <option>Verdana</option>
-                    </select>
-                </div>
-                <div class="input-row">
-                    <label>Size (px)</label>
-                    <input type="number" id="text-size" value="16" min="4" max="256" style="width:80px">
-                </div>
-                <div class="input-row">
-                    <label>Style</label>
-                    <div style="display:flex;gap:8px">
-                        <label style="color:#e0e0e0"><input type="checkbox" id="text-bold"> Bold</label>
-                        <label style="color:#e0e0e0"><input type="checkbox" id="text-italic"> Italic</label>
+                <div style="display:flex;gap:16px;align-items:flex-start">
+                    <div style="flex:1;min-width:0">
+                        <div class="input-row">
+                            <label>Text</label>
+                            <input type="text" id="text-input" placeholder="Hello World" style="width:100%">
+                        </div>
+                        <div class="input-row">
+                            <label>Font</label>
+                            <select id="text-font" style="width:100%;background:#121212;border:1px solid #444;color:white;padding:6px;border-radius:4px">
+                                <option>monospace</option>
+                                <option>sans-serif</option>
+                                <option>serif</option>
+                                <option>Arial</option>
+                                <option>Courier New</option>
+                                <option>Times New Roman</option>
+                                <option>Impact</option>
+                                <option>Georgia</option>
+                                <option>Verdana</option>
+                            </select>
+                        </div>
+                        <div class="input-row">
+                            <label>Size (px)</label>
+                            <input type="number" id="text-size" value="16" min="4" max="256" style="width:80px">
+                        </div>
+                        <div class="input-row">
+                            <label>Style</label>
+                            <div style="display:flex;gap:8px">
+                                <label style="color:#e0e0e0"><input type="checkbox" id="text-bold"> Bold</label>
+                                <label style="color:#e0e0e0"><input type="checkbox" id="text-italic"> Italic</label>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <label>Threshold</label>
+                            <input type="range" id="text-threshold" min="1" max="254" value="128" style="flex:1">
+                            <span id="text-threshold-val" style="font-size:12px;color:#a0a0a0;min-width:40px;text-align:right">128</span>
+                        </div>
+                    </div>
+                    <div style="width:40%;min-width:200px;display:flex;flex-direction:column;gap:8px;align-items:center">
+                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center">Preview</div>
+                        <canvas id="text-preview-canvas" style="display:block;width:100%;height:160px;image-rendering:pixelated;border:1px solid #444;background:#000"></canvas>
                     </div>
                 </div>
-                <div class="input-row">
-                    <label>Threshold</label>
-                    <input type="range" id="text-threshold" min="1" max="254" value="128" style="width:140px">
-                    <span id="text-threshold-val" style="font-size:12px;color:#a0a0a0;min-width:30px">128</span>
-                </div>
-                <canvas id="text-preview-canvas" style="display:block;margin:12px 0;image-rendering:pixelated;border:1px solid #444;background:#000;max-width:100%"></canvas>
-                <div class="modal-actions">
+                <div class="modal-actions" style="margin-top:12px">
                     <button id="text-cancel">Cancel</button>
                     <button id="text-apply" style="background:var(--accent);border-color:var(--accent)">Stamp</button>
                 </div>
