@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist-mac
-          path: dist/mac*/*.zip
+          path: dist/**/*.zip
 
   build-linux:
     runs-on: ubuntu-latest
