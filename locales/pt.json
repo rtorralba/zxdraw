@@ -57,6 +57,13 @@
   "modal.size.width": "Largura:",
   "modal.size.height": "Altura:",
   "modal.size.hint": "Os tamanhos devem ser múltiplos de 8.",
+  "alert.size_multiple": "O tamanho deve ser múltiplo de 8.",
+  "alert.no_selection_rotate": "Nenhuma seleção para girar.",
+  "alert.selection_required": "Seleção necessária! Troque para a ferramenta Seleção (S) e arraste uma área.",
+  "alert.selection_error": "Erro de seleção. Tente permanecer dentro dos limites.",
+  "alert.no_content_copied": "Nenhum conteúdo copiado. Selecione uma área e pressione Ctrl+C.",
+  "alert.invalid_scr": "Arquivo .scr inválido (deve ter 6912 bytes).",
+  "alert.invalid_zxp": "Arquivo .zxp inválido.",
   "anim.framew": "Frame W",
   "anim.fps": "FPS",
   "anim.no_selection": "Copie uma seleção para visualizar"
@@ -68,4 +75,6 @@
   ,
   "about.tagline": "Editor inspirado no ZX Spectrum",
   "about.version": "Versão"
+  ,
+  "btn.close": "Fechar"
 }

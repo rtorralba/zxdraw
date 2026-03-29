@@ -57,6 +57,13 @@
   "modal.size.width": "Width:",
   "modal.size.height": "Height:",
   "modal.size.hint": "Sizes must be multiples of 8.",
+  "alert.size_multiple": "Size must be a multiple of 8.",
+  "alert.no_selection_rotate": "No selection to rotate.",
+  "alert.selection_required": "Selection required! Switch to select tool (S) and drag an area.",
+  "alert.selection_error": "Selection error. Try staying within bounds.",
+  "alert.no_content_copied": "No content copied. Select an area and press Ctrl+C.",
+  "alert.invalid_scr": "Invalid .scr file (must be 6912 bytes).",
+  "alert.invalid_zxp": "Invalid .zxp file.",
   "anim.framew": "Frame W",
   "anim.fps": "FPS",
   "anim.no_selection": "Copy a selection to preview"
@@ -65,4 +72,8 @@
   "modal.text.bold": "Bold",
   "modal.text.italic": "Italic",
   "import.title": "Import Image → ZX Spectrum"
+  ,
+  "about.tagline": "ZX Spectrum-inspired pixel art editor",
+  "about.version": "Version",
+  "btn.close": "Close"
 }

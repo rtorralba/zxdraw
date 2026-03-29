@@ -343,7 +343,8 @@ class ZXDraw {
                 this.render();
                 modal.classList.add('hidden');
             } else {
-                alert('Size must be a multiple of 8.');
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.size_multiple']) ? this._currentLocaleMap['alert.size_multiple'] : 'Size must be a multiple of 8.';
+                alert(msg);
             }
         };
 
@@ -623,7 +624,8 @@ class ZXDraw {
 
     rotateSelection90() {
         if (!this.selection) {
-            alert('No selection to rotate.');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.no_selection_rotate']) ? this._currentLocaleMap['alert.no_selection_rotate'] : 'No selection to rotate.';
+            alert(msg);
             return;
         }
         this.saveHistory();
@@ -1169,7 +1171,8 @@ class ZXDraw {
     // Clipboard Logic
     copySelection() {
         if (!this.selection) {
-            alert('Selection required! Switch to select tool (S) and drag an area.');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.selection_required']) ? this._currentLocaleMap['alert.selection_required'] : 'Selection required! Switch to select tool (S) and drag an area.';
+            alert(msg);
             return;
         }
 
@@ -1199,7 +1202,8 @@ class ZXDraw {
             this.drawSelection();
         } catch (e) {
             console.error('Copy failed', e);
-            alert('Selection error. Try staying within bounds.');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.selection_error']) ? this._currentLocaleMap['alert.selection_error'] : 'Selection error. Try staying within bounds.';
+            alert(msg);
         }
     }
 
@@ -1224,7 +1228,8 @@ class ZXDraw {
 
     startPaste() {
         if (!this.clipboard) {
-            alert('No content copied. Select an area and press Ctrl+C.');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.no_content_copied']) ? this._currentLocaleMap['alert.no_content_copied'] : 'No content copied. Select an area and press Ctrl+C.';
+            alert(msg);
             return;
         }
         this.currentTool = 'draw'; // Switch tool without clearing isPasting
@@ -1316,7 +1321,8 @@ class ZXDraw {
     // .scr Format Logic (ZX Spectrum screen dump, 6912 bytes)
     importFromSCR(bytes) {
         if (bytes.length < 6912) {
-            alert('Invalid .scr file (must be 6912 bytes).');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.invalid_scr']) ? this._currentLocaleMap['alert.invalid_scr'] : 'Invalid .scr file (must be 6912 bytes).';
+            alert(msg);
             return;
         }
         this.resetData(256, 192);
@@ -1378,7 +1384,8 @@ class ZXDraw {
     importFromZXP(content) {
         const lines = content.split(/\r?\n/);
         if (lines[0] !== 'ZX-Paintbrush image') {
-            alert('Invalid .zxp file.');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.invalid_zxp']) ? this._currentLocaleMap['alert.invalid_zxp'] : 'Invalid .zxp file.';
+            alert(msg);
             return;
         }
 
