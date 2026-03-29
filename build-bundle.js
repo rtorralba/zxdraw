@@ -1,7 +1,7 @@
 const { build } = require('esbuild');
 const fs = require('fs');
 const path = require('path');
-const { JavaScriptObfuscator } = require('javascript-obfuscator');
+const JavaScriptObfuscator = require('javascript-obfuscator');
 const { spawnSync } = require('child_process');
 
 // Files to bundle and obfuscate
@@ -58,12 +58,26 @@ async function doBuild() {
       console.log('Bundled & obfuscated:', it.entry);
     }
 
-    // Run electron-builder via npx to ensure local binary
+    // Run local electron-builder binary from node_modules to avoid relying on npx
     console.log('Running electron-builder...');
     // Pass through any CLI flags (e.g. --win / --mac / --linux)
     const flags = process.argv.slice(2);
-    const args = ['electron-builder', ...flags.length ? flags : ['--win','--mac','--linux']];
-    const res = spawnSync('npx', args, { stdio: 'inherit' });
+    let flagsArr = flags.length ? flags : null;
+    if (!flagsArr) {
+      // default to current platform to avoid cross-platform build errors
+      if (process.platform === 'win32') flagsArr = ['--win'];
+      else if (process.platform === 'darwin') flagsArr = ['--mac'];
+      else if (process.platform === 'linux') flagsArr = ['--linux'];
+      else flagsArr = ['--win'];
+    }
+    const ebBin = path.join(ROOT, 'node_modules', '.bin', 'electron-builder' + (process.platform === 'win32' ? '.cmd' : ''));
+    let res;
+    if (process.platform === 'win32') {
+      // On Windows run via cmd /c to execute the .cmd wrapper
+      res = spawnSync('cmd', ['/c', ebBin, ...flagsArr], { stdio: 'inherit' });
+    } else {
+      res = spawnSync(ebBin, flagsArr, { stdio: 'inherit' });
+    }
     if (res.error) throw res.error;
     if (res.status !== 0) throw new Error('electron-builder failed with code ' + res.status);
 
