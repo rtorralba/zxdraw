@@ -25,6 +25,7 @@ function createWindow() {
       submenu: [
         { label: 'New',      accelerator: 'CmdOrCtrl+N',       click: () => mainWindow.webContents.send('menu-new') },
         { label: 'Open…',   accelerator: 'CmdOrCtrl+O',       click: () => mainWindow.webContents.send('menu-open') },
+        { label: 'Import Image…', click: () => mainWindow.webContents.send('menu-import-image') },
         { type: 'separator' },
         { label: 'Save',     accelerator: 'CmdOrCtrl+S',       click: () => mainWindow.webContents.send('menu-save') },
         { label: 'Save As…', accelerator: 'CmdOrCtrl+Shift+S', click: () => mainWindow.webContents.send('menu-saveas') },
@@ -52,7 +53,7 @@ function createWindow() {
     {
       label: 'Help',
       submenu: [
-        { label: 'About ZX-Draw', click: () => mainWindow.webContents.send('menu-about') },
+        { label: 'About ZX Draw', click: () => mainWindow.webContents.send('menu-about') },
       ],
     },
   ]);
@@ -101,6 +102,21 @@ ipcMain.handle('export-png', async (event, dataURL) => {
     const base64 = dataURL.replace(/^data:image\/png;base64,/, '');
     fs.writeFileSync(filePath, Buffer.from(base64, 'base64'));
     return filePath;
+  }
+  return null;
+});
+
+ipcMain.handle('load-image', async () => {
+  const { filePaths } = await dialog.showOpenDialog({
+    title: 'Import Image',
+    filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'bmp'] }],
+    properties: ['openFile'],
+  });
+  if (filePaths && filePaths.length > 0) {
+    const ext = path.extname(filePaths[0]).slice(1).toLowerCase();
+    const mime = ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : `image/${ext}`;
+    const buffer = fs.readFileSync(filePaths[0]);
+    return `data:${mime};base64,${buffer.toString('base64')}`;
   }
   return null;
 });

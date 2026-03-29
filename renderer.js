@@ -1,5 +1,5 @@
 /**
- * ZX-Draw Renderer Logic
+ * ZX Draw Renderer Logic
  */
 
 const SPECTRUM_PALETTE = [
@@ -277,6 +277,8 @@ class ZXDraw {
         };
 
         // File I/O
+        document.getElementById('import-image-btn').onclick = () => this.triggerImageImport();
+
         document.getElementById('save-btn').onclick = async () => {
             const zxpContent = this.exportToZXP();
             if (this.currentFilePath) {
@@ -298,7 +300,6 @@ class ZXDraw {
             if (file) {
                 if (file.type === 'scr') {
                     this.importFromSCR(file.content);
-                    // Don't set currentFilePath for SCR so first save prompts for ZXP location
                     this.currentFilePath = null;
                 } else {
                     this.importFromZXP(file.content);
@@ -322,6 +323,7 @@ class ZXDraw {
         };
 
         // Native menu events from main process
+        window.electronAPI.onMenuEvent('menu-import-image', () => this.triggerImageImport());
         window.electronAPI.onMenuEvent('menu-new',    () => document.getElementById('new-btn').click());
         window.electronAPI.onMenuEvent('menu-open',   () => document.getElementById('load-btn').click());
         window.electronAPI.onMenuEvent('menu-save',   () => document.getElementById('save-btn').click());
@@ -1072,6 +1074,180 @@ class ZXDraw {
             this.attributes[i] = parseInt(attrFlat[i], 16);
         }
     }
+    // ── Image Import ─────────────────────────────────────────────────────────
+    triggerImageImport() {
+        window.electronAPI.loadImage().then(dataUrl => {
+            if (dataUrl) this.openImageImportModal(dataUrl);
+        });
+    }
+
+    openImageImportModal(dataUrl) {
+        const modal      = document.getElementById('import-image-modal');
+        const srcCanvas  = document.getElementById('import-src-canvas');
+        const zxCanvas   = document.getElementById('import-zx-canvas');
+
+        srcCanvas.width  = 256;
+        srcCanvas.height = 192;
+        zxCanvas.width   = 256;
+        zxCanvas.height  = 192;
+
+        const img = new Image();
+        img.onload = () => {
+            const updatePreview = () => {
+                const brightness = document.getElementById('import-brightness').value;
+                const contrast   = document.getElementById('import-contrast').value;
+                const saturation = document.getElementById('import-saturation').value;
+                document.getElementById('import-brightness-val').textContent = brightness + '%';
+                document.getElementById('import-contrast-val').textContent   = contrast   + '%';
+                document.getElementById('import-saturation-val').textContent = saturation + '%';
+
+                // Draw adjusted source
+                const srcCtx = srcCanvas.getContext('2d');
+                srcCtx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+                srcCtx.drawImage(img, 0, 0, 256, 192);
+                srcCtx.filter = 'none';
+
+                // Convert to ZX Spectrum
+                const { pixels, attributes } = this.convertImageToZXCanvas(srcCanvas);
+                this._importPixels     = pixels;
+                this._importAttributes = attributes;
+
+                // Render ZX preview
+                const zxCtx   = zxCanvas.getContext('2d');
+                const imgData = zxCtx.createImageData(256, 192);
+                const data    = imgData.data;
+                const pal     = SPECTRUM_PALETTE;
+                for (let by = 0; by < 24; by++) {
+                    for (let bx = 0; bx < 32; bx++) {
+                        const attr   = attributes[by * 32 + bx];
+                        const bright = (attr >> 6) & 1;
+                        const inkC   = this.hexToRgb(pal[bright][attr & 7]);
+                        const paperC = this.hexToRgb(pal[bright][(attr >> 3) & 7]);
+                        for (let py = 0; py < 8; py++) {
+                            for (let px = 0; px < 8; px++) {
+                                const x = bx * 8 + px;
+                                const y = by * 8 + py;
+                                const c = pixels[y * 256 + x] ? inkC : paperC;
+                                const i = (y * 256 + x) * 4;
+                                data[i] = c.r; data[i+1] = c.g; data[i+2] = c.b; data[i+3] = 255;
+                            }
+                        }
+                    }
+                }
+                zxCtx.putImageData(imgData, 0, 0);
+            };
+
+            ['import-brightness', 'import-contrast', 'import-saturation'].forEach(id => {
+                document.getElementById(id).oninput = updatePreview;
+            });
+
+            // Reset sliders on each new image open
+            document.getElementById('import-brightness').value = 100;
+            document.getElementById('import-contrast').value   = 100;
+            document.getElementById('import-saturation').value = 100;
+
+            updatePreview();
+            modal.classList.remove('hidden');
+        };
+        img.src = dataUrl;
+
+        document.getElementById('import-image-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        document.getElementById('import-image-apply').onclick = () => {
+            if (this._importPixels && this._importAttributes) {
+                this.undoStack = [];
+                this.redoStack = [];
+                this.resetData(256, 192);
+                this.pixels     = this._importPixels;
+                this.attributes = this._importAttributes;
+                this.currentFilePath = null;
+                this.render();
+            }
+            modal.classList.add('hidden');
+        };
+    }
+
+    convertImageToZXCanvas(srcCanvas) {
+        const raw     = srcCanvas.getContext('2d').getImageData(0, 0, 256, 192).data;
+        const pixels  = new Uint8Array(256 * 192);
+        const attrs   = new Uint8Array(32 * 24);
+
+        // Pre-build palette as plain arrays for speed: pal[bright][idx] = [r,g,b]
+        const pal = SPECTRUM_PALETTE.map(set => set.map(hex => {
+            const c = this.hexToRgb(hex);
+            return [c.r, c.g, c.b];
+        }));
+
+        const bR = new Uint8Array(64);
+        const bG = new Uint8Array(64);
+        const bB = new Uint8Array(64);
+
+        for (let by = 0; by < 24; by++) {
+            for (let bx = 0; bx < 32; bx++) {
+                // Collect block pixels
+                for (let py = 0; py < 8; py++) {
+                    for (let px = 0; px < 8; px++) {
+                        const x = bx * 8 + px;
+                        const y = by * 8 + py;
+                        const i = (y * 256 + x) * 4;
+                        const j = py * 8 + px;
+                        bR[j] = raw[i]; bG[j] = raw[i+1]; bB[j] = raw[i+2];
+                    }
+                }
+
+                // Find best (bright, paperIdx, inkIdx) by minimum total squared error
+                let bestErr = Infinity;
+                let bestBright = 0, bestPaper = 0, bestInk = 7;
+
+                for (let bright = 0; bright < 2; bright++) {
+                    const p = pal[bright];
+                    for (let pi = 0; pi < 8; pi++) {
+                        const pr = p[pi][0], pg = p[pi][1], pb = p[pi][2];
+                        for (let ii = 0; ii < 8; ii++) {
+                            const ir = p[ii][0], ig = p[ii][1], ib = p[ii][2];
+                            let err = 0;
+                            for (let j = 0; j < 64; j++) {
+                                const r = bR[j], g = bG[j], b = bB[j];
+                                const dI = (r-ir)*(r-ir) + (g-ig)*(g-ig) + (b-ib)*(b-ib);
+                                const dP = (r-pr)*(r-pr) + (g-pg)*(g-pg) + (b-pb)*(b-pb);
+                                err += dI < dP ? dI : dP;
+                                if (err >= bestErr) break; // prune
+                            }
+                            if (err < bestErr) {
+                                bestErr = err;
+                                bestBright = bright;
+                                bestPaper  = pi;
+                                bestInk    = ii;
+                            }
+                        }
+                    }
+                }
+
+                attrs[by * 32 + bx] = (bestBright << 6) | (bestPaper << 3) | bestInk;
+
+                // Assign pixels to ink (1) or paper (0)
+                const iC = pal[bestBright][bestInk];
+                const pC = pal[bestBright][bestPaper];
+                const ir = iC[0], ig = iC[1], ib = iC[2];
+                const pr = pC[0], pg = pC[1], pb = pC[2];
+                for (let py = 0; py < 8; py++) {
+                    for (let px = 0; px < 8; px++) {
+                        const j = py * 8 + px;
+                        const r = bR[j], g = bG[j], b = bB[j];
+                        const dI = (r-ir)*(r-ir) + (g-ig)*(g-ig) + (b-ib)*(b-ib);
+                        const dP = (r-pr)*(r-pr) + (g-pg)*(g-pg) + (b-pb)*(b-pb);
+                        pixels[(by * 8 + py) * 256 + (bx * 8 + px)] = dI <= dP ? 1 : 0;
+                    }
+                }
+            }
+        }
+
+        return { pixels, attributes: attrs };
+    }
+    // ─────────────────────────────────────────────────────────────────────────
+
 }
 
 window.onload = () => {

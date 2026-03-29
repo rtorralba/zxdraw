@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZX-Draw</title>
+    <title>ZX Draw</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-theme">
@@ -15,6 +15,7 @@
                 <!-- hidden functional buttons targeted by menu/keyboard shortcuts -->
                 <button id="new-btn" style="display:none"></button>
                 <button id="load-btn" style="display:none"></button>
+                <button id="import-image-btn" style="display:none"></button>
                 <button id="save-btn" style="display:none"></button>
                 <button id="saveas-btn" style="display:none"></button>
                 <button id="undo-btn" style="display:none"></button>
@@ -37,7 +38,7 @@
                         <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
                     </button>
                     <button id="tool-select" class="tool" title="Select Blocks (S)">
-                        <svg viewBox="0 0 24 24"><path d="M7 2h10c1.1 0 2 .9 2 2v16c0 1.1-.9 2-2 2H7c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zM7 4v16h10V4H7z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2.5" fill="none"/></svg>
                     </button>
                     <button id="tool-text" class="tool" title="Text Tool (T)">
                         <svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
@@ -171,6 +172,42 @@
                 <div class="modal-actions">
                     <button id="text-cancel">Cancel</button>
                     <button id="text-apply" style="background:var(--accent);border-color:var(--accent)">Stamp</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Import Image Modal -->
+        <div id="import-image-modal" class="modal hidden">
+            <div class="modal-content" style="width:680px;max-width:95vw">
+                <h2>Import Image &#x2192; ZX Spectrum</h2>
+                <div style="display:flex;gap:12px;margin-bottom:16px">
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center">Original (adjusted)</div>
+                        <canvas id="import-src-canvas" style="display:block;width:100%;image-rendering:pixelated;border:1px solid #444;background:#000"></canvas>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center">ZX Spectrum Preview</div>
+                        <canvas id="import-zx-canvas" style="display:block;width:100%;image-rendering:pixelated;border:1px solid #444;background:#000"></canvas>
+                    </div>
+                </div>
+                <div class="input-row">
+                    <label>Brightness</label>
+                    <input type="range" id="import-brightness" min="0" max="400" value="100" style="flex:1">
+                    <span id="import-brightness-val" style="min-width:42px;text-align:right;color:#a0a0a0">100%</span>
+                </div>
+                <div class="input-row">
+                    <label>Contrast</label>
+                    <input type="range" id="import-contrast" min="0" max="400" value="100" style="flex:1">
+                    <span id="import-contrast-val" style="min-width:42px;text-align:right;color:#a0a0a0">100%</span>
+                </div>
+                <div class="input-row">
+                    <label>Saturation</label>
+                    <input type="range" id="import-saturation" min="0" max="400" value="100" style="flex:1">
+                    <span id="import-saturation-val" style="min-width:42px;text-align:right;color:#a0a0a0">100%</span>
+                </div>
+                <div class="modal-actions">
+                    <button id="import-image-cancel">Cancel</button>
+                    <button id="import-image-apply" style="background:var(--accent);border-color:var(--accent)">Import</button>
                 </div>
             </div>
         </div>
