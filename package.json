@@ -20,13 +20,16 @@
       "!node_modules/.cache"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "icon.png"
     },
     "mac": {
-      "target": "dmg"
+      "target": "dmg",
+      "icon": "icon.icns"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "icon.png"
     }
   },
   "devDependencies": {
