@@ -108,10 +108,17 @@ class ZXDraw {
                     swatch.classList.add('active');
                 }
                 swatch.onclick = () => {
-                    if (type === 'ink') this.ink = i;
-                    else this.paper = i;
+                    // Toggle selection: click again to deselect (use existing block attribute)
+                    if (type === 'ink') {
+                        if (this.ink === i) this.ink = null; else this.ink = i;
+                    } else {
+                        if (this.paper === i) this.paper = null; else this.paper = i;
+                    }
                     document.querySelectorAll(`#${type}-palette .color-swatch`).forEach(s => s.classList.remove('active'));
-                    swatch.classList.add('active');
+                    // mark active if selected
+                    if ((type === 'ink' && this.ink === i) || (type === 'paper' && this.paper === i)) {
+                        swatch.classList.add('active');
+                    }
                     this.updateUI();
                 };
                 container.appendChild(swatch);
@@ -153,8 +160,17 @@ class ZXDraw {
         };
 
         // Mods
-        document.getElementById('bright-toggle').onchange = (e) => { this.bright = e.target.checked ? 1 : 0; this.updateUI(); };
-        document.getElementById('flash-toggle').onchange = (e) => { this.flash = e.target.checked ? 1 : 0; this.updateUI(); };
+        // 3-position selects: keep / on / off
+        document.getElementById('bright-toggle').onchange = (e) => {
+            const v = e.target.value;
+            this.bright = (v === 'keep') ? null : (v === '1' ? 1 : 0);
+            this.updateUI();
+        };
+        document.getElementById('flash-toggle').onchange = (e) => {
+            const v = e.target.value;
+            this.flash = (v === 'keep') ? null : (v === '1' ? 1 : 0);
+            this.updateUI();
+        };
 
         // Undo / Redo
         document.getElementById('undo-btn').onclick = () => this.undo();
@@ -192,10 +208,10 @@ class ZXDraw {
                     // Update pixels
                     if (e.buttons & 1) { // Left click
                         this.pixels[y * this.width + x] = 1;
-                        this.attributes[attrIdx] = this.getCurrentAttrByte();
+                                this.attributes[attrIdx] = this.computeAttrByte(attrIdx);
                     } else if (e.buttons & 2) { // Right click
                         this.pixels[y * this.width + x] = 0;
-                        this.attributes[attrIdx] = this.getCurrentAttrByte();
+                                this.attributes[attrIdx] = this.computeAttrByte(attrIdx);
                     }
                 } else if (this.currentTool === 'select') {
                     if (isDrawing) {
@@ -456,7 +472,6 @@ class ZXDraw {
         const h = offscreen.height;
         const imgD = octx.getImageData(0, 0, w, h);
         const cols = this.width / 8;
-        const attr = this.getCurrentAttrByte();
 
         for (let j = 0; j < h; j++) {
             for (let i = 0; i < w; i++) {
@@ -466,7 +481,8 @@ class ZXDraw {
                 const r = imgD.data[(j * w + i) * 4];  // red = brightness
                 if (r > threshold) {
                     this.pixels[ty * this.width + tx] = 1;
-                    this.attributes[Math.floor(ty / 8) * cols + Math.floor(tx / 8)] = attr;
+                    const attrIdx = Math.floor(ty / 8) * cols + Math.floor(tx / 8);
+                    this.attributes[attrIdx] = this.computeAttrByte(attrIdx);
                 }
             }
         }
@@ -713,7 +729,31 @@ class ZXDraw {
 
     getCurrentAttrByte() {
         // F B P P P I I I
-        return (this.flash << 7) | (this.bright << 6) | (this.paper << 3) | this.ink;
+        // F B P P P I I I
+        // Fallback to defaults if any component is null
+        const f = (this.flash != null) ? this.flash : 0;
+        const b = (this.bright != null) ? this.bright : 0;
+        const p = (this.paper != null) ? this.paper : 0;
+        const i = (this.ink != null) ? this.ink : 7;
+        return (f << 7) | (b << 6) | (p << 3) | i;
+    }
+
+    computeAttrByte(attrIdx) {
+        // Merge selected components with existing attribute at attrIdx.
+        const existing = (typeof attrIdx === 'number' && this.attributes && this.attributes[attrIdx] != null)
+            ? this.attributes[attrIdx]
+            : 0;
+        const exF = (existing >> 7) & 1;
+        const exB = (existing >> 6) & 1;
+        const exP = (existing >> 3) & 0x07;
+        const exI = existing & 0x07;
+
+        const f = (this.flash != null) ? this.flash : exF;
+        const b = (this.bright != null) ? this.bright : exB;
+        const p = (this.paper != null) ? this.paper : exP;
+        const i = (this.ink != null) ? this.ink : exI;
+
+        return (f << 7) | (b << 6) | (p << 3) | i;
     }
 
     setTool(tool) {
@@ -753,25 +793,36 @@ class ZXDraw {
 
     updateUI() {
         const preview = document.getElementById('current-attr-preview');
-        const normalPalette = SPECTRUM_PALETTE[this.bright];
-        
-        preview.style.backgroundColor = normalPalette[this.paper];
-        preview.style.color = normalPalette[this.ink];
+        const brightIndex = (this.bright != null) ? this.bright : 0;
+        const normalPalette = SPECTRUM_PALETTE[brightIndex];
+
+        const paperIndex = (this.paper != null) ? this.paper : 0;
+        const inkIndex = (this.ink != null) ? this.ink : 7;
+
+        preview.style.backgroundColor = normalPalette[paperIndex];
+        preview.style.color = normalPalette[inkIndex];
         preview.innerText = 'Aa';
-        
-        document.getElementById('attr-info').innerText = `Ink: ${this.ink}, Paper: ${this.paper}, B: ${this.bright}, F: ${this.flash}`;
+
+        document.getElementById('attr-info').innerText = `Ink: ${this.ink != null ? this.ink : '-'}, Paper: ${this.paper != null ? this.paper : '-'}, B: ${this.bright != null ? this.bright : '-'}, F: ${this.flash != null ? this.flash : '-'}`;
         
         if (this.isPasting) {
             this.drawSelection();
         }
 
         // Update palette colors to reflect Bright toggle
+        const brightForPalette = (this.bright != null) ? this.bright : 0;
         document.querySelectorAll('#ink-palette .color-swatch').forEach((s, i) => {
-            s.style.backgroundColor = SPECTRUM_PALETTE[this.bright][i];
+            s.style.backgroundColor = SPECTRUM_PALETTE[brightForPalette][i];
         });
         document.querySelectorAll('#paper-palette .color-swatch').forEach((s, i) => {
-            s.style.backgroundColor = SPECTRUM_PALETTE[this.bright][i];
+            s.style.backgroundColor = SPECTRUM_PALETTE[brightForPalette][i];
         });
+
+        // Sync selects to internal state: 'keep'|'1'|'0'
+        const brightToggle = document.getElementById('bright-toggle');
+        const flashToggle = document.getElementById('flash-toggle');
+        if (brightToggle) brightToggle.value = (this.bright === 1) ? '1' : (this.bright === 0 ? '0' : 'keep');
+        if (flashToggle) flashToggle.value = (this.flash === 1) ? '1' : (this.flash === 0 ? '0' : 'keep');
     }
 
     updateStatus(x, y) {

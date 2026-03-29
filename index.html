@@ -90,12 +90,22 @@
                 </div>
 
                 <div class="panel settings">
-                    <label>
-                        <input type="checkbox" id="bright-toggle"> Bright
-                    </label>
-                    <label>
-                        <input type="checkbox" id="flash-toggle"> Flash
-                    </label>
+                    <div class="input-row">
+                        <label>Bright</label>
+                        <select id="bright-toggle">
+                            <option value="keep">Mantener</option>
+                            <option value="1">On</option>
+                            <option value="0">Off</option>
+                        </select>
+                    </div>
+                    <div class="input-row">
+                        <label>Flash</label>
+                        <select id="flash-toggle">
+                            <option value="keep">Mantener</option>
+                            <option value="1">On</option>
+                            <option value="0">Off</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="panel" id="anim-panel">
