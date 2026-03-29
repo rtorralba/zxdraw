@@ -119,7 +119,7 @@ class ZXDraw {
     setupPalettes() {
         const inkGrid = document.getElementById('ink-palette');
         const paperGrid = document.getElementById('paper-palette');
-        
+
         const createSwatches = (container, type) => {
             container.innerHTML = '';
             for (let i = 0; i < 8; i++) {
@@ -379,6 +379,12 @@ class ZXDraw {
             // DevTools shortcut: Ctrl+Shift+I (or Cmd+Shift+I on mac)
             if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyI') {
                 try { window.electronAPI.openDevTools(); } catch (err) { console.error('openDevTools failed', err); }
+                return;
+            }
+            // Delete: clear selected area (fill with zeros)
+            if (e.key === 'Delete') {
+                e.preventDefault();
+                this.clearSelection();
                 return;
             }
             if (e.ctrlKey && e.code === 'KeyS' && !e.shiftKey) {
@@ -647,6 +653,20 @@ class ZXDraw {
     async loadLocale(lang) {
         if (!this.locales) this.locales = {};
         if (this.locales[lang]) return this.locales[lang];
+        // Fast path: ask preload (fs) to load bundled locale synchronously
+        try {
+            if (window.electronAPI && typeof window.electronAPI.getLocale === 'function') {
+                const local = window.electronAPI.getLocale(lang);
+                if (local) {
+                    this.locales[lang] = local;
+                    return local;
+                }
+            }
+        } catch (e) {
+            console.warn('preload getLocale not available or failed', e);
+        }
+
+        // Fallback to fetch if preload path not available
         try {
             const url = new URL(`locales/${lang}.json`, window.location.href).href;
             const res = await fetch(url);
@@ -656,7 +676,6 @@ class ZXDraw {
             return json;
         } catch (e) {
             console.error('i18n: failed to load locale', lang, e);
-            // fallback to english bundled file or embedded fallback
             if (lang !== 'en') return this.loadLocale('en');
             this.locales['en'] = FALLBACK_TRANSLATIONS.en;
             return FALLBACK_TRANSLATIONS.en;
@@ -999,6 +1018,25 @@ class ZXDraw {
             console.error('Copy failed', e);
             alert('Selection error. Try staying within bounds.');
         }
+    }
+
+    clearSelection() {
+        if (!this.selection) return;
+        this.saveHistory();
+        const { x, y, w, h } = this.selection;
+        for (let j = 0; j < h * 8; j++) {
+            for (let i = 0; i < w * 8; i++) {
+                const px = x * 8 + i;
+                const py = y * 8 + j;
+                if (px >= 0 && px < this.width && py >= 0 && py < this.height) {
+                    this.pixels[py * this.width + px] = 0;
+                }
+            }
+        }
+        // Keep attributes as-is; only clear pixels.
+        this.render();
+        this.selection = null;
+        this.drawSelection();
     }
 
     startPaste() {
