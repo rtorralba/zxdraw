@@ -26,7 +26,14 @@
                 <span id="zoom-level">100%</span>
                 <button id="zoom-out" title="Zoom Out"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"/></svg></button>
                 <div class="divider"></div>
-                <button id="grid-toggle" class="active" title="Toggle Grid (G)"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg> Grid</button>
+                                <button id="grid-toggle" class="active" title="Toggle Grid (G)" data-i18n="tool.grid"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg> Grid</button>
+                                <label style="color:#cfcfcf;margin-left:8px">
+                                    <select id="lang-select" style="background:#111;color:#e9e9e9;border:1px solid #333;padding:6px;border-radius:6px">
+                                        <option value="en">English</option>
+                                        <option value="es">Español</option>
+                                        <option value="pt">Português</option>
+                                    </select>
+                                </label>
             </div>
         </header>
 
@@ -34,32 +41,32 @@
         <main>
             <aside id="toolbar-left">
                 <div class="tool-group">
-                    <button id="tool-draw" class="tool active" title="Draw Mode (P)">
+                    <button id="tool-draw" class="tool active" title="Draw Mode (P)" data-i18n="tool.draw.title">
                         <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
                     </button>
-                    <button id="tool-select" class="tool" title="Select Blocks (S)">
+                    <button id="tool-select" class="tool" title="Select Blocks (S)" data-i18n="tool.select.title">
                         <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="1" stroke="currentColor" stroke-width="2" stroke-dasharray="4 2.5" fill="none"/></svg>
                     </button>
-                    <button id="tool-text" class="tool" title="Text Tool (T)">
+                    <button id="tool-text" class="tool" title="Text Tool (T)" data-i18n="tool.text.title">
                         <svg viewBox="0 0 24 24"><path d="M5 4v3h5.5v12h3V7H19V4z"/></svg>
                     </button>
                 </div>
                 <div class="tool-group">
-                    <button id="size-settings" class="tool" title="Resize">
+                    <button id="size-settings" class="tool" title="Resize" data-i18n="tool.resize.title">
                         <svg viewBox="0 0 24 24"><path d="M7 14H5v5l5-5H7v-3zm3 3v2h5l-5-5v3zm3-3h2V9l-5 5h3v3zm-3-3V7H5l5 5V9zM19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
                     </button>
                 </div>
                 <div class="tool-group">
-                    <button id="flip-h-btn" class="tool" title="Flip Horizontal (H)">
+                    <button id="flip-h-btn" class="tool" title="Flip Horizontal (H)" data-i18n="tool.flip.h">
                         <svg viewBox="0 0 24 24"><path d="M11 2h2v20h-2zM15 8l5 4-5 4V8zM9 16l-5-4 5-4v8z"/></svg>
                     </button>
-                    <button id="flip-v-btn" class="tool" title="Flip Vertical (V)">
+                    <button id="flip-v-btn" class="tool" title="Flip Vertical (V)" data-i18n="tool.flip.v">
                         <svg viewBox="0 0 24 24"><path d="M2 11v2h20v-2H2zM16 9L12 4 8 9h8zM8 15l4 5 4-5H8z"/></svg>
                     </button>
-                    <button id="invert-pixels-btn" class="tool" title="Invert Pixels">
+                    <button id="invert-pixels-btn" class="tool" title="Invert Pixels" data-i18n="tool.invert.pixels">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18V4c4.42 0 8 3.58 8 8s-3.58 8-8 8z"/></svg>
                     </button>
-                    <button id="invert-attrs-btn" class="tool" title="Invert Attributes (swap ink/paper)">
+                    <button id="invert-attrs-btn" class="tool" title="Invert Attributes (swap ink/paper)" data-i18n="tool.invert.attrs">
                         <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
                     </button>
                 </div>
@@ -76,14 +83,14 @@
             <aside id="toolbar-right">
                 <!-- Color Palette -->
                 <div class="panel">
-                    <h3>Ink Color</h3>
+                    <h3 data-i18n="label.ink">Ink Color</h3>
                     <div id="ink-palette" class="palette-grid">
                         <!-- Colors inserted by JS -->
                     </div>
                 </div>
 
                 <div class="panel">
-                    <h3>Paper Color</h3>
+                    <h3 data-i18n="label.paper">Paper Color</h3>
                     <div id="paper-palette" class="palette-grid">
                         <!-- Colors inserted by JS -->
                     </div>
@@ -91,25 +98,25 @@
 
                 <div class="panel settings">
                     <div class="input-row">
-                        <label>Bright</label>
+                        <label data-i18n="label.bright">Bright</label>
                         <select id="bright-toggle">
-                            <option value="keep">Mantener</option>
-                            <option value="1">On</option>
-                            <option value="0">Off</option>
+                            <option value="keep" data-i18n="opt.keep">Mantener</option>
+                            <option value="1" data-i18n="opt.on">On</option>
+                            <option value="0" data-i18n="opt.off">Off</option>
                         </select>
                     </div>
                     <div class="input-row">
-                        <label>Flash</label>
+                        <label data-i18n="label.flash">Flash</label>
                         <select id="flash-toggle">
-                            <option value="keep">Mantener</option>
-                            <option value="1">On</option>
-                            <option value="0">Off</option>
+                            <option value="keep" data-i18n="opt.keep">Mantener</option>
+                            <option value="1" data-i18n="opt.on">On</option>
+                            <option value="0" data-i18n="opt.off">Off</option>
                         </select>
                     </div>
                 </div>
 
                 <div class="panel" id="anim-panel">
-                    <h3>Animation Preview</h3>
+                    <h3 data-i18n="panel.animation">Animation Preview</h3>
                     <div class="anim-controls">
                         <div class="anim-row">
                             <label>Frame W <small>(blocks)</small></label>
@@ -126,7 +133,7 @@
                 </div>
 
                 <div class="panel preview-box">
-                    <h3>Current Attribute</h3>
+                    <h3 data-i18n="panel.currentAttr">Current Attribute</h3>
                     <div id="current-attr-preview"></div>
                     <div id="attr-info">Ink: 7, Paper: 0, B: 0, F: 0</div>
                 </div>

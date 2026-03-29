@@ -1,0 +1,20 @@
+{
+  "tool.draw.title": "Draw Mode (P)",
+  "tool.select.title": "Select Blocks (S)",
+  "tool.text.title": "Text Tool (T)",
+  "tool.resize.title": "Resize",
+  "tool.flip.h": "Flip Horizontal (H)",
+  "tool.flip.v": "Flip Vertical (V)",
+  "tool.invert.pixels": "Invert Pixels",
+  "tool.invert.attrs": "Invert Attributes (swap ink/paper)",
+  "tool.grid": "Grid",
+  "label.ink": "Ink Color",
+  "label.paper": "Paper Color",
+  "label.bright": "Bright",
+  "label.flash": "Flash",
+  "opt.keep": "Keep",
+  "opt.on": "On",
+  "opt.off": "Off",
+  "panel.animation": "Animation Preview",
+  "panel.currentAttr": "Current Attribute"
+}

@@ -72,6 +72,11 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+// Allow renderer to request opening DevTools (useful during development)
+ipcMain.on('open-devtools', () => {
+  if (mainWindow && mainWindow.webContents) mainWindow.webContents.openDevTools({ mode: 'undocked' });
+});
+
 // IPC Handlers for File I/O
 ipcMain.handle('save-file', async (event, content, defaultName) => {
   const { filePath } = await dialog.showSaveDialog({

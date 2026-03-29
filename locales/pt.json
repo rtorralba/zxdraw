@@ -1,0 +1,20 @@
+{
+  "tool.draw.title": "Desenho (P)",
+  "tool.select.title": "Seleccionar Blocos (S)",
+  "tool.text.title": "Texto (T)",
+  "tool.resize.title": "Redimensionar",
+  "tool.flip.h": "Inverter Horizontal (H)",
+  "tool.flip.v": "Inverter Vertical (V)",
+  "tool.invert.pixels": "Inverter Pixels",
+  "tool.invert.attrs": "Inverter Atributos (trocar tinta/papel)",
+  "tool.grid": "Grade",
+  "label.ink": "Cor de tinta",
+  "label.paper": "Cor de papel",
+  "label.bright": "Brilho",
+  "label.flash": "Piscar",
+  "opt.keep": "Manter",
+  "opt.on": "On",
+  "opt.off": "Off",
+  "panel.animation": "Pré-visualização de Animação",
+  "panel.currentAttr": "Atributo Atual"
+}

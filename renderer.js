@@ -7,6 +7,27 @@ const SPECTRUM_PALETTE = [
     ['#000000', '#0000FF', '#FF0000', '#FF00FF', '#00FF00', '#00FFFF', '#FFFF00', '#FFFFFF']  // Bright
 ];
 
+// Localized strings are loaded from JSON files in /locales/*.json
+const FALLBACK_TRANSLATIONS = {
+    en: {
+        'tool.grid': 'Grid',
+        'tool.draw.title': 'Draw Mode (P)',
+        'tool.select.title': 'Select Blocks (S)',
+        'tool.text.title': 'Text Tool (T)',
+        'tool.resize.title': 'Resize',
+        'tool.flip.h': 'Flip Horizontal (H)',
+        'tool.flip.v': 'Flip Vertical (V)',
+        'tool.invert.pixels': 'Invert Pixels',
+        'tool.invert.attrs': 'Invert Attributes (swap ink/paper)',
+        'label.ink': 'Ink Color',
+        'label.paper': 'Paper Color',
+        'label.bright': 'Bright',
+        'label.flash': 'Flash',
+        'panel.animation': 'Animation Preview',
+        'panel.currentAttr': 'Current Attribute'
+    }
+};
+
 class ZXDraw {
     constructor() {
         this.zoom = 4;
@@ -60,6 +81,8 @@ class ZXDraw {
         this.setupAnimationViewer();
         this.render();
         this.updateUI();
+
+        this.setupI18n();
 
         // Start Flash timer
         setInterval(() => {
@@ -353,6 +376,11 @@ class ZXDraw {
 
         // Shortcuts
         window.onkeydown = (e) => {
+            // DevTools shortcut: Ctrl+Shift+I (or Cmd+Shift+I on mac)
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'KeyI') {
+                try { window.electronAPI.openDevTools(); } catch (err) { console.error('openDevTools failed', err); }
+                return;
+            }
             if (e.ctrlKey && e.code === 'KeyS' && !e.shiftKey) {
                 e.preventDefault();
                 document.getElementById('save-btn').click();
@@ -600,6 +628,55 @@ class ZXDraw {
             else this.startAnimation();
         };
         this.renderAnimFrame();
+    }
+
+    // ── Internationalization ─────────────────────────────────────────────
+    setupI18n() {
+        const select = document.getElementById('lang-select');
+        if (!select) return;
+        const saved = localStorage.getItem('zxdraw_lang') || (navigator.language || 'en').slice(0,2);
+        const lang = ['en','es','pt'].includes(saved) ? saved : 'en';
+        select.value = lang;
+        this.loadLocale(lang).then(map => this.applyTranslationsMap(map));
+        select.onchange = (e) => {
+            const l = e.target.value;
+            localStorage.setItem('zxdraw_lang', l);
+            this.loadLocale(l).then(map => this.applyTranslationsMap(map));
+        };
+    }
+    async loadLocale(lang) {
+        if (!this.locales) this.locales = {};
+        if (this.locales[lang]) return this.locales[lang];
+        try {
+            const url = new URL(`locales/${lang}.json`, window.location.href).href;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Locale not found');
+            const json = await res.json();
+            this.locales[lang] = json;
+            return json;
+        } catch (e) {
+            console.error('i18n: failed to load locale', lang, e);
+            // fallback to english bundled file or embedded fallback
+            if (lang !== 'en') return this.loadLocale('en');
+            this.locales['en'] = FALLBACK_TRANSLATIONS.en;
+            return FALLBACK_TRANSLATIONS.en;
+        }
+    }
+
+    applyTranslationsMap(map) {
+        if (!map) return;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            const txt = map[key];
+            if (!txt) return;
+            if (el.tagName.toLowerCase() === 'button' || el.hasAttribute('title')) {
+                // For buttons/icons: only update the title (hover text). Do not change visible
+                // contents for buttons that include an SVG icon to avoid breaking layout.
+                el.setAttribute('title', txt);
+            } else {
+                el.textContent = txt;
+            }
+        });
     }
 
     getAnimParams() {

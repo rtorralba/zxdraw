@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadFile: () => ipcRenderer.invoke('load-file'),
   loadImage: () => ipcRenderer.invoke('load-image'),
   onMenuEvent: (channel, cb) => ipcRenderer.on(channel, cb),
+  openDevTools: () => ipcRenderer.send('open-devtools'),
 });
