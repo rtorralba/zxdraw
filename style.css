@@ -49,8 +49,73 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 12px;
+    gap: 0;
     z-index: 100;
+    overflow: visible;
+}
+
+.header-attr-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.header-attr-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.header-palette {
+    grid-template-columns: repeat(8, 1fr);
+    gap: 2px;
+}
+
+.header-palette .color-swatch {
+    width: 16px;
+    height: 16px;
+    max-width: 16px;
+    max-height: 16px;
+    border-radius: 2px;
+    border-width: 1px;
+}
+
+.header-select {
+    background: #1a1a1a;
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    padding: 3px 4px;
+    border-radius: 4px;
+    font-size: 11px;
+}
+
+.sidebar-zoom-panel {
+    padding: 8px 10px;
+}
+
+.sidebar-zoom-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sidebar-zoom-row button {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sidebar-zoom-row button svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }
 
 .logo {
@@ -222,12 +287,15 @@ button.tool svg {
 .palette-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    gap: 4px;
 }
 
 .color-swatch {
     aspect-ratio: 1;
-    border-radius: 4px;
+    width: 100%;
+    max-width: 28px;
+    max-height: 28px;
+    border-radius: 3px;
     cursor: pointer;
     border: 2px solid transparent;
     transition: transform 0.1s;
@@ -245,7 +313,6 @@ button.tool svg {
 .settings {
     display: flex;
     flex-direction: column;
-    gap: 10px;
 }
 
 .preview-box {

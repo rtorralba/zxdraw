@@ -157,6 +157,18 @@ class ZXDraw {
         // Zoom
         document.getElementById('zoom-in').onclick = () => { this.zoom = Math.min(16, this.zoom + 1); this.updateZoom(); };
         document.getElementById('zoom-out').onclick = () => { if(this.zoom > 1) this.zoom--; this.updateZoom(); };
+        // Sidebar zoom/grid proxies
+        const zinSb = document.getElementById('zoom-in-sb');
+        const zoutSb = document.getElementById('zoom-out-sb');
+        const gridSb = document.getElementById('grid-toggle-sb');
+        if (zinSb) zinSb.onclick = () => { this.zoom = Math.min(16, this.zoom + 1); this.updateZoom(); };
+        if (zoutSb) zoutSb.onclick = () => { if(this.zoom > 1) this.zoom--; this.updateZoom(); };
+        if (gridSb) gridSb.onclick = () => {
+            this.gridVisible = !this.gridVisible;
+            document.getElementById('grid-toggle').classList.toggle('active', this.gridVisible);
+            gridSb.classList.toggle('active', this.gridVisible);
+            this.drawGrid();
+        };
 
         document.getElementById('canvas-container').addEventListener('wheel', (e) => {
             e.preventDefault();
@@ -1047,6 +1059,8 @@ class ZXDraw {
         this.selCanvas.style.height = (this.height * this.zoom) + 'px';
         
         document.getElementById('zoom-level').innerText = (this.zoom * 100) + '%';
+        const sbLabel = document.getElementById('zoom-level-sb');
+        if (sbLabel) sbLabel.innerText = (this.zoom * 100) + '%';
         this.drawGrid();
         this.drawSelection();
     }
