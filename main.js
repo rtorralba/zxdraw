@@ -102,6 +102,11 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
+// Synchronous locale loader — used by renderer at startup before contextBridge async ready
+ipcMain.on('get-locale-sync', (event, lang) => {
+  event.returnValue = loadTranslations(lang);
+});
+
 // Allow renderer to request opening DevTools only during development
 ipcMain.on('open-devtools', () => {
   if (app.isPackaged) {

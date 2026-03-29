@@ -4,11 +4,13 @@ const path = require('path');
 const JavaScriptObfuscator = require('javascript-obfuscator');
 const { spawnSync } = require('child_process');
 
-// Files to bundle and obfuscate
+// Only bundle renderer.js (browser context, no require).
+// preload.js must NOT be bundled: it runs in Electron's Node context with
+// full require() support, and bundling it would break contextBridge because
+// esbuild would try to inline require('electron') which is not a real npm pkg.
 const ROOT = __dirname;
 const items = [
   { entry: path.join(ROOT, 'renderer.js'), outfile: path.join(ROOT, 'renderer.js'), platform: 'browser' },
-  { entry: path.join(ROOT, 'preload.js'), outfile: path.join(ROOT, 'preload.js'), platform: 'node' },
 ];
 
 async function doBuild() {
@@ -23,25 +25,28 @@ async function doBuild() {
 
       // bundle with esbuild into a temp file
       const tmpOut = it.entry + '.tmp.js';
+      // iife format is required for <script src> loading in the browser/renderer context.
+      // cjs format would wrap code in a CommonJS module that never auto-executes in the browser.
       await build({
         entryPoints: [it.entry],
         bundle: true,
         minify: true,
         platform: it.platform,
-        format: 'cjs',
+        format: 'iife',
         outfile: tmpOut,
         define: { 'process.env.NODE_ENV': '"production"' },
       });
 
       const code = fs.readFileSync(tmpOut, 'utf8');
 
-      // obfuscate
+      // Obfuscate with safe options only.
+      // controlFlowFlattening and deadCodeInjection are disabled: they restructure
+      // the AST and break `this` closures inside for/let loops (e.g. palette swatches).
+      // stringArray + transformObjectKeys give real protection without breaking code.
       const obf = JavaScriptObfuscator.obfuscate(code, {
         compact: true,
-        controlFlowFlattening: true,
-        controlFlowFlatteningThreshold: 0.75,
-        deadCodeInjection: true,
-        deadCodeInjectionThreshold: 0.4,
+        controlFlowFlattening: false,
+        deadCodeInjection: false,
         stringArray: true,
         stringArrayEncoding: ['base64'],
         stringArrayIndexShift: true,
@@ -50,7 +55,6 @@ async function doBuild() {
         unicodeEscapeSequence: false,
       }).getObfuscatedCode();
 
-      // write obfuscated code back to original path
       fs.writeFileSync(it.outfile, obf, 'utf8');
 
       // remove temp

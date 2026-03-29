@@ -79,10 +79,11 @@ class ZXDraw {
         this.setupEventListeners();
         this.setupPalettes();
         this.setupAnimationViewer();
+        // Apply translations synchronously before first render to avoid flash of untranslated text.
+        // setupI18n also wires the lang-select onchange for subsequent switches.
+        this.setupI18n();
         this.render();
         this.updateUI();
-
-        this.setupI18n();
 
         // Start Flash timer
         setInterval(() => {
@@ -763,16 +764,32 @@ class ZXDraw {
         const saved = localStorage.getItem('zxdraw_lang') || (navigator.language || 'en').slice(0,2);
         const lang = ['en','es','pt'].includes(saved) ? saved : 'en';
         select.value = lang;
-        this.loadLocale(lang).then(map => this.applyTranslationsMap(map));
+
+        // Wire language selector (works for both sync and async paths)
         select.onchange = (e) => {
             const l = e.target.value;
             localStorage.setItem('zxdraw_lang', l);
             this.loadLocale(l).then(map => {
                 this.applyTranslationsMap(map);
-                // notify main process to rebuild native menu
                 try { if (window.electronAPI && typeof window.electronAPI.setAppLanguage === 'function') window.electronAPI.setAppLanguage(l); } catch (err) { console.warn('setAppLanguage failed', err); }
             });
         };
+
+        // Synchronous fast-path via preload — avoids async latency on startup.
+        // Works in both dev and packaged builds as long as preload is NOT bundled.
+        if (window.electronAPI && typeof window.electronAPI.getLocale === 'function') {
+            try {
+                const map = window.electronAPI.getLocale(lang);
+                if (map) {
+                    if (!this.locales) this.locales = {};
+                    this.locales[lang] = map;
+                    this.applyTranslationsMap(map);
+                    return; // done synchronously, no async needed
+                }
+            } catch(e) { console.warn('sync getLocale failed', e); }
+        }
+        // Fallback: async fetch (e.g. browser/web context without preload)
+        this.loadLocale(lang).then(map => this.applyTranslationsMap(map));
     }
     async loadLocale(lang) {
         if (!this.locales) this.locales = {};

@@ -10,14 +10,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadImage: () => ipcRenderer.invoke('load-image'),
   onMenuEvent: (channel, cb) => ipcRenderer.on(channel, cb),
   openDevTools: () => ipcRenderer.send('open-devtools'),
+  // Synchronous locale via IPC — guaranteed available before DOMContentLoaded,
+  // even when contextBridge is still being set up. Avoids any async latency.
   getLocale: (lang) => {
     try {
-      const p = path.join(__dirname, 'locales', `${lang}.json`);
-      if (fs.existsSync(p)) {
-        const raw = fs.readFileSync(p, 'utf8');
-        return JSON.parse(raw);
-      }
-      return null;
+      return ipcRenderer.sendSync('get-locale-sync', lang);
     } catch (e) {
       console.error('preload.getLocale error', e);
       return null;
