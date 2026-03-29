@@ -16,11 +16,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Windows
         run: npm run build:win
@@ -40,11 +39,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build macOS
         run: npm run build:mac
@@ -64,11 +62,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: 24
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build Linux
         run: npm run build:linux
