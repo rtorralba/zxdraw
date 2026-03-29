@@ -76,6 +76,8 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
+      // disable DevTools in packaged (production) builds
+      devTools: !app.isPackaged,
     },
   });
 
@@ -100,8 +102,12 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// Allow renderer to request opening DevTools (useful during development)
+// Allow renderer to request opening DevTools only during development
 ipcMain.on('open-devtools', () => {
+  if (app.isPackaged) {
+    // ignore requests in production
+    return;
+  }
   if (mainWindow && mainWindow.webContents) mainWindow.webContents.openDevTools({ mode: 'undocked' });
 });
 

@@ -1,77 +1,83 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ZX Draw — Funcionalidades</title>
-  <style>
-    body{font-family:Inter,Segoe UI,Arial,sans-serif;background:#0b0b0b;color:#e9e9e9;margin:0;padding:0}
-    .wrap{max-width:980px;margin:32px auto;padding:28px;background:#111;border-radius:10px;box-shadow:0 6px 30px rgba(0,0,0,.6)}
-    h1{margin:0 0 8px;font-size:28px}
-    p.lead{color:#cfcfcf;margin-top:0}
-    .grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
-    .panel{background:#0f0f0f;padding:14px;border-radius:8px;border:1px solid #1f1f1f}
-    ul{line-height:1.6}
-    .screenshot{width:100%;height:180px;background:#0a0a0a;border:1px dashed #2a2a2a;display:flex;align-items:center;justify-content:center;color:#666;margin-bottom:10px}
-    .note{font-size:13px;color:#9a9a9a}
-    .cta{display:inline-block;margin-top:12px;padding:10px 14px;border-radius:6px;background:#ff0044;color:#fff;text-decoration:none}
-    footer{margin-top:24px;color:#8a8a8a;font-size:13px}
-    .feature-title{font-weight:700;color:#fff}
-    code{background:#0a0a0a;padding:2px 6px;border-radius:4px;font-size:13px}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <h1>ZX Draw</h1>
-    <p class="lead">Editor simple inspirado en ZX Spectrum para crear y editar gráficos compatibles con formatos clásicos (.zxp, .scr). Ideal para pixel art y assets para demos y juegos retro.</p>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ZX Draw — Itch.io</title>
+  </head>
+  <body>
+    <hr>
+    <h2>Español</h2>
+    <p>Editor simple inspirado en ZX Spectrum para crear y editar gráficos compatibles con formatos clásicos (.zxp, .scr). ideal para juegos de nuestro ZX Spectrum</p>
+    <h3>Resumen de funcionalidades</h3>
+    <ul>
+      <li><strong>Apertura y guardado</strong>: soporte nativo para <code>.zxp</code> y <code>.scr</code>.</li>
+      <li><strong>Importar imágenes</strong>: importa PNG/JPG y convierte a paleta Spectrum con modal interactivo.</li>
+      <li><strong>Conversión con previsualización</strong>: controla brillo, contraste y saturación y visualiza el resultado ZX Spectrum antes de importar.</li>
+      <li><strong>Edición por bloques</strong>: lienzo en bloques 8×8 con atributos ink/paper/bright/flash.</li>
+      <li><strong>Herramientas</strong>: lápiz, selección por bloques, texto (modal mejorado), invertir píxeles/atributos, flip H/V.</li>
+      <li><strong>Rotar selección</strong>: botón para rotar 90° solo la selección activa.</li>
+      <li><strong>Exportar</strong>: exporta PNG o guarda en <code>.zxp</code> para seguir editando.</li>
+      <li><strong>i18n</strong>: UI traducible y menú nativo en Español, Inglés y Portugués.</li>
+    </ul>
+    <h3>Flujo típico</h3>
+    <ol>
+      <li>Importa una imagen o abre una <code>.scr</code>/<code>.zxp</code>.</li>
+      <li>Ajusta brillo/contraste/saturación en el modal de importación y previsualiza la conversión.</li>
+      <li>Refina píxel a píxel, usa la selección y el portapapeles para componer sprites.</li>
+      <li>Guarda como <code>.zxp</code> o exporta PNG.</li>
+    </ol>
+    <h3>Formato .scr</h3>
+    <p>Soporte para archivos .scr de 6912 bytes (6144 bitmap + 768 atributos) respetando el layout de memoria del Spectrum.</p>
 
-    <div class="grid">
-      <div>
-        <div class="panel">
-          <h2 class="feature-title">Resumen de funcionalidades</h2>
-          <ul>
-            <li><strong>Apertura y guardado</strong>: soporte nativo para <code>.zxp</code> (formato del editor) y <code>.scr</code> (volcado de pantalla del ZX Spectrum).</li>
-            <li><strong>Importar imágenes</strong>: arrastra o importa <code>PNG/JPG/BMP</code> y convierte automáticamente a paleta Spectrum.</li>
-            <li><strong>Conversión con previsualización</strong>: modal interactivo donde ajustar <em>Brillo</em>, <em>Contraste</em> y <em>Saturación</em> mientras ves la conversión en tiempo real.</li>
-            <li><strong>Edición por bloques</strong>: lienzo basado en bloques de 8×8, atributos de tinta/papel/bright/flash por bloque.</li>
-            <li><strong>Herramientas</strong>: lápiz, selección por bloques, texto, invertir píxeles/atributos, voltear horizontal/vertical.</li>
-            <li><strong>Animación</strong>: copiar áreas para previsualizar frames y reproducir secuencias (visor de animación).</li>
-            <li><strong>Exportar</strong>: exporta a PNG para compartir o a <code>.zxp</code> para seguir editando.</li>
-            <li><strong>Atajos</strong>: soporte para atajos comunes (Ctrl+S, Ctrl+O, S, P, T, etc.).</li>
-          </ul>
-        </div>
+    <hr>
+    <h2>English</h2>
+    <p>A lightweight ZX Spectrum-inspired editor for creating 256×192 graphics with 8×8 block attributes. Great for games on our ZX Spectrum.</p>
+    <h3>Key Features</h3>
+    <ul>
+      <li><strong>Open & Save</strong>: Native support for <code>.zxp</code> (project) and <code>.scr</code> (Spectrum screen dump).</li>
+      <li><strong>Image import</strong>: Import PNG/JPG and convert to Spectrum palette with an interactive modal.</li>
+      <li><strong>Live conversion preview</strong>: Adjust brightness, contrast and saturation while seeing the ZX Spectrum result.</li>
+      <li><strong>Block editing</strong>: Canvas uses 8×8 blocks with ink/paper/bright/flash attributes.</li>
+      <li><strong>Tools</strong>: pencil, block selection, improved text tool, invert pixels/attributes, flip H/V.</li>
+      <li><strong>Rotate selection</strong>: button to rotate only the active selection by 90°.</li>
+      <li><strong>Export</strong>: export PNG or save as <code>.zxp</code> to continue editing.</li>
+      <li><strong>i18n</strong>: UI translations and native menu localization (EN/ES/PT).</li>
+    </ul>
+    <h3>Typical workflow</h3>
+    <ol>
+      <li>Import an image or open a <code>.scr</code>/<code>.zxp</code>.</li>
+      <li>Use the import modal to tweak brightness/contrast/saturation and preview the conversion.</li>
+      <li>Refine pixel-by-pixel, use selection and clipboard to compose sprites or tiles.</li>
+      <li>Save as <code>.zxp</code> or export PNG.</li>
+    </ol>
+    <h3>.scr format</h3>
+    <p>Supports .scr files (6912 bytes: 6144 bitmap + 768 attributes) using the Spectrum memory layout.</p>
 
-        <div class="panel" style="margin-top:14px">
-          <h2 class="feature-title">Flujo típico</h2>
-          <ol>
-            <li>Importa una imagen o abre una <code>.scr</code>/<code>.zxp</code>.</li>
-            <li>Usa el modal de importación para ajustar brillo/contraste/saturación y obtener la mejor conversión posible.</li>
-            <li>Refina píxel a píxel, usa la selección y el portapapeles para montar sprites o tiles.</li>
-            <li>Guarda como <code>.zxp</code> o exporta PNG. Para distribución en Windows, usa el instalador incluido.</li>
-          </ol>
-        </div>
+    <hr>
+    <h2>Português</h2>
+    <p>Editor leve inspirado no ZX Spectrum para criar gráficos 256×192 com atributos de bloco 8×8. ideal para jogos do nosso ZX Spectrum</p>
+    <h3>Principais funcionalidades</h3>
+    <ul>
+      <li><strong>Abrir e salvar</strong>: suporte nativo a <code>.zxp</code> e <code>.scr</code>.</li>
+      <li><strong>Importar imagem</strong>: importe PNG/JPG e converta para a paleta Spectrum via modal interativo.</li>
+      <li><strong>Pré-visualização</strong>: ajuste brilho, contraste e saturação e veja o resultado ZX Spectrum.</li>
+      <li><strong>Edição por blocos</strong>: canvas em blocos 8×8 com atributos ink/paper/bright/flash.</li>
+      <li><strong>Ferramentas</strong>: lápis, seleção, ferramenta de texto melhorada, inverter pixels/atributos, flip H/V.</li>
+      <li><strong>Rodar seleção</strong>: botão para girar apenas a seleção ativa 90°.</li>
+      <li><strong>Exportar</strong>: exporte PNG ou salve em <code>.zxp</code>.</li>
+      <li><strong>i18n</strong>: UI traduzível com menu nativo localizado.</li>
+    </ul>
+    <h3>Fluxo típico</h3>
+    <ol>
+      <li>Importe uma imagem ou abra um <code>.scr</code>/<code>.zxp</code>.</li>
+      <li>Ajuste brilho/contraste/saturação no modal de importação e pré-visualize a conversão.</li>
+      <li>Refine pixel a pixel, use seleção e portapapéis para montar sprites.</li>
+      <li>Salve em <code>.zxp</code> ou exporte PNG.</li>
+    </ol>
+    <h3>Formato .scr</h3>
+    <p>Suporte a arquivos .scr de 6912 bytes (6144 bitmap + 768 atributos) seguindo o layout de memória do Spectrum.</p>
 
-        <div class="panel" style="margin-top:14px">
-          <h2 class="feature-title">Formato .scr</h2>
-          <p class="note">El soporte <code>.scr</code> interpreta los 6912 bytes de la pantalla Spectrum (6144 bitmap + 768 atributos) respetando el layout de memoria original.</p>
-        </div>
-      </div>
-      <aside>
-        <div class="panel">
-          
-        </div>
-
-        <div class="panel" style="margin-top:12px">
-          <h3 class="feature-title">Soporte y contacto</h3>
-          <p class="note">Autor: Raül Torralba<br>Repositorio: <a href="https://github.com/rtorralba/zx-draw" style="color:#ff77aa">github.com/rtorralba/zx-draw</a></p>
-        </div>
-      </aside>
-    <footer>
-      <div>Notas de publicación: añade capturas y enlaces de descarga/instalador. Este HTML está listo para subir a <em>itch.io</em> como página de proyecto.</div>
-      <div style="margin-top:10px;font-size:13px;color:#b5b5b5">
-        <strong>Agradecimientos:</strong> Gracias a Claus Jahn, creador de <em>ZX Paintbrush</em>, por diseñar el formato <code>.zxp</code> que este proyecto soporta. Su trabajo ha facilitado la preservación y edición de gráficos Spectrum.
-      </div>
-    </footer>
-  </div>
-</body>
+    <hr>
+  </body>
 </html>
