@@ -6,16 +6,18 @@
   "author": "Raül Torralba",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win --mac --linux",
-    "build:win": "electron-builder --win",
-    "build:mac": "electron-builder --mac",
-    "build:linux": "electron-builder --linux"
+    "build": "node build-bundle.js",
+    "build:bundle": "node build-bundle.js",
+    "build:win": "node build-bundle.js --win",
+    "build:mac": "node build-bundle.js --mac",
+    "build:linux": "node build-bundle.js --linux"
   },
   "build": {
     "appId": "com.zxdraw.app",
     "productName": "ZXDraw",
     "artifactName": "ZXDraw-${version}.${ext}",
     "forceCodeSigning": false,
+    "asar": true,
     "files": [
       "**/*",
       "!node_modules/.cache"
@@ -44,6 +46,8 @@
   },
   "devDependencies": {
     "electron": "^30.0.0",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "esbuild": "^0.19.4",
+    "javascript-obfuscator": "^4.0.0"
   }
 }

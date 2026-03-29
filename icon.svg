@@ -1,30 +1,107 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 256 256"
+   version="1.1"
+   id="svg7"
+   sodipodi:docname="icon.svg"
+   inkscape:export-filename="icon.png"
+   inkscape:export-xdpi="192"
+   inkscape:export-ydpi="192"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs7" />
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="3.1523438"
+     inkscape:cx="128"
+     inkscape:cy="128"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg7" />
   <!-- Background -->
-  <rect width="256" height="256" rx="32" fill="#121212"/>
-
+  <rect
+     width="256"
+     height="256"
+     rx="32"
+     fill="#121212"
+     id="rect1" />
   <!-- ZX Spectrum stripe accent -->
-  <rect x="0" y="180" width="256" height="76" rx="0" fill="#1a1a1a"/>
-  <rect x="0" y="176" width="256" height="6" fill="#ff0044"/>
-
+  <rect
+     x="0"
+     y="180"
+     width="256"
+     height="76"
+     rx="0"
+     fill="#1a1a1a"
+     id="rect2" />
+  <rect
+     x="0"
+     y="176"
+     width="256"
+     height="6"
+     fill="#ff0044"
+     id="rect3" />
   <!-- "ZX" text -->
-  <text x="20" y="148"
-    font-family="'Segoe UI', Arial, sans-serif"
-    font-weight="800"
-    font-size="128"
-    letter-spacing="-4"
-    fill="#ffffff">ZX</text>
-
+  <text
+     x="20"
+     y="148"
+     font-family="'Segoe UI', Arial, sans-serif"
+     font-weight="800"
+     font-size="128"
+     letter-spacing="-4"
+     fill="#ffffff"
+     id="text3">ZX</text>
   <!-- "Draw" text -->
-  <text x="22" y="230"
-    font-family="'Segoe UI', Arial, sans-serif"
-    font-weight="800"
-    font-size="68"
-    letter-spacing="-1"
-    fill="#ff0044">Draw</text>
-
+  <text
+     x="22"
+     y="230"
+     font-family="'Segoe UI', Arial, sans-serif"
+     font-weight="800"
+     font-size="68"
+     letter-spacing="-1"
+     fill="#ff0044"
+     id="text4">Draw</text>
   <!-- Pixel art dot accent (top-right corner) -->
-  <rect x="210" y="18" width="16" height="16" fill="#ff0044"/>
-  <rect x="230" y="18" width="16" height="16" fill="#ff0044"/>
-  <rect x="210" y="38" width="16" height="16" fill="#ff0044"/>
-  <rect x="230" y="38" width="16" height="16" fill="#1a1a1a"/>
+  <rect
+     x="210"
+     y="18"
+     width="16"
+     height="16"
+     fill="#ff0044"
+     id="rect4" />
+  <rect
+     x="230"
+     y="18"
+     width="16"
+     height="16"
+     fill="#ff0044"
+     id="rect5" />
+  <rect
+     x="210"
+     y="38"
+     width="16"
+     height="16"
+     fill="#ff0044"
+     id="rect6" />
+  <rect
+     x="230"
+     y="38"
+     width="16"
+     height="16"
+     fill="#1a1a1a"
+     id="rect7" />
 </svg>
