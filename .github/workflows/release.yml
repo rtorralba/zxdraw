@@ -32,8 +32,8 @@ jobs:
           name: dist-windows
           path: dist/*.exe
 
-  build-mac-intel:
-    runs-on: macos-13
+  build-mac:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -49,24 +49,6 @@ jobs:
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-mac-intel
-          path: dist/*.dmg
-
-  build-mac-arm:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Install dependencies
-        run: npm install
-
       - name: Build macOS Apple Silicon arm64
         run: npm run build -- --mac --arm64 --publish never
         env:
@@ -75,7 +57,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: dist-mac-arm
+          name: dist-mac
           path: dist/*.dmg
 
   build-linux:
@@ -102,7 +84,7 @@ jobs:
           path: dist/*.AppImage
 
   release:
-    needs: [build-windows, build-mac-intel, build-mac-arm, build-linux]
+    needs: [build-windows, build-mac, build-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts
