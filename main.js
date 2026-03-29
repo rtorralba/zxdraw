@@ -120,15 +120,36 @@ ipcMain.handle('save-file', async (event, content, defaultName) => {
   });
 
   if (filePath) {
-    fs.writeFileSync(filePath, content, 'utf8');
+    try {
+      const ext = path.extname(filePath).toLowerCase();
+      let out = content;
+      if (ext === '.zxp' && typeof out === 'string') {
+        // Normalize to CRLF as required for .zxp files
+        out = out.replace(/\r?\n/g, '\r\n');
+      }
+      fs.writeFileSync(filePath, out, 'utf8');
+    } catch (e) {
+      console.error('save-file write error', e);
+      throw e;
+    }
     return filePath;
   }
   return null;
 });
 
 ipcMain.handle('save-file-direct', async (event, filePath, content) => {
-  fs.writeFileSync(filePath, content, 'utf8');
-  return filePath;
+  try {
+    const ext = path.extname(filePath).toLowerCase();
+    let out = content;
+    if (ext === '.zxp' && typeof out === 'string') {
+      out = out.replace(/\r?\n/g, '\r\n');
+    }
+    fs.writeFileSync(filePath, out, 'utf8');
+    return filePath;
+  } catch (e) {
+    console.error('save-file-direct write error', e);
+    throw e;
+  }
 });
 
 ipcMain.handle('export-png', async (event, dataURL) => {

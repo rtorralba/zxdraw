@@ -25,4 +25,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
   }
   ,
   setAppLanguage: (lang) => ipcRenderer.send('set-language', lang)
+  ,
+  getAppVersion: () => {
+    try {
+      const pkg = fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8');
+      const obj = JSON.parse(pkg);
+      return obj.version || null;
+    } catch (e) {
+      console.error('preload.getAppVersion error', e);
+      return null;
+    }
+  }
 });

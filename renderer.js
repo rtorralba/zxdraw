@@ -380,6 +380,19 @@ class ZXDraw {
         document.getElementById('about-close').onclick = () => {
             document.getElementById('about-modal').classList.add('hidden');
         };
+        // Populate about modal version when opened
+        const aboutModal = document.getElementById('about-modal');
+        const showAbout = () => {
+            try {
+                if (window.electronAPI && typeof window.electronAPI.getAppVersion === 'function') {
+                    const v = window.electronAPI.getAppVersion();
+                    if (v) document.getElementById('about-version').textContent = 'v' + v;
+                }
+            } catch (e) { console.warn('getAppVersion failed', e); }
+            aboutModal.classList.remove('hidden');
+        };
+        // override menu event to populate version
+        window.electronAPI.onMenuEvent('menu-about',  () => showAbout());
 
         // Native menu events from main process
         window.electronAPI.onMenuEvent('menu-import-image', () => this.triggerImageImport());

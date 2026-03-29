@@ -65,6 +65,10 @@
   "modal.text.bold": "Negrito",
   "modal.text.italic": "Itálico",
   "import.title": "Importar imagem → ZX Spectrum"
+  ,
+  "about.tagline": "Editor inspirado no ZX Spectrum",
+  "about.version": "Versão"
+}
 }
 }
 }
