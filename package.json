@@ -1,6 +1,6 @@
 {
   "name": "zx-draw",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Simplified ZX Spectrum graphics editor with .zxp support.",
   "main": "main.js",
   "author": "Raül Torralba",
@@ -37,8 +37,8 @@
     },
     "mac": {
       "target": [
-        { "target": "dmg", "arch": ["x64"] },
-        { "target": "dmg", "arch": ["arm64"] }
+        { "target": "zip", "arch": ["x64"] },
+        { "target": "zip", "arch": ["arm64"] }
       ],
       "icon": "icon.png"
     },
