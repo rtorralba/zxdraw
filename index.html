@@ -125,17 +125,17 @@
                     <h3 data-i18n="panel.animation">Animation Preview</h3>
                     <div class="anim-controls">
                         <div class="anim-row">
-                            <label>Frame W <small>(blocks)</small></label>
+                            <label data-i18n="anim.framew">Frame W <small>(blocks)</small></label>
                             <input type="number" id="anim-frame-w" value="2" min="1" max="64">
                         </div>
                         <div class="anim-row">
-                            <label>FPS</label>
+                            <label data-i18n="anim.fps">FPS</label>
                             <input type="number" id="anim-fps" value="8" min="1" max="50">
                         </div>
                     </div>
                     <canvas id="anim-canvas"></canvas>
-                    <div id="anim-info" class="anim-info">Copy a selection to preview</div>
-                    <button id="anim-play-btn" style="width:100%;margin-top:6px">▶ Play</button>
+                    <div id="anim-info" class="anim-info" data-i18n="anim.no_selection">Copy a selection to preview</div>
+                    <button id="anim-play-btn" style="width:100%;margin-top:6px"><span id="anim-play-label" data-i18n="btn.play">▶ Play</span></button>
                 </div>
 
                 <!-- Current attribute preview removed per user request -->
@@ -152,16 +152,16 @@
         <!-- Text Modal -->
         <div id="text-modal" class="modal hidden">
             <div class="modal-content" style="width:680px;max-height:70vh;overflow:auto;">
-                <h2>Insert Text</h2>
+                <h2 data-i18n="modal.text.title">Insert Text</h2>
                 <div style="display:flex;gap:16px;align-items:flex-start">
                     <div style="flex:1;min-width:0">
                         <div class="input-row">
-                            <label>Text</label>
-                            <input type="text" id="text-input" placeholder="Hello World" style="width:100%">
+                            <label data-i18n="modal.text.label.text">Text</label>
+                            <input type="text" id="text-input" data-i18n="modal.text.placeholder" placeholder="Hello World" style="width:80%">
                         </div>
                         <div class="input-row">
-                            <label>Font</label>
-                            <select id="text-font" style="width:100%;background:#121212;border:1px solid #444;color:white;padding:6px;border-radius:4px">
+                            <label data-i18n="modal.text.label.font">Font</label>
+                            <select id="text-font" style="width:80%;background:#121212;border:1px solid #444;color:white;padding:6px;border-radius:4px">
                                 <option>monospace</option>
                                 <option>sans-serif</option>
                                 <option>serif</option>
@@ -174,30 +174,30 @@
                             </select>
                         </div>
                         <div class="input-row">
-                            <label>Size (px)</label>
+                            <label data-i18n="modal.text.label.size">Size (px)</label>
                             <input type="number" id="text-size" value="16" min="4" max="256" style="width:80px">
                         </div>
                         <div class="input-row">
-                            <label>Style</label>
+                            <label data-i18n="modal.text.label.style">Style</label>
                             <div style="display:flex;gap:8px">
-                                <label style="color:#e0e0e0"><input type="checkbox" id="text-bold"> Bold</label>
-                                <label style="color:#e0e0e0"><input type="checkbox" id="text-italic"> Italic</label>
+                                <label style="color:#e0e0e0"><input type="checkbox" id="text-bold"> <span data-i18n="modal.text.bold">Bold</span></label>
+                                <label style="color:#e0e0e0"><input type="checkbox" id="text-italic"> <span data-i18n="modal.text.italic">Italic</span></label>
                             </div>
                         </div>
                         <div class="input-row">
-                            <label>Threshold</label>
+                            <label data-i18n="modal.text.label.threshold">Threshold</label>
                             <input type="range" id="text-threshold" min="1" max="254" value="128" style="flex:1">
                             <span id="text-threshold-val" style="font-size:12px;color:#a0a0a0;min-width:40px;text-align:right">128</span>
                         </div>
                     </div>
                     <div style="width:40%;min-width:200px;display:flex;flex-direction:column;gap:8px;align-items:center">
-                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center">Preview</div>
+                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center" data-i18n="modal.text.preview">Preview</div>
                         <canvas id="text-preview-canvas" style="display:block;width:100%;height:160px;image-rendering:pixelated;border:1px solid #444;background:#000"></canvas>
                     </div>
                 </div>
                 <div class="modal-actions" style="margin-top:12px">
-                    <button id="text-cancel">Cancel</button>
-                    <button id="text-apply" style="background:var(--accent);border-color:var(--accent)">Stamp</button>
+                    <button id="text-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="text-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.stamp">Stamp</span></button>
                 </div>
             </div>
         </div>
@@ -205,35 +205,35 @@
         <!-- Import Image Modal -->
         <div id="import-image-modal" class="modal hidden">
             <div class="modal-content" style="width:680px;max-width:95vw">
-                <h2>Import Image &#x2192; ZX Spectrum</h2>
+                <h2 data-i18n="import.title">Import Image &#x2192; ZX Spectrum</h2>
                 <div style="display:flex;gap:12px;margin-bottom:16px">
                     <div style="flex:1;min-width:0">
-                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center">Original (adjusted)</div>
+                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center" data-i18n="import.orig">Original (adjusted)</div>
                         <canvas id="import-src-canvas" style="display:block;width:100%;image-rendering:pixelated;border:1px solid #444;background:#000"></canvas>
                     </div>
                     <div style="flex:1;min-width:0">
-                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center">ZX Spectrum Preview</div>
+                        <div style="font-size:12px;color:#a0a0a0;margin-bottom:6px;text-align:center" data-i18n="import.zx">ZX Spectrum Preview</div>
                         <canvas id="import-zx-canvas" style="display:block;width:100%;image-rendering:pixelated;border:1px solid #444;background:#000"></canvas>
                     </div>
                 </div>
                 <div class="input-row">
-                    <label>Brightness</label>
+                    <label data-i18n="import.brightness">Brightness</label>
                     <input type="range" id="import-brightness" min="0" max="400" value="100" style="flex:1">
                     <span id="import-brightness-val" style="min-width:42px;text-align:right;color:#a0a0a0">100%</span>
                 </div>
                 <div class="input-row">
-                    <label>Contrast</label>
+                    <label data-i18n="import.contrast">Contrast</label>
                     <input type="range" id="import-contrast" min="0" max="400" value="100" style="flex:1">
                     <span id="import-contrast-val" style="min-width:42px;text-align:right;color:#a0a0a0">100%</span>
                 </div>
                 <div class="input-row">
-                    <label>Saturation</label>
+                    <label data-i18n="import.saturation">Saturation</label>
                     <input type="range" id="import-saturation" min="0" max="400" value="100" style="flex:1">
                     <span id="import-saturation-val" style="min-width:42px;text-align:right;color:#a0a0a0">100%</span>
                 </div>
                 <div class="modal-actions">
-                    <button id="import-image-cancel">Cancel</button>
-                    <button id="import-image-apply" style="background:var(--accent);border-color:var(--accent)">Import</button>
+                    <button id="import-image-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="import-image-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.import">Import</span></button>
                 </div>
             </div>
         </div>
@@ -252,20 +252,20 @@
 
         <!-- Size Modal -->
         <div id="size-modal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Set Canvas Size</h2>
+                <div class="modal-content">
+                <h2 data-i18n="modal.size.title">Set Canvas Size</h2>
                 <div class="input-row">
-                    <label>Width:</label>
+                    <label data-i18n="modal.size.width">Width:</label>
                     <input type="number" id="width-input" value="256" step="8" min="8">
                 </div>
                 <div class="input-row">
-                    <label>Height:</label>
+                    <label data-i18n="modal.size.height">Height:</label>
                     <input type="number" id="height-input" value="192" step="8" min="8">
                 </div>
-                <p class="hint">Sizes must be multiples of 8.</p>
+                <p class="hint" data-i18n="modal.size.hint">Sizes must be multiples of 8.</p>
                 <div class="modal-actions">
-                    <button id="modal-cancel">Cancel</button>
-                    <button id="modal-apply">Apply</button>
+                    <button id="modal-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="modal-apply"><span data-i18n="btn.apply">Apply</span></button>
                 </div>
             </div>
         </div>

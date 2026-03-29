@@ -301,7 +301,12 @@ class ZXDraw {
 
         // Modal triggers
         document.getElementById('size-settings').onclick = () => {
-            document.getElementById('size-modal').classList.remove('hidden');
+            // Open size modal for resizing; prefill with current canvas size
+            const modal = document.getElementById('size-modal');
+            document.getElementById('width-input').value = this.width || 256;
+            document.getElementById('height-input').value = this.height || 192;
+            modal.dataset.purpose = 'resize';
+            modal.classList.remove('hidden');
         };
         document.getElementById('modal-cancel').onclick = () => {
              document.getElementById('size-modal').classList.add('hidden');
@@ -309,10 +314,21 @@ class ZXDraw {
         document.getElementById('modal-apply').onclick = () => {
             const w = parseInt(document.getElementById('width-input').value);
             const h = parseInt(document.getElementById('height-input').value);
+            const modal = document.getElementById('size-modal');
             if (w % 8 === 0 && h % 8 === 0 && w > 0 && h > 0) {
-                this.resetData(w, h);
+                const purpose = modal.dataset.purpose || 'resize';
+                if (purpose === 'new') {
+                    // Creating a new image: reset data, clear history and file path
+                    this.resetData(w, h);
+                    this.undoStack = [];
+                    this.redoStack = [];
+                    this.currentFilePath = null;
+                } else {
+                    // Resize (same behavior as before)
+                    this.resetData(w, h);
+                }
                 this.render();
-                document.getElementById('size-modal').classList.add('hidden');
+                modal.classList.add('hidden');
             } else {
                 alert('Size must be a multiple of 8.');
             }
@@ -352,11 +368,12 @@ class ZXDraw {
         };
 
         document.getElementById('new-btn').onclick = () => {
-            if(confirm('Start a new image? Progress will be lost.')) {
-                this.resetData(this.width, this.height);
-                this.currentFilePath = null;
-                this.render();
-            }
+            // Open size modal for creating a new image. Defaults to ZX Spectrum size.
+            const modal = document.getElementById('size-modal');
+            document.getElementById('width-input').value = 256;
+            document.getElementById('height-input').value = 192;
+            modal.dataset.purpose = 'new';
+            modal.classList.remove('hidden');
         };
 
         // About modal
@@ -778,13 +795,28 @@ class ZXDraw {
 
     applyTranslationsMap(map) {
         if (!map) return;
+        // keep reference to current locale map for runtime strings
+        this._currentLocaleMap = map;
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
             const txt = map[key];
             if (!txt) return;
-            if (el.tagName.toLowerCase() === 'button' || el.hasAttribute('title')) {
-                // For buttons/icons: only update the title (hover text). Do not change visible
-                // contents for buttons that include an SVG icon to avoid breaking layout.
+            const tag = el.tagName.toLowerCase();
+            // Inputs and textareas: set placeholder when present
+            if (tag === 'input' || tag === 'textarea') {
+                if (el.hasAttribute('placeholder')) el.setAttribute('placeholder', txt);
+                else el.value = txt;
+            } else if (tag === 'button') {
+                // If the button contains another element with data-i18n (e.g. a <span>), let
+                // that child be updated instead. For SVG buttons, prefer setting the title.
+                if (el.querySelector('[data-i18n]')) {
+                    // child will be updated separately
+                } else if (el.querySelector('svg')) {
+                    el.setAttribute('title', txt);
+                } else {
+                    el.textContent = txt;
+                }
+            } else if (el.hasAttribute('title')) {
                 el.setAttribute('title', txt);
             } else {
                 el.textContent = txt;
@@ -815,12 +847,18 @@ class ZXDraw {
         };
         const { fps } = this.getAnimParams();
         this.animInterval = setInterval(tick, 1000 / fps);
-        document.getElementById('anim-play-btn').textContent = '\u23f9 Stop';
+        const labelEl = document.getElementById('anim-play-label');
+        const stopTxt = (this._currentLocaleMap && this._currentLocaleMap['btn.stop']) ? this._currentLocaleMap['btn.stop'] : 'Stop';
+        if (labelEl) labelEl.textContent = '\u23F9 ' + stopTxt;
+        else document.getElementById('anim-play-btn').textContent = '\u23F9 ' + stopTxt;
     }
 
     stopAnimation() {
         if (this.animInterval) { clearInterval(this.animInterval); this.animInterval = null; }
-        document.getElementById('anim-play-btn').textContent = '\u25b6 Play';
+        const labelEl = document.getElementById('anim-play-label');
+        const playTxt = (this._currentLocaleMap && this._currentLocaleMap['btn.play']) ? this._currentLocaleMap['btn.play'] : 'Play';
+        if (labelEl) labelEl.textContent = '\u25B6 ' + playTxt;
+        else document.getElementById('anim-play-btn').textContent = '\u25B6 ' + playTxt;
     }
 
     renderAnimFrame() {
@@ -832,7 +870,9 @@ class ZXDraw {
             canvas.width = 64; canvas.height = 32;
             ctx.fillStyle = '#111';
             ctx.fillRect(0, 0, 64, 32);
-            document.getElementById('anim-info').textContent = 'Copy a selection to preview';
+            const infoEl = document.getElementById('anim-info');
+            const noSel = (this._currentLocaleMap && this._currentLocaleMap['anim.no_selection']) ? this._currentLocaleMap['anim.no_selection'] : 'Copy a selection to preview';
+            if (infoEl) infoEl.textContent = noSel;
             return;
         }
 

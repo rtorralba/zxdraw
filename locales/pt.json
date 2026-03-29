@@ -34,4 +34,37 @@
   "menu.paste": "Colar",
   "menu.help": "Ajuda",
   "menu.about": "Sobre ZXDraw"
+  ,
+  "modal.text.title": "Inserir texto",
+  "modal.text.label.text": "Texto",
+  "modal.text.label.font": "Fonte",
+  "modal.text.label.size": "Tamanho (px)",
+  "modal.text.label.style": "Estilo",
+  "modal.text.label.threshold": "Limiar",
+  "modal.text.preview": "Pré-visualização",
+  "btn.cancel": "Cancelar",
+  "btn.stamp": "Carimbar",
+  "btn.apply": "Aplicar",
+  "btn.import": "Importar",
+  "btn.play": "Reproduzir",
+  "btn.stop": "Parar",
+  "import.orig": "Original (ajustada)",
+  "import.zx": "Pré-visualização ZX Spectrum",
+  "import.brightness": "Brilho",
+  "import.contrast": "Contraste",
+  "import.saturation": "Saturação",
+  "modal.size.title": "Definir tamanho da tela",
+  "modal.size.width": "Largura:",
+  "modal.size.height": "Altura:",
+  "modal.size.hint": "Os tamanhos devem ser múltiplos de 8.",
+  "anim.framew": "Frame W",
+  "anim.fps": "FPS",
+  "anim.no_selection": "Copie uma seleção para visualizar"
+  ,
+  "modal.text.placeholder": "Olá Mundo",
+  "modal.text.bold": "Negrito",
+  "modal.text.italic": "Itálico",
+  "import.title": "Importar imagem → ZX Spectrum"
+}
+}
 }
