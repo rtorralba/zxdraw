@@ -22,6 +22,20 @@
       "**/*",
       "!node_modules/.cache"
     ],
+    "fileAssociations": [
+      {
+        "ext": "zxp",
+        "name": "ZX-Paintbrush Image",
+        "description": "ZX-Paintbrush image file",
+        "role": "Viewer"
+      },
+      {
+        "ext": "scr",
+        "name": "ZX Spectrum Screen",
+        "description": "ZX Spectrum screen file",
+        "role": "Viewer"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "icon.png"
