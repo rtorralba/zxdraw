@@ -56,6 +56,15 @@ function openFilePathAndSend(filePath) {
   } catch (e) { console.error('openFilePathAndSend error', e); }
 }
 
+function findFileArg(argv) {
+  if (!argv || argv.length === 0) return null;
+  for (let i = 0; i < argv.length; i++) {
+    const a = String(argv[i]);
+    if (a && (a.toLowerCase().endsWith('.zxp') || a.toLowerCase().endsWith('.scr'))) return a;
+  }
+  return null;
+}
+
 function loadTranslations(lang) {
   try {
     const p = path.join(__dirname, 'locales', `${lang}.json`);
@@ -146,8 +155,39 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
 }
 
+// Single instance handling: when a second instance is launched (e.g. via "Open with"),
+// forward any file argument to the existing instance and focus the window.
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, argv, workingDir) => {
+    // Windows: file path may be in argv
+    const fileArg = findFileArg(argv);
+    if (fileArg) {
+      // If window exists, send file to renderer; otherwise store it after create
+      if (mainWindow && mainWindow.webContents) {
+        openFilePathAndSend(fileArg);
+      }
+    }
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
+    }
+  });
+}
+
 app.whenReady().then(() => {
   createWindow();
+
+  // If app started with a file argument (Windows "Open with"), open it now
+  try {
+    const initial = findFileArg(process.argv);
+    if (initial) {
+      // small delay to ensure window/webContents ready
+      setTimeout(() => openFilePathAndSend(initial), 300);
+    }
+  } catch (e) { /* noop */ }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -156,6 +196,18 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+// macOS: open-file event when launching via Finder
+app.on('open-file', (event, pathArg) => {
+  event.preventDefault();
+  if (!pathArg) return;
+  if (mainWindow && mainWindow.webContents) {
+    openFilePathAndSend(pathArg);
+  } else {
+    // If window not ready yet, open after ready
+    app.once('ready', () => setTimeout(() => openFilePathAndSend(pathArg), 300));
+  }
 });
 
 // Synchronous locale loader — used by renderer at startup before contextBridge async ready
