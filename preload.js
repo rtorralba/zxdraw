@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveFileDirect: (filePath, content) => ipcRenderer.invoke('save-file-direct', filePath, content),
   exportPng: (dataURL) => ipcRenderer.invoke('export-png', dataURL),
   loadFile: () => ipcRenderer.invoke('load-file'),
+  loadFilePath: (filePath) => ipcRenderer.invoke('load-file-path', filePath),
+  addRecentFile: (filePath) => ipcRenderer.send('add-recent-file', filePath),
   loadImage: () => ipcRenderer.invoke('load-image'),
   onMenuEvent: (channel, cb) => ipcRenderer.on(channel, cb),
   openDevTools: () => ipcRenderer.send('open-devtools'),

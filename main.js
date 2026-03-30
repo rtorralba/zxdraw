@@ -3,6 +3,58 @@ const path = require('path');
 const fs = require('fs');
 
 let mainWindow;
+let currentTranslations = {};
+
+const RECENT_STORE = () => path.join(app.getPath('userData') || __dirname, 'recent.json');
+
+function loadRecentFiles() {
+  try {
+    const p = RECENT_STORE();
+    if (fs.existsSync(p)) {
+      const raw = fs.readFileSync(p, 'utf8');
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) return arr;
+    }
+  } catch (e) { console.warn('loadRecentFiles failed', e); }
+  return [];
+}
+
+function saveRecentFiles(arr) {
+  try {
+    const p = RECENT_STORE();
+    fs.writeFileSync(p, JSON.stringify(arr || []), 'utf8');
+  } catch (e) { console.warn('saveRecentFiles failed', e); }
+}
+
+function addRecentFile(filePath) {
+  try {
+    if (!filePath) return;
+    const arr = loadRecentFiles().filter(p => p !== filePath);
+    arr.unshift(filePath);
+    while (arr.length > 10) arr.pop();
+    saveRecentFiles(arr);
+    // rebuild menu so recent submenu updates
+    try {
+      const menu = Menu.buildFromTemplate(buildMenuTemplate(currentTranslations));
+      Menu.setApplicationMenu(menu);
+    } catch (e) { console.warn('rebuild menu failed', e); }
+  } catch (e) { console.warn('addRecentFile failed', e); }
+}
+
+function openFilePathAndSend(filePath) {
+  try {
+    if (!filePath) return;
+    const ext = path.extname(filePath).toLowerCase();
+    if (ext === '.scr') {
+      const buffer = fs.readFileSync(filePath);
+      if (mainWindow && mainWindow.webContents) mainWindow.webContents.send('menu-open-file', { content: Array.from(buffer), filePath, type: 'scr' });
+    } else {
+      const content = fs.readFileSync(filePath, 'utf8');
+      if (mainWindow && mainWindow.webContents) mainWindow.webContents.send('menu-open-file', { content, filePath, type: 'zxp' });
+    }
+    addRecentFile(filePath);
+  } catch (e) { console.error('openFilePathAndSend error', e); }
+}
 
 function loadTranslations(lang) {
   try {
@@ -25,12 +77,15 @@ function loadTranslations(lang) {
 }
 
 function buildMenuTemplate(t) {
+  const recent = loadRecentFiles();
+  const recentSub = (recent && recent.length > 0) ? recent.map(p => ({ label: p, click: () => openFilePathAndSend(p) })) : [{ label: t['menu.recent_empty'] || 'No recent files', enabled: false }];
   return [
     {
       label: t['menu.file'] || 'File',
       submenu: [
         { label: t['menu.new'] || 'New', accelerator: 'CmdOrCtrl+N', click: () => mainWindow.webContents.send('menu-new') },
         { label: t['menu.open'] || 'Open…', accelerator: 'CmdOrCtrl+O', click: () => mainWindow.webContents.send('menu-open') },
+        { label: t['menu.recent'] || 'Recent', submenu: recentSub },
         { label: t['menu.import_image'] || 'Import Image…', click: () => mainWindow.webContents.send('menu-import-image') },
         { type: 'separator' },
         { label: t['menu.save'] || 'Save', accelerator: 'CmdOrCtrl+S', click: () => mainWindow.webContents.send('menu-save') },
@@ -85,6 +140,7 @@ function createWindow() {
   // Build localized menu
   const sysLang = (app.getLocale && app.getLocale().slice(0,2)) || 'en';
   const translations = loadTranslations(sysLang);
+  currentTranslations = translations || {};
   const menuTpl = buildMenuTemplate(translations);
   const menu = Menu.buildFromTemplate(menuTpl);
   Menu.setApplicationMenu(menu);
@@ -210,13 +266,36 @@ ipcMain.handle('load-file', async () => {
   return null;
 });
 
+ipcMain.handle('load-file-path', async (event, filePath) => {
+  try {
+    if (!filePath) return null;
+    const ext = path.extname(filePath).toLowerCase();
+    if (ext === '.scr') {
+      const buffer = fs.readFileSync(filePath);
+      return { content: Array.from(buffer), filePath: filePath, type: 'scr' };
+    } else {
+      const content = fs.readFileSync(filePath, 'utf8');
+      return { content, filePath: filePath, type: 'zxp' };
+    }
+  } catch (e) {
+    console.error('load-file-path error', e);
+    return null;
+  }
+});
+
 // Rebuild menu when renderer requests language change
 ipcMain.on('set-language', (event, lang) => {
   try {
     const translations = loadTranslations(lang);
+    currentTranslations = translations || {};
     const menu = Menu.buildFromTemplate(buildMenuTemplate(translations));
     Menu.setApplicationMenu(menu);
   } catch (e) {
     console.error('Failed to set language menu', e);
   }
+});
+
+// Renderer notifies main that a file was opened/saved and should be added to recent list
+ipcMain.on('add-recent-file', (event, filePath) => {
+  try { addRecentFile(filePath); } catch (e) { console.warn('add-recent-file ipc failed', e); }
 });

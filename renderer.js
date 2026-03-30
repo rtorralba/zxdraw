@@ -82,6 +82,7 @@ class ZXDraw {
         // Apply translations synchronously before first render to avoid flash of untranslated text.
         // setupI18n also wires the lang-select onchange for subsequent switches.
         this.setupI18n();
+        this.setupRecentFiles();
         this.render();
         this.updateUI();
 
@@ -91,6 +92,85 @@ class ZXDraw {
             this.render();
             this.renderAnimFrame();
         }, 1000);
+    }
+
+    // Recent files management (store in localStorage, max 10)
+    setupRecentFiles() {
+        try {
+            this.renderRecentList();
+            const sel = document.getElementById('recent-select');
+            if (sel) {
+                sel.onchange = async (e) => {
+                    const val = sel.value;
+                    if (!val) return;
+                    // Load via main process
+                    const file = await window.electronAPI.loadFilePath(val);
+                    if (file) {
+                        if (file.type === 'scr') {
+                            this.importFromSCR(file.content);
+                            this.currentFilePath = null;
+                        } else {
+                            this.importFromZXP(file.content);
+                            this.currentFilePath = file.filePath;
+                        }
+                        this.render();
+                        this.addRecentFile(val);
+                    } else {
+                        const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.invalid_zxp']) ? this._currentLocaleMap['alert.invalid_zxp'] : 'Failed to open file.';
+                        alert(msg);
+                    }
+                    // reset selection to placeholder
+                    this.renderRecentList();
+                };
+            }
+        } catch (e) { /* noop */ }
+    }
+
+    getRecentFiles() {
+        try {
+            const raw = localStorage.getItem('zxdraw_recent_files');
+            if (!raw) return [];
+            const arr = JSON.parse(raw);
+            if (!Array.isArray(arr)) return [];
+            return arr;
+        } catch (e) { return []; }
+    }
+
+    saveRecentFiles(arr) {
+        try { localStorage.setItem('zxdraw_recent_files', JSON.stringify(arr)); } catch (e) {}
+    }
+
+    addRecentFile(filePath) {
+        if (!filePath) return;
+        const arr = this.getRecentFiles().filter(p => p !== filePath);
+        arr.unshift(filePath);
+        while (arr.length > 10) arr.pop();
+        this.saveRecentFiles(arr);
+        this.renderRecentList();
+    }
+
+    renderRecentList() {
+        try {
+            const sel = document.getElementById('recent-select');
+            if (!sel) return;
+            const arr = this.getRecentFiles();
+            sel.innerHTML = '';
+            if (!arr || arr.length === 0) {
+                const opt = document.createElement('option'); opt.value = ''; opt.text = (this._currentLocaleMap && this._currentLocaleMap['label.recent']) ? (this._currentLocaleMap['label.recent'] + ':') : 'Recent:'; opt.disabled = true; sel.appendChild(opt);
+                const empty = document.createElement('option'); empty.value = ''; empty.text = 'No recent files'; empty.disabled = true; sel.appendChild(empty);
+                return;
+            }
+            const placeholder = document.createElement('option'); placeholder.value = ''; placeholder.text = (this._currentLocaleMap && this._currentLocaleMap['label.recent']) ? (this._currentLocaleMap['label.recent'] + ':') : 'Recent:'; placeholder.disabled = true; sel.appendChild(placeholder);
+            for (let i = 0; i < arr.length; i++) {
+                const p = arr[i];
+                const opt = document.createElement('option');
+                opt.value = p;
+                // show filename and truncated path
+                const base = p.split(/[/\\]/).pop();
+                opt.text = `${base} — ${p}`;
+                sel.appendChild(opt);
+            }
+        } catch (e) { /* noop */ }
     }
 
     resetData(w, h) {
@@ -383,9 +463,11 @@ class ZXDraw {
             const zxpContent = this.exportToZXP();
             if (this.currentFilePath) {
                 await window.electronAPI.saveFileDirect(this.currentFilePath, zxpContent);
+                try { this.addRecentFile(this.currentFilePath); window.electronAPI.addRecentFile(this.currentFilePath); } catch(e) {}
             } else {
                 const filePath = await window.electronAPI.saveFile(zxpContent, 'my_graphic.zxp');
                 if (filePath) this.currentFilePath = filePath;
+                try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
             }
         };
 
@@ -393,6 +475,7 @@ class ZXDraw {
             const zxpContent = this.exportToZXP();
             const filePath = await window.electronAPI.saveFile(zxpContent, this.currentFilePath || 'my_graphic.zxp');
             if (filePath) this.currentFilePath = filePath;
+            try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
         };
 
         document.getElementById('load-btn').onclick = async () => {
@@ -406,6 +489,7 @@ class ZXDraw {
                     this.currentFilePath = file.filePath;
                 }
                 this.render();
+                try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             }
         };
 
@@ -441,6 +525,21 @@ class ZXDraw {
         window.electronAPI.onMenuEvent('menu-import-image', () => this.triggerImageImport());
         window.electronAPI.onMenuEvent('menu-new',    () => document.getElementById('new-btn').click());
         window.electronAPI.onMenuEvent('menu-open',   () => document.getElementById('load-btn').click());
+        // File opened from Recent menu
+        window.electronAPI.onMenuEvent('menu-open-file', (ev, file) => {
+            try {
+                if (!file) return;
+                if (file.type === 'scr') {
+                    this.importFromSCR(file.content);
+                    this.currentFilePath = null;
+                } else {
+                    this.importFromZXP(file.content);
+                    this.currentFilePath = file.filePath;
+                }
+                this.render();
+                try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
+            } catch (e) { console.warn('menu-open-file handler failed', e); }
+        });
         window.electronAPI.onMenuEvent('menu-save',   () => document.getElementById('save-btn').click());
         window.electronAPI.onMenuEvent('menu-saveas', () => document.getElementById('saveas-btn').click());
         window.electronAPI.onMenuEvent('menu-about',  () => document.getElementById('about-modal').classList.remove('hidden'));
