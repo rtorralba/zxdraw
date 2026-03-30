@@ -318,6 +318,18 @@ class ZXDraw {
             const modal = document.getElementById('size-modal');
             document.getElementById('width-input').value = this.width || 256;
             document.getElementById('height-input').value = this.height || 192;
+            // Set preset select to match current dims if possible
+            try {
+                const preset = document.getElementById('preset-select');
+                let matched = false;
+                for (let i = 0; i < preset.options.length; i++) {
+                    const opt = preset.options[i];
+                    const ow = parseInt(opt.dataset.w);
+                    const oh = parseInt(opt.dataset.h);
+                    if (!isNaN(ow) && !isNaN(oh) && ow === (this.width || 256) && oh === (this.height || 192)) { preset.selectedIndex = i; matched = true; break; }
+                }
+                if (!matched) preset.value = 'custom';
+            } catch (e) { /* ignore if element missing */ }
             modal.dataset.purpose = 'resize';
             modal.classList.remove('hidden');
         };
@@ -347,6 +359,22 @@ class ZXDraw {
                 alert(msg);
             }
         };
+
+        // Preset select wiring: when user picks a preset, update width/height inputs but allow manual override
+        try {
+            const presetSel = document.getElementById('preset-select');
+            if (presetSel) {
+                presetSel.onchange = (e) => {
+                    const opt = presetSel.options[presetSel.selectedIndex];
+                    const ow = parseInt(opt.dataset.w);
+                    const oh = parseInt(opt.dataset.h);
+                    if (!isNaN(ow) && !isNaN(oh)) {
+                        document.getElementById('width-input').value = ow;
+                        document.getElementById('height-input').value = oh;
+                    }
+                };
+            }
+        } catch (e) { /* noop */ }
 
         // File I/O
         document.getElementById('import-image-btn').onclick = () => this.triggerImageImport();
@@ -386,6 +414,7 @@ class ZXDraw {
             const modal = document.getElementById('size-modal');
             document.getElementById('width-input').value = 256;
             document.getElementById('height-input').value = 192;
+            try { const preset = document.getElementById('preset-select'); if (preset) preset.value = 'spectrum'; } catch(e) {}
             modal.dataset.purpose = 'new';
             modal.classList.remove('hidden');
         };

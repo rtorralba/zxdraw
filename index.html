@@ -257,15 +257,30 @@
 
         <!-- Size Modal -->
         <div id="size-modal" class="modal hidden">
-                <div class="modal-content">
+                <div class="modal-content" style="width:520px;max-width:95vw">
                 <h2 data-i18n="modal.size.title">Set Canvas Size</h2>
                 <div class="input-row">
-                    <label data-i18n="modal.size.width">Width:</label>
-                    <input type="number" id="width-input" value="256" step="8" min="8">
+                    <label>Presets:</label>
+                    <select id="preset-select" style="width:320px;background:#121212;border:1px solid #444;color:white;padding:6px;border-radius:4px">
+                        <option value="custom" data-w="" data-h="">Custom</option>
+                        <option value="spectrum" data-w="256" data-h="192" selected>ZX Spectrum screen 256x192 (por defecto)</option>
+                        <option value="zxsgm-spriteset" data-w="256" data-h="48">ZXSGM Spriteset 256x48</option>
+                        <option value="zxsgm-tileset" data-w="256" data-h="48">ZXSGM Tileset 256x48</option>
+                    </select>
                 </div>
-                <div class="input-row">
-                    <label data-i18n="modal.size.height">Height:</label>
-                    <input type="number" id="height-input" value="192" step="8" min="8">
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.size.width">Width:</label>
+                            <input type="number" id="width-input" value="256" step="8" min="8">
+                        </div>
+                    </div>
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.size.height">Height:</label>
+                            <input type="number" id="height-input" value="192" step="8" min="8">
+                        </div>
+                    </div>
                 </div>
                 <p class="hint" data-i18n="modal.size.hint">Sizes must be multiples of 8.</p>
                 <div class="modal-actions">
