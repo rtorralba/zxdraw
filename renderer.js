@@ -83,6 +83,7 @@ class ZXDraw {
         // setupI18n also wires the lang-select onchange for subsequent switches.
         this.setupI18n();
         this.setupRecentFiles();
+        this.setupDragAndDrop();
         this.render();
         this.updateUI();
 
@@ -92,6 +93,43 @@ class ZXDraw {
             this.render();
             this.renderAnimFrame();
         }, 1000);
+    }
+
+    // Drag & drop files onto the window to open
+    setupDragAndDrop() {
+        try {
+            window.addEventListener('dragover', (e) => { e.preventDefault(); });
+            window.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                try {
+                    const files = (e.dataTransfer && e.dataTransfer.files) ? e.dataTransfer.files : null;
+                    if (!files || files.length === 0) return;
+                    for (let i = 0; i < files.length; i++) {
+                        const f = files[i];
+                        // path is provided by Electron file drag
+                        const p = f.path || f.name;
+                        if (!p) continue;
+                        const lower = p.toLowerCase();
+                        if (lower.endsWith('.zxp') || lower.endsWith('.scr')) {
+                            const file = await window.electronAPI.loadFilePath(p);
+                            if (file) {
+                                if (file.type === 'scr') {
+                                    this.importFromSCR(file.content);
+                                    this.currentFilePath = null;
+                                } else {
+                                    this.importFromZXP(file.content);
+                                    this.currentFilePath = file.filePath;
+                                }
+                                this.render();
+                                try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
+                            }
+                            // open only first supported file by default
+                            break;
+                        }
+                    }
+                } catch (err) { console.warn('drop handler failed', err); }
+            });
+        } catch (e) { /* noop */ }
     }
 
     // Recent files management (store in localStorage, max 10)
