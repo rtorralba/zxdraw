@@ -54,6 +54,7 @@
   "import.contrast": "Contraste",
   "import.saturation": "Saturación",
   "modal.size.title": "Tamaño del lienzo",
+  "modal.size.presets": "Preajustes",
   "modal.size.width": "Ancho:",
   "modal.size.height": "Altura:",
   "modal.size.hint": "Los tamaños deben ser múltiplos de 8.",

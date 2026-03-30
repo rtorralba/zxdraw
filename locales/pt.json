@@ -54,6 +54,7 @@
   "import.contrast": "Contraste",
   "import.saturation": "Saturação",
   "modal.size.title": "Definir tamanho da tela",
+  "modal.size.presets": "Predefinidos",
   "modal.size.width": "Largura:",
   "modal.size.height": "Altura:",
   "modal.size.hint": "Os tamanhos devem ser múltiplos de 8.",

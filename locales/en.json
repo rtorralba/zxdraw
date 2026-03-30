@@ -54,6 +54,7 @@
   "import.contrast": "Contrast",
   "import.saturation": "Saturation",
   "modal.size.title": "Set Canvas Size",
+  "modal.size.presets": "Presets",
   "modal.size.width": "Width:",
   "modal.size.height": "Height:",
   "modal.size.hint": "Sizes must be multiples of 8.",
