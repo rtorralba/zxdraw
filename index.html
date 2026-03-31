@@ -338,8 +338,57 @@
                 </div>
             </div>
         </div>
+        <!-- GuSprites Modal -->
+        <div id="gusprites-modal" class="modal hidden">
+            <div class="modal-content" style="width:520px;max-width:95vw">
+                <h2 data-i18n="modal.gusprites.title">Export to GuSprites</h2>
+                <div class="input-row">
+                    <label data-i18n="modal.gusprites.name">Variable Prefix:</label>
+                    <input type="text" id="gusprites-name" value="mySprite" style="width: 240px">
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.gusprites.width">Tile Width:</label>
+                            <input type="number" id="gusprites-width" value="16" step="8" min="8" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.gusprites.rows">Rows:</label>
+                            <input type="number" id="gusprites-rows" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.gusprites.cols">Cols:</label>
+                            <input type="number" id="gusprites-cols" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-row" style="justify-content:flex-start;gap:16px;">
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="gusprites-matrix">
+                        <span data-i18n="modal.gusprites.matrix">Export as Matrix</span>
+                    </label>
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="gusprites-attributes" checked>
+                        <span data-i18n="modal.gusprites.attributes">Include Attributes</span>
+                    </label>
+                </div>
+                <p class="hint" data-i18n="modal.gusprites.hint">Tile Width must be a multiple of 8.</p>
+                <div class="modal-actions">
+                    <button id="gusprites-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="gusprites-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.export">Export</span></button>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="export/putchars.js"></script>
+    <script src="export/gusprites.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

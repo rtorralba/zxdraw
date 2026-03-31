@@ -1573,8 +1573,53 @@ class ZXDraw {
     }
 
     exportBorielGuSprites() {
-        const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.not_implemented']) ? this._currentLocaleMap['alert.not_implemented'] : 'Boriel Basic GuSprites export is not fully implemented yet.';
-        alert(msg);
+        const modal = document.getElementById('gusprites-modal');
+        modal.classList.remove('hidden');
+
+        document.getElementById('gusprites-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        const applyBtn = document.getElementById('gusprites-apply');
+        applyBtn.onclick = () => {
+            const width = parseInt(document.getElementById('gusprites-width').value);
+            const rows = parseInt(document.getElementById('gusprites-rows').value);
+            const cols = parseInt(document.getElementById('gusprites-cols').value);
+            const name = document.getElementById('gusprites-name').value || 'mySprite';
+            const matrix = document.getElementById('gusprites-matrix').checked;
+            const noAttrs = !document.getElementById('gusprites-attributes').checked;
+
+            if (width % 8 !== 0) {
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.size_multiple']) ? this._currentLocaleMap['alert.size_multiple'] : 'Width must be a multiple of 8.';
+                alert(msg);
+                return;
+            }
+
+            modal.classList.add('hidden');
+            this.generateAndSaveGuSprites(width, rows, cols, name, matrix, noAttrs);
+        };
+    }
+
+    async generateAndSaveGuSprites(w, rows, cols, name, matrix, noAttrs) {
+        if (!window.ZXExportGuSprites) {
+            console.error('ZXExportGuSprites module not found.');
+            return;
+        }
+
+        const finalOutput = window.ZXExportGuSprites(
+            this.pixels,
+            this.attributes,
+            this.width,
+            this.height,
+            w,
+            rows,
+            cols,
+            name,
+            matrix,
+            noAttrs
+        );
+
+        await window.electronAPI.exportBas(finalOutput, `${name}.bas`);
     }
 
     exportToZXP() {
