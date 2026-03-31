@@ -110,7 +110,8 @@ function buildMenuTemplate(t) {
                 { label: t['menu.export_boriel_putchars'] || 'PutChars…', click: () => mainWindow.webContents.send('menu-export-boriel-putchars') },
                 { label: t['menu.export_boriel_gusprites'] || 'GuSprites…', click: () => mainWindow.webContents.send('menu-export-boriel-gusprites') }
               ]
-            }
+            },
+            { label: t['menu.export_data'] || 'Export Data…', click: () => mainWindow.webContents.send('menu-export-data') }
           ],
         },
         { type: 'separator' },
@@ -246,6 +247,19 @@ ipcMain.handle('export-bas', async (event, content, defaultName) => {
   });
   if (filePath) {
     fs.writeFileSync(filePath, content, 'utf8');
+    return filePath;
+  }
+  return null;
+});
+
+ipcMain.handle('export-bin', async (event, buffer, defaultName) => {
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Export Binary Data',
+    defaultPath: defaultName || 'export.bin',
+    filters: [{ name: 'Binary Data', extensions: ['bin'] }, { name: 'All Files', extensions: ['*'] }],
+  });
+  if (filePath) {
+    fs.writeFileSync(filePath, Buffer.from(buffer));
     return filePath;
   }
   return null;

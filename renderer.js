@@ -588,6 +588,7 @@ class ZXDraw {
         window.electronAPI.onMenuEvent('menu-export-png', () => this.exportPng());
         window.electronAPI.onMenuEvent('menu-export-boriel-putchars', () => this.exportBorielPutChars());
         window.electronAPI.onMenuEvent('menu-export-boriel-gusprites', () => this.exportBorielGuSprites());
+        window.electronAPI.onMenuEvent('menu-export-data', () => this.exportData());
 
         // Shortcuts
         window.onkeydown = (e) => {
@@ -1620,6 +1621,87 @@ class ZXDraw {
         );
 
         await window.electronAPI.exportBas(finalOutput, `${name}.bas`);
+    }
+
+    exportData() {
+        const modal = document.getElementById('export-data-modal');
+        
+        let defW = 8;
+        let defRows = 1;
+        let defCols = 1;
+
+        if (this.selection) {
+            defW = this.selection.w * 8;
+            defRows = 1;
+            defCols = 1;
+        } else {
+            // No selection: Default to full image or common 8x8 blocks
+            defW = 8;
+            defRows = this.height / 8;
+            defCols = this.width / 8;
+        }
+
+        document.getElementById('export-data-width').value = defW;
+        document.getElementById('export-data-rows').value = defRows;
+        document.getElementById('export-data-cols').value = defCols;
+        
+        modal.classList.remove('hidden');
+
+        document.getElementById('export-data-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        const applyBtn = document.getElementById('export-data-apply');
+        applyBtn.onclick = () => {
+            const name = document.getElementById('export-data-name').value || 'mySprite';
+            const width = parseInt(document.getElementById('export-data-width').value) || 8;
+            const rows = parseInt(document.getElementById('export-data-rows').value) || 1;
+            const cols = parseInt(document.getElementById('export-data-cols').value) || 1;
+            const type = document.getElementById('export-data-type').value;
+            const sort = document.getElementById('export-data-sort').value;
+            const nolabel = document.getElementById('export-data-nolabel').checked;
+            const format = document.querySelector('input[name="export-data-format"]:checked').value;
+
+            if (width % 8 !== 0) {
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.size_multiple']) ? this._currentLocaleMap['alert.size_multiple'] : 'Width must be a multiple of 8.';
+                alert(msg);
+                return;
+            }
+
+            modal.classList.add('hidden');
+            this.generateAndSaveData({ name, width, rows, cols, type, sort, nolabel, format });
+        };
+    }
+
+    async generateAndSaveData(options) {
+        if (!window.ZXExportData) {
+            console.error('ZXExportData module not found.');
+            return;
+        }
+
+        const x = this.selection ? this.selection.x : 0;
+        const y = this.selection ? this.selection.y : 0;
+        
+        const finalOutput = window.ZXExportData(
+            this.pixels,
+            this.attributes,
+            this.width,
+            this.height,
+            options.width,
+            options.rows,
+            options.cols,
+            {
+                ...options,
+                startX: x,
+                startY: y
+            }
+        );
+
+        if (options.format === 'bin') {
+            await window.electronAPI.exportBin(finalOutput, `${options.name}.bin`);
+        } else {
+            await window.electronAPI.exportBas(finalOutput, `${options.name}.asm`);
+        }
     }
 
     exportToZXP() {

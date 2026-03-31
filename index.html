@@ -387,8 +387,91 @@
             </div>
         </div>
     </div>
+        <!-- Export Data Modal (Standard) -->
+        <div id="export-data-modal" class="modal hidden">
+            <div class="modal-content" style="width:520px;max-width:95vw">
+                <h2 data-i18n="modal.export_data.title">Export Data (Standard)</h2>
+                
+                <div class="input-row">
+                    <label data-i18n="modal.export_data.name">Variable Prefix:</label>
+                    <input type="text" id="export-data-name" value="mySprite" style="width: 240px">
+                </div>
+
+                <div style="display:flex;gap:12px;margin-top:12px;">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.export_data.width">Tile Width:</label>
+                            <input type="number" id="export-data-width" value="8" step="8" min="8" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.export_data.rows">Rows:</label>
+                            <input type="number" id="export-data-rows" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.export_data.cols">Cols:</label>
+                            <input type="number" id="export-data-cols" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-row" style="margin-top:12px;">
+                    <label data-i18n="modal.export_data.output">Data Outputted:</label>
+                    <select id="export-data-type" style="width: 240px">
+                        <option value="gfx_attr" data-i18n="opt.gfx_attr">Gfx + Attr</option>
+                        <option value="attr_gfx" data-i18n="opt.attr_gfx">Attr + Gfx</option>
+                        <option value="gfx" data-i18n="opt.gfx">Gfx Only</option>
+                        <option value="attr" data-i18n="opt.attr">Attr Only</option>
+                    </select>
+                </div>
+
+                <div class="input-row">
+                    <label data-i18n="modal.export_data.sort">Byte Sort Priority:</label>
+                    <select id="export-data-sort" style="width: 240px">
+                        <option value="x_line_y">X char, Char line, Y char</option>
+                        <option value="y_x_line">Y char, X char, Char line</option>
+                        <option value="line_x_y">Char line, X char, Y char</option>
+                        <option value="line_y_x">Char line, Y char, X char</option>
+                    </select>
+                </div>
+
+                <div class="input-row">
+                    <label data-i18n="modal.export_data.format">Output Format:</label>
+                    <div style="display:flex;gap:16px;">
+                        <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                            <input type="radio" name="export-data-format" value="asm" checked>
+                            <span>ASM</span>
+                        </label>
+                        <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                            <input type="radio" name="export-data-format" value="bin">
+                            <span>BIN</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-row" style="justify-content:flex-start;gap:16px;">
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="export-data-nolabel">
+                        <span data-i18n="modal.export_data.nolabel">No ASM Label</span>
+                    </label>
+                </div>
+
+                <p class="hint" data-i18n="modal.export_data.hint">Export follows standard sprite data logic with flexible sorting.</p>
+                <div class="modal-actions">
+                    <button id="export-data-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="export-data-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.export">Export</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="export/putchars.js"></script>
     <script src="export/gusprites.js"></script>
+    <script src="export/data.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

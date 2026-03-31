@@ -16,6 +16,11 @@
   "opt.on": "On",
   "opt.off": "Off",
   "panel.animation": "Animación",
+  "menu.export_data": "Exportar Datos…",
+  "opt.gfx_attr": "Gfx + Attr",
+  "opt.attr_gfx": "Attr + Gfx",
+  "opt.gfx": "Solo Gfx",
+  "opt.attr": "Solo Attr",
   "panel.currentAttr": "Atributo Actual"
   ,
   "menu.file": "Archivo",
@@ -75,7 +80,17 @@
   "modal.text.placeholder": "Hola Mundo",
   "modal.text.bold": "Negrita",
   "modal.text.italic": "Cursiva",
-  "import.title": "Importar imagen → ZX Spectrum"
+  "import.title": "Importar imagen → ZX Spectrum",
+  "modal.export_data.title": "Exportar Datos (Estándar)",
+  "modal.export_data.width": "Ancho de sprite:",
+  "modal.export_data.rows": "Filas:",
+  "modal.export_data.cols": "Columnas:",
+  "modal.export_data.name": "Prefijo de variable:",
+  "modal.export_data.output": "Datos de salida:",
+  "modal.export_data.sort": "Prioridad de orden:",
+  "modal.export_data.format": "Formato de salida:",
+  "modal.export_data.nolabel": "Sin etiqueta ASM",
+  "modal.export_data.hint": "La exportación sigue una lógica estándar de datos de sprites con orden flexible."
   ,
   "about.tagline": "Editor inspirado en ZX Spectrum",
   "about.version": "Versión"
