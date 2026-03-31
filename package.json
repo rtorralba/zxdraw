@@ -12,7 +12,9 @@
     "build:mac": "node build-bundle.js --mac",
     "build:linux": "node build-bundle.js --linux",
     "test:gusprites": "node tests/gusprites.test.js",
-    "test:putchars": "node tests/putchars.test.js"
+    "test:putchars": "node tests/putchars.test.js",
+    "test": "npm run test:gusprites && npm run test:putchars",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "build": {
     "appId": "com.zxdraw.app",

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Pre-push hook to run tests before pushing
+echo "Running tests before push..."
+npm test
+
+# If tests fail, exit with non-zero code to block the push
+if [ $? -ne 0 ]; then
+  echo "Tests failed. Push aborted."
+  exit 1
+fi
+
+echo "Tests passed. Proceeding with push."
+exit 0
