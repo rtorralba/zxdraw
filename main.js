@@ -155,27 +155,8 @@ function createWindow() {
   Menu.setApplicationMenu(menu);
 }
 
-// Single instance handling: when a second instance is launched (e.g. via "Open with"),
-// forward any file argument to the existing instance and focus the window.
-const gotLock = app.requestSingleInstanceLock();
-if (!gotLock) {
-  app.quit();
-} else {
-  app.on('second-instance', (event, argv, workingDir) => {
-    // Windows: file path may be in argv
-    const fileArg = findFileArg(argv);
-    if (fileArg) {
-      // If window exists, send file to renderer; otherwise store it after create
-      if (mainWindow && mainWindow.webContents) {
-        openFilePathAndSend(fileArg);
-      }
-    }
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) mainWindow.restore();
-      mainWindow.focus();
-    }
-  });
-}
+// Single instance lock removed to allow multiple simultaneous instances.
+// Each launch or 'Open with' will now open a new window in its own instance.
 
 app.whenReady().then(() => {
   createWindow();
