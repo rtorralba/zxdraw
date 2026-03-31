@@ -10,7 +10,9 @@
     "build:bundle": "node build-bundle.js",
     "build:win": "node build-bundle.js --win",
     "build:mac": "node build-bundle.js --mac",
-    "build:linux": "node build-bundle.js --linux"
+    "build:linux": "node build-bundle.js --linux",
+    "test:gusprites": "node tests/gusprites.test.js",
+    "test:putchars": "node tests/putchars.test.js"
   },
   "build": {
     "appId": "com.zxdraw.app",
