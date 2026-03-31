@@ -586,6 +586,8 @@ class ZXDraw {
         window.electronAPI.onMenuEvent('menu-copy',   () => this.copySelection());
         window.electronAPI.onMenuEvent('menu-paste',  () => this.startPaste());
         window.electronAPI.onMenuEvent('menu-export-png', () => this.exportPng());
+        window.electronAPI.onMenuEvent('menu-export-boriel-putchars', () => this.exportBorielPutChars());
+        window.electronAPI.onMenuEvent('menu-export-boriel-gusprites', () => this.exportBorielGuSprites());
 
         // Shortcuts
         window.onkeydown = (e) => {
@@ -1518,6 +1520,61 @@ class ZXDraw {
     async exportPng() {
         const dataURL = this.canvas.toDataURL('image/png');
         await window.electronAPI.exportPng(dataURL);
+    }
+
+    exportBorielPutChars() {
+        const modal = document.getElementById('putchars-modal');
+        modal.classList.remove('hidden');
+
+        document.getElementById('putchars-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        const applyBtn = document.getElementById('putchars-apply');
+        applyBtn.onclick = () => {
+            const width = parseInt(document.getElementById('putchars-width').value);
+            const rows = parseInt(document.getElementById('putchars-rows').value);
+            const cols = parseInt(document.getElementById('putchars-cols').value);
+            const name = document.getElementById('putchars-name').value || 'mySprite';
+            const matrix = document.getElementById('putchars-matrix').checked;
+            const noAttrs = !document.getElementById('putchars-attributes').checked;
+
+            if (width % 8 !== 0) {
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.size_multiple']) ? this._currentLocaleMap['alert.size_multiple'] : 'Width must be a multiple of 8.';
+                alert(msg);
+                return;
+            }
+
+            modal.classList.add('hidden');
+            this.generateAndSavePutChars(width, rows, cols, name, matrix, noAttrs);
+        };
+    }
+
+    async generateAndSavePutChars(w, rows, cols, name, matrix, noAttrs) {
+        if (!window.ZXExportPutChars) {
+            console.error('ZXExportPutChars module not found.');
+            return;
+        }
+
+        const finalOutput = window.ZXExportPutChars(
+            this.pixels,
+            this.attributes,
+            this.width,
+            this.height,
+            w,
+            rows,
+            cols,
+            name,
+            matrix,
+            noAttrs
+        );
+
+        await window.electronAPI.exportBas(finalOutput, `${name}.bas`);
+    }
+
+    exportBorielGuSprites() {
+        const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.not_implemented']) ? this._currentLocaleMap['alert.not_implemented'] : 'Boriel Basic GuSprites export is not fully implemented yet.';
+        alert(msg);
     }
 
     exportToZXP() {

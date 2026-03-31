@@ -5,6 +5,7 @@ const path = require('path');
 contextBridge.exposeInMainWorld('electronAPI', {
   saveFile: (content, defaultName) => ipcRenderer.invoke('save-file', content, defaultName),
   saveFileDirect: (filePath, content) => ipcRenderer.invoke('save-file-direct', filePath, content),
+  exportBas: (content, defaultName) => ipcRenderer.invoke('export-bas', content, defaultName),
   exportPng: (dataURL) => ipcRenderer.invoke('export-png', dataURL),
   loadFile: () => ipcRenderer.invoke('load-file'),
   loadFilePath: (filePath) => ipcRenderer.invoke('load-file-path', filePath),

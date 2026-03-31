@@ -290,6 +290,56 @@
             </div>
         </div>
     </div>
+        <!-- PutChars Modal -->
+        <div id="putchars-modal" class="modal hidden">
+            <div class="modal-content" style="width:520px;max-width:95vw">
+                <h2 data-i18n="modal.putchars.title">Export to PutChars</h2>
+                <div class="input-row">
+                    <label data-i18n="modal.putchars.name">Variable Prefix:</label>
+                    <input type="text" id="putchars-name" value="mySprite" style="width: 240px">
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.putchars.width">Tile Width:</label>
+                            <input type="number" id="putchars-width" value="16" step="8" min="8" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.putchars.rows">Rows:</label>
+                            <input type="number" id="putchars-rows" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.putchars.cols">Cols:</label>
+                            <input type="number" id="putchars-cols" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-row" style="justify-content:flex-start;gap:16px;">
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="putchars-matrix">
+                        <span data-i18n="modal.putchars.matrix">Export as Matrix</span>
+                    </label>
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="putchars-attributes" checked>
+                        <span data-i18n="modal.putchars.attributes">Include Attributes</span>
+                    </label>
+                </div>
+                <p class="hint" data-i18n="modal.putchars.hint">Tile Width must be a multiple of 8.</p>
+                <div class="modal-actions">
+                    <button id="putchars-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="putchars-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.export">Export</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="export/putchars.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

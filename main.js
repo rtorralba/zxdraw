@@ -104,6 +104,13 @@ function buildMenuTemplate(t) {
           label: t['menu.export'] || 'Export',
           submenu: [
             { label: t['menu.export_png'] || 'PNG…', click: () => mainWindow.webContents.send('menu-export-png') },
+            {
+              label: t['menu.export_boriel'] || 'Boriel Basic',
+              submenu: [
+                { label: t['menu.export_boriel_putchars'] || 'PutChars…', click: () => mainWindow.webContents.send('menu-export-boriel-putchars') },
+                { label: t['menu.export_boriel_gusprites'] || 'GuSprites…', click: () => mainWindow.webContents.send('menu-export-boriel-gusprites') }
+              ]
+            }
           ],
         },
         { type: 'separator' },
@@ -226,6 +233,19 @@ ipcMain.handle('save-file', async (event, content, defaultName) => {
       console.error('save-file write error', e);
       throw e;
     }
+    return filePath;
+  }
+  return null;
+});
+
+ipcMain.handle('export-bas', async (event, content, defaultName) => {
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Export Boriel Basic',
+    defaultPath: defaultName || 'export.bas',
+    filters: [{ name: 'Boriel Basic Source', extensions: ['bas'] }, { name: 'All Files', extensions: ['*'] }],
+  });
+  if (filePath) {
+    fs.writeFileSync(filePath, content, 'utf8');
     return filePath;
   }
   return null;
