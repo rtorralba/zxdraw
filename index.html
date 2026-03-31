@@ -98,6 +98,9 @@
                     <button id="invert-attrs-btn" class="tool" title="Invert Attributes (swap ink/paper)" data-i18n="tool.invert.attrs">
                         <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18V4c4.42 0 8 3.58 8 8s-3.58 8-8 8z"/></svg>
                     </button>
+                    <button id="generate-masks-btn" class="tool" title="Generate Masks" data-i18n="tool.generate_masks">
+                        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                    </button>
                 </div>
             </aside>
 
@@ -465,6 +468,39 @@
                 <div class="modal-actions">
                     <button id="export-data-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
                     <button id="export-data-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.export">Export</span></button>
+                </div>
+            </div>
+        </div>
+        <!-- Generate Masks Modal -->
+        <div id="masks-modal" class="modal hidden">
+            <div class="modal-content" style="width:520px;max-width:95vw">
+                <h2 data-i18n="modal.masks.title">Generate Transparency Masks</h2>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.masks.width">Tile Width:</label>
+                            <input type="number" id="masks-width" value="16" step="8" min="8" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.masks.rows">Rows:</label>
+                            <input type="number" id="masks-rows" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.masks.cols">Cols:</label>
+                            <input type="number" id="masks-cols" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <p class="hint" data-i18n="modal.masks.hint">This will double the canvas width and create inverted mask bitplanes next to each sprite.</p>
+                <div class="modal-actions">
+                    <button id="masks-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="masks-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.generate">Generate</span></button>
                 </div>
             </div>
         </div>

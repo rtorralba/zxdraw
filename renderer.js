@@ -341,6 +341,9 @@ class ZXDraw {
         document.getElementById('invert-pixels-btn').onclick = () => this.invertPixels();
         document.getElementById('invert-attrs-btn').onclick = () => this.invertAttrs();
 
+        // Masks
+        document.getElementById('generate-masks-btn').onclick = () => this.openMasksModal();
+
         // Canvas Painting
         let isDrawing = false;
         
@@ -1954,6 +1957,135 @@ class ZXDraw {
     }
     // ─────────────────────────────────────────────────────────────────────────
 
+    openMasksModal() {
+        const modal = document.getElementById('masks-modal');
+        
+        // Auto-defaults: if 256x192, default 16x16 tiled.
+        document.getElementById('masks-width').value = 16;
+        document.getElementById('masks-rows').value = Math.floor(this.height / 16) || 1;
+        document.getElementById('masks-cols').value = Math.floor(this.width / 16) || 1;
+        
+        modal.classList.remove('hidden');
+
+        document.getElementById('masks-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        const applyBtn = document.getElementById('masks-apply');
+        applyBtn.onclick = () => {
+            const w = parseInt(document.getElementById('masks-width').value) || 16;
+            const rows = parseInt(document.getElementById('masks-rows').value) || 1;
+            const cols = parseInt(document.getElementById('masks-cols').value) || 1;
+
+            if (w % 8 !== 0) {
+                alert('Width must be a multiple of 8.');
+                return;
+            }
+
+            modal.classList.add('hidden');
+            this.applyGenerateMasks(w, rows, cols);
+        };
+    }
+
+    applyGenerateMasks(w, rows, cols) {
+        this.saveHistory();
+
+        const newWidth = (cols * 2) * w;
+        const newHeight = rows * w;
+        const newPixels = new Uint8Array(newWidth * newHeight);
+        const newAttributes = new Uint8Array((newWidth / 8) * (newHeight / 8));
+        
+        // Neutral attribute for the entire new workspace (Paper 0, Ink 7)
+        newAttributes.fill(0x07); 
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                const srcX = c * w;
+                const srcY = r * w;
+                const dstX_Sprite = (c * 2) * w;
+                const dstY = r * w;
+                const dstX_Mask = (c * 2 + 1) * w;
+
+                const isSpritePixel = (tx, ty) => {
+                    const sx = srcX + tx;
+                    const sy = srcY + ty;
+                    if (sx < 0 || sx >= this.width || sy < 0 || sy >= this.height) return 0;
+                    return this.pixels[sy * this.width + sx];
+                };
+
+                // Simple silhouette mask: copy sprite and mark only border pixels as mask=1
+                // Apply per-row algorithm: invert row (0->1, 1->0), then between first and last
+                // sprite pixel set values to 0. If row has no sprite pixels, leave all 1.
+                for (let py = 0; py < w; py++) {
+                    const dy = dstY + py;
+                    // Build inverted row
+                    const inv = new Uint8Array(w);
+                    for (let px = 0; px < w; px++) {
+                        const val = isSpritePixel(px, py);
+                        newPixels[dy * newWidth + (dstX_Sprite + px)] = val;
+                        inv[px] = val === 0 ? 1 : 0;
+                    }
+
+                    // Find first and last sprite pixel in this row
+                    let first = -1, last = -1;
+                    for (let px = 0; px < w; px++) {
+                        if (isSpritePixel(px, py) === 1) { first = px; break; }
+                    }
+                    for (let px = w - 1; px >= 0; px--) {
+                        if (isSpritePixel(px, py) === 1) { last = px; break; }
+                    }
+
+                    if (first !== -1 && last !== -1 && last >= first) {
+                        // set inner region between first..last to 0
+                        for (let px = first; px <= last; px++) inv[px] = 0;
+                    }
+
+                    // Write mask row
+                    for (let px = 0; px < w; px++) {
+                        newPixels[dy * newWidth + (dstX_Mask + px)] = inv[px];
+                    }
+                }
+
+                // Copy Attributes for Sprite
+                const srcBlockX = srcX / 8;
+                const srcBlockY = srcY / 8;
+                const dstBlockX_Sprite = dstX_Sprite / 8;
+                const dstBlockY = dstY / 8;
+                const sizeBlocks = w / 8;
+
+                for (let by = 0; by < sizeBlocks; by++) {
+                    for (let bx = 0; bx < sizeBlocks; bx++) {
+                        const say = srcBlockY + by;
+                        const sax = srcBlockX + bx;
+                        if (say < (this.height / 8) && sax < (this.width / 8)) {
+                            const attr = this.attributes[say * (this.width / 8) + sax];
+                            const day = dstBlockY + by;
+                            const dax = dstBlockX_Sprite + bx;
+                            newAttributes[day * (newWidth / 8) + dax] = attr;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Apply new data
+        this.width = newWidth;
+        this.height = newHeight;
+        this.pixels = newPixels;
+        this.attributes = newAttributes;
+
+        // Resize Canvas internal resolution
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        
+        // Update display size and auxiliary canvases
+        this.updateZoom();
+
+        this.currentFilePath = null;
+        this.selection = null;
+        this.render();
+        this.drawGrid();
+    }
 }
 
 window.onload = () => {

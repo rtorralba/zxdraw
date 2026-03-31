@@ -90,7 +90,14 @@
   "modal.export_data.sort": "Byte Sort Priority:",
   "modal.export_data.format": "Output Format:",
   "modal.export_data.nolabel": "No ASM Label",
-  "modal.export_data.hint": "Export follows standard sprite data logic with flexible sorting."
+  "modal.export_data.hint": "Export follows standard sprite data logic with flexible sorting.",
+  "tool.generate_masks": "Generate Masks",
+  "modal.masks.title": "Generate Transparency Masks",
+  "modal.masks.width": "Tile Width:",
+  "modal.masks.rows": "Rows:",
+  "modal.masks.cols": "Cols:",
+  "modal.masks.hint": "This will double the canvas width and create inverted mask bitplanes next to each sprite.",
+  "btn.generate": "Generate"
   ,
   "about.tagline": "ZX Spectrum-inspired pixel art editor",
   "about.version": "Version",

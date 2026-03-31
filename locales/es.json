@@ -90,7 +90,14 @@
   "modal.export_data.sort": "Prioridad de orden:",
   "modal.export_data.format": "Formato de salida:",
   "modal.export_data.nolabel": "Sin etiqueta ASM",
-  "modal.export_data.hint": "La exportación sigue una lógica estándar de datos de sprites con orden flexible."
+  "modal.export_data.hint": "La exportación sigue una lógica estándar de datos de sprites con orden flexible.",
+  "tool.generate_masks": "Generar Máscaras",
+  "modal.masks.title": "Generar Máscaras de Transparencia",
+  "modal.masks.width": "Ancho de sprite:",
+  "modal.masks.rows": "Filas:",
+  "modal.masks.cols": "Columnas:",
+  "modal.masks.hint": "Esto duplicará el ancho del lienzo y creará máscaras invertidas al lado de cada sprite.",
+  "btn.generate": "Generar"
   ,
   "about.tagline": "Editor inspirado en ZX Spectrum",
   "about.version": "Versión"
