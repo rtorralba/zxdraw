@@ -13,7 +13,8 @@
     "build:linux": "node build-bundle.js --linux",
     "test:gusprites": "node tests/gusprites.test.js",
     "test:putchars": "node tests/putchars.test.js",
-    "test": "npm run test:gusprites && npm run test:putchars",
+    "test:data": "node tests/data_export.test.js",
+    "test": "npm run test:gusprites && npm run test:putchars && npm run test:data",
     "prepare": "git config core.hooksPath .githooks"
   },
   "build": {

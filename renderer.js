@@ -1628,51 +1628,66 @@ class ZXDraw {
 
     exportData() {
         const modal = document.getElementById('export-data-modal');
-        
-        let defW = 8;
-        let defRows = 1;
-        let defCols = 1;
 
-        if (this.selection) {
-            defW = this.selection.w * 8;
-            defRows = 1;
-            defCols = 1;
-        } else {
-            // No selection: Default to full image or common 8x8 blocks
-            defW = 8;
-            defRows = this.height / 8;
-            defCols = this.width / 8;
-        }
-
-        document.getElementById('export-data-width').value = defW;
-        document.getElementById('export-data-rows').value = defRows;
-        document.getElementById('export-data-cols').value = defCols;
-        
         modal.classList.remove('hidden');
+
+        // Wire Attribute Mask toggle visibility
+        const attrMaskChk = document.getElementById('export-data-attrmask');
+        const attrMaskOpts = document.getElementById('export-data-attrmask-opts');
+        attrMaskChk.onchange = () => {
+            attrMaskOpts.style.display = attrMaskChk.checked ? 'flex' : 'none';
+        };
+
+        // Wire priority list Move Up / Move Down buttons
+        const prioList = document.getElementById('export-data-priority-list');
+        document.getElementById('export-data-priority-up').onclick = () => {
+            const idx = prioList.selectedIndex;
+            if (idx > 0) {
+                const opt = prioList.options[idx];
+                prioList.remove(idx);
+                prioList.add(opt, idx - 1);
+                prioList.selectedIndex = idx - 1;
+            }
+        };
+        document.getElementById('export-data-priority-down').onclick = () => {
+            const idx = prioList.selectedIndex;
+            if (idx >= 0 && idx < prioList.options.length - 1) {
+                const opt = prioList.options[idx];
+                prioList.remove(idx);
+                prioList.add(opt, idx + 1);
+                prioList.selectedIndex = idx + 1;
+            }
+        };
 
         document.getElementById('export-data-cancel').onclick = () => {
             modal.classList.add('hidden');
         };
 
-        const applyBtn = document.getElementById('export-data-apply');
-        applyBtn.onclick = () => {
-            const name = document.getElementById('export-data-name').value || 'mySprite';
-            const width = parseInt(document.getElementById('export-data-width').value) || 8;
-            const rows = parseInt(document.getElementById('export-data-rows').value) || 1;
-            const cols = parseInt(document.getElementById('export-data-cols').value) || 1;
-            const type = document.getElementById('export-data-type').value;
-            const sort = document.getElementById('export-data-sort').value;
-            const nolabel = document.getElementById('export-data-nolabel').checked;
-            const format = document.querySelector('input[name="export-data-format"]:checked').value;
+        document.getElementById('export-data-apply').onclick = () => {
+            const name       = document.getElementById('export-data-name').value || 'mySprite';
+            const type       = document.getElementById('export-data-type').value;
+            const interleave = parseInt(document.getElementById('export-data-interleave').value);
+            const format     = document.querySelector('input[name="export-data-format"]:checked').value;
+            const nolabel    = document.getElementById('export-data-nolabel').checked;
+            const maskfirst  = document.getElementById('export-data-maskfirst').checked;
+            const zigzag     = document.getElementById('export-data-zigzag').checked;
+            const z88dk      = document.getElementById('export-data-z88dk').checked;
+            const attrMask   = document.getElementById('export-data-attrmask').checked;
+            const attrMaskInk    = document.getElementById('export-data-attrmask-ink').checked;
+            const attrMaskPaper  = document.getElementById('export-data-attrmask-paper').checked;
+            const attrMaskBright = document.getElementById('export-data-attrmask-bright').checked;
+            const attrMaskFlash  = document.getElementById('export-data-attrmask-flash').checked;
 
-            if (width % 8 !== 0) {
-                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.size_multiple']) ? this._currentLocaleMap['alert.size_multiple'] : 'Width must be a multiple of 8.';
-                alert(msg);
-                return;
-            }
+            // Read priority list order (value = dimension index 0-4)
+            const priorities = Array.from(prioList.options).map(o => parseInt(o.value));
 
             modal.classList.add('hidden');
-            this.generateAndSaveData({ name, width, rows, cols, type, sort, nolabel, format });
+            this.generateAndSaveData({
+                name, type, interleave, format, nolabel,
+                maskfirst, zigzag, z88dk,
+                attrMask, attrMaskInk, attrMaskPaper, attrMaskBright, attrMaskFlash,
+                priorities,
+            });
         };
     }
 
@@ -1682,22 +1697,12 @@ class ZXDraw {
             return;
         }
 
-        const x = this.selection ? this.selection.x : 0;
-        const y = this.selection ? this.selection.y : 0;
-        
         const finalOutput = window.ZXExportData(
             this.pixels,
             this.attributes,
             this.width,
             this.height,
-            options.width,
-            options.rows,
-            options.cols,
-            {
-                ...options,
-                startX: x,
-                startY: y
-            }
+            options
         );
 
         if (options.format === 'bin') {
