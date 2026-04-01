@@ -13,12 +13,20 @@
     flip H/V.</li>
   <li><strong>Rotar selección</strong>: botón para rotar 90° solo la selección activa.</li>
   <li><strong>Exportar</strong>: exporta PNG o guarda en <code>.zxp</code> para seguir editando.</li>
-  <li><strong>i18n</strong>: UI traducible y menú nativo en Español, Inglés y Portugués.</li>
+  <li><strong>Exportación de datos (ASM / BIN)</strong>: exporta datos de sprites y atributos en formato ensamblador o binario. Configura datos exportados (Gfx+Attr, solo Gfx, solo Attr…), orden de bytes, intercalado, máscaras, zig-zag horizontal, info extra z88dk y más.</li>
+  <li><strong>Exportador PutChars</strong>: genera código Boriel BASIC para mostrar gráficos de caracteres en pantalla.</li>
+  <li><strong>Exportador GuSprites</strong>: genera tablas de datos de sprites en formato GuSprites para Boriel BASIC.</li>
+  <li><strong>Generación de máscaras</strong>: genera automáticamente una columna de sprites de transparencia junto a cada sprite de la hoja.</li>
+  <li><strong>Preview de animación</strong>: visualiza y navega frame a frame la selección activa como animación. Botón de play, anterior y siguiente. Resalta el frame actual en el canvas principal.</li> UI traducible y menú nativo en Español, Inglés y Portugués.</li>
   <li><strong>Presets de tamaño</strong>: el modal de tamaño incluye presets seleccionables (ZX Spectrum 256×192 por defecto, ZXSGM Spriteset 256×48, ZXSGM Tileset 256×48) además de opción personalizada.</li>
   <li><strong>Archivos recientes</strong>: menú nativo "Recientes" bajo Archivo muestra los últimos 10 ficheros abiertos/guardados para acceso rápido.</li>
   <li><strong>Arrastrar y soltar</strong>: arrastra <code>.zxp</code> o <code>.scr</code> sobre la ventana para abrirlos rápidamente.</li>
   <li><strong>Asociación de archivos</strong>: al instalar el programa se registra como aplicación posible para abrir <code>.zxp</code> y <code>.scr</code>.</li>
   <li><strong>Idiomas</strong>: disponible en Español, English y Português.</li>
+  <li><strong>Múltiples instancias</strong>: ZXDraw puede abrirse en varias ventanas simultáneamente.</li>
+  <li><strong>Copiar y pegar entre instancias</strong>: el portapapeles se comparte entre todas las ventanas abiertas. Copia en una instancia y pega en cualquier otra sin archivos intermedios.</li>
+  <li><strong>Rejilla de píxel (1×1)</strong>: nuevo botón de rejilla fina de 1×1 píxel, independiente y combinable con la rejilla de caracteres 8×8. También visible en el visor de animación.</li>
+  <li><strong>Editar sprites desde el visor de animación</strong>: pinta píxeles directamente sobre el preview de animación (clic izquierdo = tinta, clic derecho = papel) y los cambios se reflejan en el spriteset principal en el frame correcto.</li>
 </ul>
 <h3>Flujo típico</h3>
 <ol>
@@ -30,6 +38,9 @@
 <h3>Formato .scr</h3>
 <p>Soporte para archivos .scr de 6912 bytes (6144 bitmap + 768 atributos) respetando el layout de memoria del Spectrum.
 </p>
+<h3>Agradecimientos</h3>
+<p>Gracias a <strong>Jaime Tejedor (Metalbrain)</strong> por su editor gráfico <strong>Sevenup</strong>, cuyo exportador ha servido de referencia para comprender las distintas necesidades que los usuarios pueden tener a la hora de exportar datos y código ASM.</p>
+<p><img src="https://img.itch.zone/aW1nLzI2NDE4MTU3LmdpZg==/original/rKQ9%2Fw.gif"><br></p>
 <hr>
 <h2>English</h2>
 <p>A lightweight ZX Spectrum-inspired editor for creating 256×192 graphics with 8×8 block attributes. Great for games on
@@ -45,12 +56,20 @@
   <li><strong>Tools</strong>: pencil, block selection, improved text tool, invert pixels/attributes, flip H/V.</li>
   <li><strong>Rotate selection</strong>: button to rotate only the active selection by 90°.</li>
   <li><strong>Export</strong>: export PNG or save as <code>.zxp</code> to continue editing.</li>
-  <li><strong>i18n</strong>: UI translations and native menu localization (EN/ES/PT).</li>
+  <li><strong>Data export (ASM / BIN)</strong>: export sprite and attribute data in assembly or binary format. Configure data output (Gfx+Attr, Gfx only, Attr only…), byte order, interleave, masks, horizontal zig-zag, z88dk extra info and more.</li>
+  <li><strong>PutChars exporter</strong>: generates Boriel BASIC code to display character graphics on screen.</li>
+  <li><strong>GuSprites exporter</strong>: generates Boriel BASIC sprite data tables in GuSprites format.</li>
+  <li><strong>Generate masks</strong>: automatically generates a transparency mask sprite column next to each sprite in the sheet.</li>
+  <li><strong>Animation preview</strong>: preview and navigate frame by frame through the active selection as an animation. Play, previous and next buttons. Highlights the current frame on the main canvas.</li> UI translations and native menu localization (EN/ES/PT).</li>
   <li><strong>Size presets</strong>: the size modal includes selectable presets (ZX Spectrum 256×192 default, ZXSGM Spriteset 256×48, ZXSGM Tileset 256×48) while keeping a custom option.</li>
   <li><strong>Recent files</strong>: native "Recent" menu under File shows the last 10 opened/saved files for quick access.</li>
   <li><strong>Drag & drop</strong>: drag <code>.zxp</code> or <code>.scr</code> files onto the window to open them.</li>
   <li><strong>File associations</strong>: installer registers the app as an option to open <code>.zxp</code> and <code>.scr</code> files.</li>
   <li><strong>Languages</strong>: available in Español, English and Português.</li>
+  <li><strong>Multiple instances</strong>: ZXDraw can be launched in multiple windows simultaneously.</li>
+  <li><strong>Copy &amp; paste between instances</strong>: clipboard is shared across all open ZXDraw windows. Copy in one instance, paste in any other — no intermediate file needed.</li>
+  <li><strong>Pixel grid (1×1)</strong>: new fine pixel grid button, independent and combinable with the 8×8 character grid. Also shown in the animation preview.</li>
+  <li><strong>Edit sprites from animation preview</strong>: paint pixels directly on the animation preview (left click = ink, right click = paper) and changes are immediately reflected on the main spriteset at the correct frame position.</li>
 </ul>
 <h3>Typical workflow</h3>
 <ol>
@@ -61,6 +80,9 @@
 </ol>
 <h3>.scr format</h3>
 <p>Supports .scr files (6912 bytes: 6144 bitmap + 768 attributes) using the Spectrum memory layout.</p>
+<h3>Acknowledgements</h3>
+<p>Thanks to <strong>Jaime Tejedor (Metalbrain)</strong> for his graphic editor <strong>Sevenup</strong>, whose exporter served as a reference to understand the wide range of options users may need when exporting sprite data and ASM code.</p>
+<p><img src="https://img.itch.zone/aW1nLzI2NDE4MTY0LmdpZg==/original/%2FVLlj3.gif"><br></p>
 <hr>
 <h2>Português</h2>
 <p>Editor leve inspirado no ZX Spectrum para criar gráficos 256×192 com atributos de bloco 8×8. ideal para jogos do
@@ -75,12 +97,20 @@
   </li>
   <li><strong>Rodar seleção</strong>: botão para girar apenas a seleção ativa 90°.</li>
   <li><strong>Exportar</strong>: exporte PNG ou salve em <code>.zxp</code>.</li>
-  <li><strong>i18n</strong>: UI traduzível com menu nativo localizado.</li>
+  <li><strong>Exportação de dados (ASM / BIN)</strong>: exporta dados de sprites e atributos em formato assemblador ou binário. Configure dados exportados (Gfx+Attr, apenas Gfx, apenas Attr…), ordem de bytes, intercalação, máscaras, zig-zag horizontal, info extra z88dk e mais.</li>
+  <li><strong>Exportador PutChars</strong>: gera código Boriel BASIC para exibir gráficos de caracteres no ecrã.</li>
+  <li><strong>Exportador GuSprites</strong>: gera tabelas de dados de sprites no formato GuSprites para Boriel BASIC.</li>
+  <li><strong>Geração de máscaras</strong>: gera automaticamente uma coluna de sprites de transparência junto a cada sprite da folha.</li>
+  <li><strong>Pré-visualização de animação</strong>: visualize e navegue frame a frame pela seleção ativa como animação. Botões de play, anterior e próximo. Destaca o frame atual no canvas principal.</li> UI traduzível com menu nativo localizado.</li>
   <li><strong>Predefinições de tamanho</strong>: o modal de tamanho inclui predefinições selecionáveis (ZX Spectrum 256×192 por omissão, ZXSGM Spriteset 256×48, ZXSGM Tileset 256×48) mantendo opção personalizada.</li>
   <li><strong>Arquivos recentes</strong>: menu nativo "Recentes" em Arquivo mostra os 10 últimos ficheiros abertos/guardados para acesso rápido.</li>
   <li><strong>Arrastar e soltar</strong>: arraste ficheiros <code>.zxp</code> ou <code>.scr</code> para a janela para os abrir.</li>
   <li><strong>Associação de ficheiros</strong>: o instalador regista a aplicação como opção para abrir <code>.zxp</code> e <code>.scr</code>.</li>
   <li><strong>Idiomas</strong>: disponível em Español, English e Português.</li>
+  <li><strong>Múltiplas instâncias</strong>: o ZXDraw pode ser aberto em várias janelas em simultâneo.</li>
+  <li><strong>Copiar e colar entre instâncias</strong>: a área de transferência é partilhada entre todas as janelas abertas. Copie numa instância e cole noutra — sem ficheiros intermediários.</li>
+  <li><strong>Grelha de pixel (1×1)</strong>: novo botão de grelha fina de 1×1 pixel, independente e combinável com a grelha de caracteres 8×8. Também visível no visualizador de animação.</li>
+  <li><strong>Editar sprites a partir do visualizador de animação</strong>: pinte pixels diretamente no preview de animação (clique esquerdo = tinta, clique direito = papel) e as alterações refletem-se no spriteset principal na posição correta do frame.</li>
 </ul>
 <h3>Fluxo típico</h3>
 <ol>
@@ -91,8 +121,11 @@
 </ol>
 <h3>Formato .scr</h3>
 <p>Suporte a arquivos .scr de 6912 bytes (6144 bitmap + 768 atributos) seguindo o layout de memória do Spectrum.</p>
+<h3>Agradecimentos</h3>
+<p>Obrigado a <strong>Jaime Tejedor (Metalbrain)</strong> pelo seu editor gráfico <strong>Sevenup</strong>, cujo exportador serviu de referência para compreender as diferentes necessidades que os utilizadores podem ter ao exportar dados de sprites e código ASM.</p>
 <p>
-<br>
+<img src="https://img.itch.zone/aW1nLzI2NDE4MTY3LmdpZg==/original/blC6Il.gif"><br>
 </p>
 <hr>
-<h4>Testing</h4><ul><li><a href="https://charlyitv.itch.io/" target="_blank">CarlosITV</a> (Windows)</li><li><a href="https://zxmoe.itch.io/" target="_blank">ZXMoe</a>&nbsp;y <a href="https://github.com/programadorhedonista" target="_blank">Programadorhedonista</a> (Linux)</li><li>AbenZaX (MacOS arm e Intel)<a href="https://github.com/programadorhedonista"></a></li></ul>
+<h4>Testing</h4>
+<ul><li><a href="https://charlyitv.itch.io/" target="_blank">CarlosITV</a> (Windows)</li><li><a href="https://zxmoe.itch.io/" target="_blank">ZXMoe</a>&nbsp;y <a href="https://github.com/programadorhedonista" target="_blank">Programadorhedonista</a> (Linux)</li><li>AbenZaX (MacOS arm e Intel)<a href="https://github.com/programadorhedonista"></a></li></ul>
