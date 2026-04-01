@@ -32,6 +32,7 @@ class ZXDraw {
     constructor() {
         this.zoom = 4;
         this.gridVisible = true;
+        this.pixelGridVisible = false;
         this.flashInverted = false;
         this.currentTool = 'draw';
         
@@ -285,6 +286,12 @@ class ZXDraw {
             this.gridVisible = !this.gridVisible;
             document.getElementById('grid-toggle').classList.toggle('active', this.gridVisible);
             gridSb.classList.toggle('active', this.gridVisible);
+            this.drawGrid();
+        };
+        const pixelGridSb = document.getElementById('pixel-grid-toggle-sb');
+        if (pixelGridSb) pixelGridSb.onclick = () => {
+            this.pixelGridVisible = !this.pixelGridVisible;
+            pixelGridSb.classList.toggle('active', this.pixelGridVisible);
             this.drawGrid();
         };
 
@@ -959,6 +966,83 @@ class ZXDraw {
             this.selectCurrentAnimFrame();
         };
         this.renderAnimFrame();
+        this.setupAnimDrawing();
+    }
+
+    setupAnimDrawing() {
+        const canvas = document.getElementById('anim-canvas');
+        if (!canvas) return;
+        canvas.style.cursor = 'crosshair';
+
+        let isAnimDrawing = false;
+
+        const paintOnAnim = (e) => {
+            if (!this.clipboard || this.clipboard.originX === undefined) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const { frameW } = this.getAnimParams();
+            const { w, h } = this.clipboard;
+            const totalFrames = Math.max(1, Math.floor(w / frameW));
+            const frameIdx = this.animCurrentFrame % totalFrames;
+
+            const fPixW = frameW * 8;
+            const fPixH = h * 8;
+            if (canvas.width === 0 || canvas.height === 0) return;
+            const scaleX = rect.width / fPixW;
+            const scaleY = rect.height / fPixH;
+
+            const cx = e.clientX - rect.left;
+            const cy = e.clientY - rect.top;
+            const px = Math.floor(cx / scaleX);
+            const py = Math.floor(cy / scaleY);
+
+            if (px < 0 || px >= fPixW || py < 0 || py >= fPixH) return;
+
+            const pixVal = (e.buttons & 1) ? 1 : (e.buttons & 2) ? 0 : -1;
+            if (pixVal === -1) return;
+
+            // Map to main canvas coords
+            const mainX = this.clipboard.originX * 8 + frameIdx * fPixW + px;
+            const mainY = this.clipboard.originY * 8 + py;
+            if (mainX < 0 || mainX >= this.width || mainY < 0 || mainY >= this.height) return;
+
+            // Paint on main canvas
+            this.pixels[mainY * this.width + mainX] = pixVal;
+
+            const bx = Math.floor(mainX / 8);
+            const by = Math.floor(mainY / 8);
+            const attrIdx = by * (this.width / 8) + bx;
+            this.attributes[attrIdx] = this.computeAttrByte(attrIdx);
+
+            // Keep clipboard in sync so the preview reflects the change immediately
+            const clipSrcX = frameIdx * fPixW + px;
+            this.clipboard.pixels[py * (w * 8) + clipSrcX] = pixVal;
+            const clipBx = Math.floor(clipSrcX / 8);
+            const clipBy = Math.floor(py / 8);
+            this.clipboard.attributes[clipBy * w + clipBx] = this.attributes[attrIdx];
+
+            this.render();
+            this.renderAnimFrame();
+        };
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (!this.clipboard || this.clipboard.originX === undefined) return;
+            e.preventDefault();
+            if (this.animInterval) this.stopAnimation();
+            isAnimDrawing = true;
+            this.saveHistory();
+            paintOnAnim(e);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isAnimDrawing) return;
+            e.preventDefault();
+            paintOnAnim(e);
+        });
+
+        canvas.addEventListener('mouseup', () => { isAnimDrawing = false; });
+        canvas.addEventListener('mouseleave', () => { isAnimDrawing = false; });
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     }
 
     // ── Internationalization ─────────────────────────────────────────────
@@ -1164,6 +1248,36 @@ class ZXDraw {
             }
         }
         ctx.putImageData(imgData, 0, 0);
+
+        // Pixel grid (1x1)
+        if (this.pixelGridVisible && scale > 1) {
+            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for (let x = 0; x <= canvas.width; x += scale) {
+                ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
+            }
+            for (let y = 0; y <= canvas.height; y += scale) {
+                ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+        }
+
+        // Char grid (8x8)
+        if (this.gridVisible) {
+            ctx.strokeStyle = '#D7D700';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            const charStep = 8 * scale;
+            for (let x = 0; x <= canvas.width; x += charStep) {
+                ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
+            }
+            for (let y = 0; y <= canvas.height; y += charStep) {
+                ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
+            }
+            ctx.stroke();
+        }
+
         document.getElementById('anim-info').textContent =
             `Frame ${frameIdx + 1}/${totalFrames} · ${frameW}×${h} blocks`;
     }
@@ -1237,6 +1351,15 @@ class ZXDraw {
     setTool(tool) {
         this.currentTool = tool;
         this.isPasting = false;
+
+        // Clicking select clears any existing selection and resets the preview
+        if (tool === 'select') {
+            this.selection = null;
+            this.clipboard = null;
+            this.animCurrentFrame = 0;
+            this.renderAnimFrame();
+        }
+
         document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
         if (document.getElementById(`tool-${tool}`)) {
             document.getElementById(`tool-${tool}`).classList.add('active');
@@ -1320,6 +1443,24 @@ class ZXDraw {
 
     drawGrid() {
         this.gridCtx.clearRect(0, 0, this.gridCanvas.width, this.gridCanvas.height);
+
+        // Pixel grid (1x1) — draw first so char grid renders on top
+        if (this.pixelGridVisible) {
+            this.gridCtx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
+            this.gridCtx.lineWidth = 1;
+            this.gridCtx.beginPath();
+            const pStep = this.zoom;
+            for (let x = 0; x <= this.gridCanvas.width; x += pStep) {
+                this.gridCtx.moveTo(x, 0);
+                this.gridCtx.lineTo(x, this.gridCanvas.height);
+            }
+            for (let y = 0; y <= this.gridCanvas.height; y += pStep) {
+                this.gridCtx.moveTo(0, y);
+                this.gridCtx.lineTo(this.gridCanvas.width, y);
+            }
+            this.gridCtx.stroke();
+        }
+
         if (!this.gridVisible) return;
         
         // Golden Spectrum color
