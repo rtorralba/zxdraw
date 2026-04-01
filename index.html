@@ -137,12 +137,17 @@
                     </div>
                     <canvas id="anim-canvas"></canvas>
                     <div id="anim-info" class="anim-info" data-i18n="anim.no_selection">Copy a selection to preview</div>
-                    <button id="anim-play-btn" style="width:100%;margin-top:6px;display:flex;align-items:center;justify-content:center">
-                        <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="margin-right:8px;fill:currentColor">
-                            <path d="M8 5v14l11-7z"></path>
-                        </svg>
-                        <span id="anim-play-label" data-i18n="btn.play">Play</span>
-                    </button>
+                    <div style="display:flex;gap:4px;margin-top:6px">
+                        <button id="anim-prev-btn" title="Previous frame" style="flex:0 0 auto;padding:4px 8px;display:flex;align-items:center;justify-content:center">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                        </button>
+                        <button id="anim-play-btn" style="flex:1;display:flex;align-items:center;justify-content:center">
+                            <span id="anim-play-label" data-i18n="btn.play">▶ Play</span>
+                        </button>
+                        <button id="anim-next-btn" title="Next frame" style="flex:0 0 auto;padding:4px 8px;display:flex;align-items:center;justify-content:center">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Current attribute preview removed per user request -->

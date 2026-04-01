@@ -940,6 +940,24 @@ class ZXDraw {
             if (this.animInterval) this.stopAnimation();
             else this.startAnimation();
         };
+        document.getElementById('anim-prev-btn').onclick = () => {
+            if (!this.clipboard) return;
+            this.stopAnimation();
+            const { frameW } = this.getAnimParams();
+            const total = Math.max(1, Math.floor(this.clipboard.w / frameW));
+            this.animCurrentFrame = (this.animCurrentFrame - 1 + total) % total;
+            this.renderAnimFrame();
+            this.selectCurrentAnimFrame();
+        };
+        document.getElementById('anim-next-btn').onclick = () => {
+            if (!this.clipboard) return;
+            this.stopAnimation();
+            const { frameW } = this.getAnimParams();
+            const total = Math.max(1, Math.floor(this.clipboard.w / frameW));
+            this.animCurrentFrame = (this.animCurrentFrame + 1) % total;
+            this.renderAnimFrame();
+            this.selectCurrentAnimFrame();
+        };
         this.renderAnimFrame();
     }
 
@@ -1075,6 +1093,20 @@ class ZXDraw {
         const playTxt = (this._currentLocaleMap && this._currentLocaleMap['btn.play']) ? this._currentLocaleMap['btn.play'] : 'Play';
         if (labelEl) labelEl.textContent = '\u25B6 ' + playTxt;
         else document.getElementById('anim-play-btn').textContent = '\u25B6 ' + playTxt;
+    }
+
+    selectCurrentAnimFrame() {
+        if (!this.clipboard || this.clipboard.originX === undefined) return;
+        const { frameW } = this.getAnimParams();
+        const total = Math.max(1, Math.floor(this.clipboard.w / frameW));
+        const frameIdx = this.animCurrentFrame % total;
+        this.selection = {
+            x: this.clipboard.originX + frameIdx * frameW,
+            y: this.clipboard.originY,
+            w: frameW,
+            h: this.clipboard.h
+        };
+        this.drawSelection();
     }
 
     renderAnimFrame() {
@@ -1367,7 +1399,7 @@ class ZXDraw {
                 }
             }
 
-            this.clipboard = { pixels: clipPixels, attributes: clipAttrs, w, h };
+            this.clipboard = { pixels: clipPixels, attributes: clipAttrs, w, h, originX: x, originY: y };
             this.animCurrentFrame = 0;
             this.renderAnimFrame();
             this.selection = null; // Clear selection after copy
