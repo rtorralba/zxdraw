@@ -2018,36 +2018,51 @@ class ZXDraw {
                     return this.pixels[sy * this.width + sx];
                 };
 
-                // Simple silhouette mask: copy sprite and mark only border pixels as mask=1
-                // Apply per-row algorithm: invert row (0->1, 1->0), then between first and last
-                // sprite pixel set values to 0. If row has no sprite pixels, leave all 1.
+                // Phase 1: Detect horizontal limits for each row (sprite pixels only, no fill yet)
+                const hFirst = new Array(w).fill(-1);
+                const hLast  = new Array(w).fill(-1);
+                for (let py = 0; py < w; py++) {
+                    for (let px = 0; px < w; px++) {
+                        if (isSpritePixel(px, py) === 1) {
+                            if (hFirst[py] === -1) hFirst[py] = px;
+                            hLast[py] = px;
+                        }
+                    }
+                }
+
+                // Phase 2: Detect vertical limits constrained by horizontal extents, fill intermediate mask.
+                const intermediateMask = new Uint8Array(w * w).fill(1); // 1=transparent
+                for (let px = 0; px < w; px++) {
+                    let vFirst = -1, vLast = -1;
+                    for (let py = 0; py < w; py++) {
+                        if (hFirst[py] !== -1 && px >= hFirst[py] && px <= hLast[py]) {
+                            if (vFirst === -1) vFirst = py;
+                            vLast = py;
+                        }
+                    }
+                    if (vFirst !== -1) {
+                        for (let py = vFirst; py <= vLast; py++) {
+                            intermediateMask[py * w + px] = 0; // opaque
+                        }
+                    }
+                }
+
+                // Phase 3: Copy sprite pixels and fill mask horizontally using intermediate mask.
                 for (let py = 0; py < w; py++) {
                     const dy = dstY + py;
-                    // Build inverted row
-                    const inv = new Uint8Array(w);
                     for (let px = 0; px < w; px++) {
-                        const val = isSpritePixel(px, py);
-                        newPixels[dy * newWidth + (dstX_Sprite + px)] = val;
-                        inv[px] = val === 0 ? 1 : 0;
+                        newPixels[dy * newWidth + (dstX_Sprite + px)] = isSpritePixel(px, py);
                     }
-
-                    // Find first and last sprite pixel in this row
                     let first = -1, last = -1;
                     for (let px = 0; px < w; px++) {
-                        if (isSpritePixel(px, py) === 1) { first = px; break; }
+                        if (intermediateMask[py * w + px] === 0) {
+                            if (first === -1) first = px;
+                            last = px;
+                        }
                     }
-                    for (let px = w - 1; px >= 0; px--) {
-                        if (isSpritePixel(px, py) === 1) { last = px; break; }
-                    }
-
-                    if (first !== -1 && last !== -1 && last >= first) {
-                        // set inner region between first..last to 0
-                        for (let px = first; px <= last; px++) inv[px] = 0;
-                    }
-
-                    // Write mask row
                     for (let px = 0; px < w; px++) {
-                        newPixels[dy * newWidth + (dstX_Mask + px)] = inv[px];
+                        newPixels[dy * newWidth + (dstX_Mask + px)] =
+                            (first !== -1 && px >= first && px <= last) ? 0 : 1;
                     }
                 }
 
