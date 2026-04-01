@@ -366,3 +366,22 @@ ipcMain.on('set-language', (event, lang) => {
 ipcMain.on('add-recent-file', (event, filePath) => {
   try { addRecentFile(filePath); } catch (e) { console.warn('add-recent-file ipc failed', e); }
 });
+
+// Cross-instance clipboard sharing via a shared JSON file in userData
+const CLIPBOARD_STORE = () => path.join(app.getPath('userData'), 'clipboard.json');
+
+ipcMain.handle('zxdraw-clipboard-set', (event, data) => {
+  try {
+    fs.writeFileSync(CLIPBOARD_STORE(), JSON.stringify(data), 'utf8');
+  } catch (e) { console.warn('zxdraw-clipboard-set failed', e); }
+});
+
+ipcMain.handle('zxdraw-clipboard-get', () => {
+  try {
+    const p = CLIPBOARD_STORE();
+    if (fs.existsSync(p)) {
+      return JSON.parse(fs.readFileSync(p, 'utf8'));
+    }
+  } catch (e) { console.warn('zxdraw-clipboard-get failed', e); }
+  return null;
+});

@@ -1404,6 +1404,15 @@ class ZXDraw {
             this.renderAnimFrame();
             this.selection = null; // Clear selection after copy
             this.drawSelection();
+
+            // Persist to shared clipboard so other instances can paste
+            if (window.electronAPI && typeof window.electronAPI.setClipboard === 'function') {
+                window.electronAPI.setClipboard({
+                    pixels: Array.from(clipPixels),
+                    attributes: Array.from(clipAttrs),
+                    w, h, originX: x, originY: y
+                }).catch(e => console.warn('setClipboard failed', e));
+            }
         } catch (e) {
             console.error('Copy failed', e);
             const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.selection_error']) ? this._currentLocaleMap['alert.selection_error'] : 'Selection error. Try staying within bounds.';
@@ -1430,7 +1439,25 @@ class ZXDraw {
         this.drawSelection();
     }
 
-    startPaste() {
+    async startPaste() {
+        // If no local clipboard, try to load from shared clipboard (cross-instance)
+        if (!this.clipboard && window.electronAPI && typeof window.electronAPI.getClipboard === 'function') {
+            try {
+                const shared = await window.electronAPI.getClipboard();
+                if (shared) {
+                    this.clipboard = {
+                        pixels: new Uint8Array(shared.pixels),
+                        attributes: new Uint8Array(shared.attributes),
+                        w: shared.w,
+                        h: shared.h,
+                        originX: shared.originX,
+                        originY: shared.originY
+                    };
+                    this.animCurrentFrame = 0;
+                    this.renderAnimFrame();
+                }
+            } catch (e) { console.warn('getClipboard failed', e); }
+        }
         if (!this.clipboard) {
             const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.no_content_copied']) ? this._currentLocaleMap['alert.no_content_copied'] : 'No content copied. Select an area and press Ctrl+C.';
             alert(msg);
