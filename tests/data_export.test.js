@@ -39,91 +39,136 @@ function parseZXP(content) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function normalise(str) {
-    // Normalise line endings only; preserve all other content
     return str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 }
 
-// ── Snapshot paths ────────────────────────────────────────────────────────────
+// ── Snapshot dir & input ──────────────────────────────────────────────────────
 const SNAP_DIR  = path.join(__dirname, 'snapshots', 'Data');
 const INPUT_ZXP = path.join(SNAP_DIR, 'input.zxp');
-const EXP_ASM   = path.join(SNAP_DIR, 'output_gfx+attr_xchar_sprite.asm');
-const EXP_BIN   = path.join(SNAP_DIR, 'output_gfx+attr_xchar_sprite.bin');
 
 let passed = 0;
 let failed = 0;
 
-function assert(label, actual, expected, isBin) {
-    let ok;
-    if (isBin) {
-        ok = actual.length === expected.length &&
-             actual.every((b, i) => b === expected[i]);
-    } else {
-        ok = actual === expected;
-    }
-
-    if (ok) {
-        console.log(`  PASS: ${label}`);
+function assertAsm(stem, actual) {
+    const expPath = path.join(SNAP_DIR, stem + '.asm');
+    const expected = normalise(fs.readFileSync(expPath, 'utf8'));
+    if (normalise(actual) === expected) {
+        console.log(`  PASS: ${stem}.asm`);
         passed++;
     } else {
-        console.error(`  FAIL: ${label}`);
-        if (!isBin) {
-            // Find first differing line
-            const aLines = actual.split('\n');
-            const eLines = expected.split('\n');
-            const maxL   = Math.max(aLines.length, eLines.length);
-            for (let i = 0; i < maxL; i++) {
-                if (aLines[i] !== eLines[i]) {
-                    console.error(`    First diff at line ${i + 1}:`);
-                    console.error(`      expected: ${JSON.stringify(eLines[i])}`);
-                    console.error(`      actual  : ${JSON.stringify(aLines[i])}`);
-                    break;
-                }
+        console.error(`  FAIL: ${stem}.asm`);
+        const aLines = actual.split('\n');
+        const eLines = expected.split('\n');
+        for (let i = 0; i < Math.max(aLines.length, eLines.length); i++) {
+            if (aLines[i] !== eLines[i]) {
+                console.error(`    First diff at line ${i + 1}:`);
+                console.error(`      expected: ${JSON.stringify(eLines[i])}`);
+                console.error(`      actual  : ${JSON.stringify(aLines[i])}`);
+                break;
             }
-            // Write actual output for diffing
-            const actualPath = path.join(SNAP_DIR, 'actual_output.asm');
-            fs.writeFileSync(actualPath, actual);
-            console.error(`    Actual output written to: ${actualPath}`);
-        } else {
-            const actualPath = path.join(SNAP_DIR, 'actual_output.bin');
-            fs.writeFileSync(actualPath, actual);
-            console.error(`    Actual output written to: ${actualPath}`);
         }
+        fs.writeFileSync(path.join(SNAP_DIR, 'actual_' + stem + '.asm'), actual);
+        console.error(`    Actual written to: actual_${stem}.asm`);
         failed++;
     }
 }
 
-// ── Run tests ─────────────────────────────────────────────────────────────────
-console.log('Running Data Snapshot Tests...\n');
+function assertBin(stem, actual) {
+    const expPath = path.join(SNAP_DIR, stem + '.bin');
+    const expected = new Uint8Array(fs.readFileSync(expPath));
+    const ok = actual.length === expected.length &&
+               actual.every((b, i) => b === expected[i]);
+    if (ok) {
+        console.log(`  PASS: ${stem}.bin`);
+        passed++;
+    } else {
+        console.error(`  FAIL: ${stem}.bin  (expected ${expected.length} bytes, got ${actual.length})`);
+        fs.writeFileSync(path.join(SNAP_DIR, 'actual_' + stem + '.bin'), actual);
+        console.error(`    Actual written to: actual_${stem}.bin`);
+        failed++;
+    }
+}
+
+// ── Load image ────────────────────────────────────────────────────────────────
+console.log('Running Data Export Snapshot Tests...\n');
 
 const { pixels, attributes, imgWidth, imgHeight } = parseZXP(
     fs.readFileSync(INPUT_ZXP, 'utf8')
 );
 
-// Options matching output_gfx+attr_xchar_sprite.*
-//   Sort: X char (0), Char line (1), Y char (2) — innermost first
-//   Data: Gfx+Attr   Interleave: Sprite (5)
-const OPTIONS = {
-    name:       'input',
-    type:       'gfx+attr',
-    priorities: [0, 1, 2, 3, 4],
-    interleave: 5,
-    nolabel:    false,
-};
+// ── Test cases ────────────────────────────────────────────────────────────────
+// Each entry mirrors a combination in generate.js
+const CASES = [
+    // ── Priority order: X char, Char line, Y char (SevenuP default) ──────────
+    {
+        stem: 'output_gfx+attr_xchar_sprite',
+        desc: 'Gfx+Attr | X char, Char line, Y char | Sprite interleave (SevenuP reference)',
+        opts: { name:'input', type:'gfx+attr', priorities:[0,1,2,3,4], interleave:5 },
+    },
+    // ── Priority order: Y char, X char, Char line ─────────────────────────────
+    {
+        stem: 'output_gfx+attr_ychar_sprite',
+        desc: 'Gfx+Attr | Y char, X char, Char line | Sprite interleave',
+        opts: { name:'input', type:'gfx+attr', priorities:[2,0,1,3,4], interleave:5 },
+    },
+    // ── Priority order: Char line, X char, Y char ─────────────────────────────
+    {
+        stem: 'output_gfx+attr_linexchar_sprite',
+        desc: 'Gfx+Attr | Char line, X char, Y char | Sprite interleave',
+        opts: { name:'input', type:'gfx+attr', priorities:[1,0,2,3,4], interleave:5 },
+    },
+    // ── Interleave: Line ──────────────────────────────────────────────────────
+    {
+        stem: 'output_gfx+attr_xchar_line',
+        desc: 'Gfx+Attr | X char, Char line, Y char | Line interleave',
+        opts: { name:'input', type:'gfx+attr', priorities:[0,1,2,3,4], interleave:0 },
+    },
+    // ── Interleave: Character ──────────────────────────────────────────────────
+    {
+        stem: 'output_gfx+attr_xchar_char',
+        desc: 'Gfx+Attr | X char, Char line, Y char | Character interleave',
+        opts: { name:'input', type:'gfx+attr', priorities:[0,1,2,3,4], interleave:1 },
+    },
+    // ── Interleave: Column ────────────────────────────────────────────────────
+    {
+        stem: 'output_gfx+attr_xchar_col',
+        desc: 'Gfx+Attr | X char, Char line, Y char | Column interleave',
+        opts: { name:'input', type:'gfx+attr', priorities:[0,1,2,3,4], interleave:2 },
+    },
+    // ── Output type: Attr+Gfx ────────────────────────────────────────────────
+    {
+        stem: 'output_attr+gfx_xchar_sprite',
+        desc: 'Attr+Gfx | X char, Char line, Y char | Sprite interleave',
+        opts: { name:'input', type:'attr+gfx', priorities:[0,1,2,3,4], interleave:5 },
+    },
+    // ── Output type: Gfx only ────────────────────────────────────────────────
+    {
+        stem: 'output_gfx_xchar_sprite',
+        desc: 'Gfx only | X char, Char line, Y char | Sprite interleave',
+        opts: { name:'input', type:'gfx',      priorities:[0,1,2,3,4], interleave:5 },
+    },
+    // ── Output type: Attr only ───────────────────────────────────────────────
+    {
+        stem: 'output_attr_xchar_sprite',
+        desc: 'Attr only | X char, Char line, Y char | Sprite interleave',
+        opts: { name:'input', type:'attr',     priorities:[0,1,2,3,4], interleave:5 },
+    },
+    // ── nolabel flag ─────────────────────────────────────────────────────────
+    {
+        stem: 'output_gfx_xchar_sprite_nolabel',
+        desc: 'Gfx only | nolabel flag',
+        opts: { name:'input', type:'gfx', priorities:[0,1,2,3,4], interleave:5, nolabel:true },
+    },
+];
 
-// ── ASM test ──────────────────────────────────────────────────────────────────
-const expectedAsm = normalise(fs.readFileSync(EXP_ASM, 'utf8'));
-const actualAsm   = window.ZXExportData(pixels, attributes, imgWidth, imgHeight,
-                        { ...OPTIONS, format: 'asm' });
-assert('output_gfx+attr_xchar_sprite.asm matches snapshot', actualAsm, expectedAsm, false);
-
-// ── BIN test ──────────────────────────────────────────────────────────────────
-const expectedBin = new Uint8Array(fs.readFileSync(EXP_BIN));
-const actualBin   = window.ZXExportData(pixels, attributes, imgWidth, imgHeight,
-                        { ...OPTIONS, format: 'bin' });
-assert('output_gfx+attr_xchar_sprite.bin matches snapshot',
-    actualBin, expectedBin, true);
+for (const { stem, desc, opts } of CASES) {
+    console.log(`  [${desc}]`);
+    assertAsm(stem, window.ZXExportData(pixels, attributes, imgWidth, imgHeight, { ...opts, format:'asm' }));
+    assertBin(stem, window.ZXExportData(pixels, attributes, imgWidth, imgHeight, { ...opts, format:'bin' }));
+    console.log('');
+}
 
 // ── Summary ───────────────────────────────────────────────────────────────────
-console.log(`\n${passed} passed, ${failed} failed.`);
+console.log(`${passed} passed, ${failed} failed.`);
 if (failed > 0) process.exit(1);
 
