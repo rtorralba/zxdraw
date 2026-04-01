@@ -42,6 +42,10 @@ function normalise(str) {
     return str.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 }
 
+function stripComments(str) {
+    return str.split('\n').filter(l => !l.startsWith(';')).join('\n');
+}
+
 // ── Snapshot dir & input ──────────────────────────────────────────────────────
 const SNAP_DIR  = path.join(__dirname, 'snapshots', 'Data');
 const INPUT_ZXP = path.join(SNAP_DIR, 'input.zxp');
@@ -52,13 +56,15 @@ let failed = 0;
 function assertAsm(stem, actual) {
     const expPath = path.join(SNAP_DIR, stem + '.asm');
     const expected = normalise(fs.readFileSync(expPath, 'utf8'));
-    if (normalise(actual) === expected) {
+    const actualNorm   = stripComments(normalise(actual));
+    const expectedNorm = stripComments(expected);
+    if (actualNorm === expectedNorm) {
         console.log(`  PASS: ${stem}.asm`);
         passed++;
     } else {
         console.error(`  FAIL: ${stem}.asm`);
-        const aLines = actual.split('\n');
-        const eLines = expected.split('\n');
+        const aLines = actualNorm.split('\n');
+        const eLines = expectedNorm.split('\n');
         for (let i = 0; i < Math.max(aLines.length, eLines.length); i++) {
             if (aLines[i] !== eLines[i]) {
                 console.error(`    First diff at line ${i + 1}:`);

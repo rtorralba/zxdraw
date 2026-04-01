@@ -201,8 +201,7 @@ window.ZXExportData = function(pixels, attributes, imgWidth, imgHeight, options)
     const PER_LINE = 8;
 
     const asmLines = [];
-    asmLines.push('; ASM source file created by SevenuP v1.20');
-    asmLines.push('; SevenuP (C) Copyright 2002-2006 by Jaime Tejedor Gomez, aka Metalbrain');
+    asmLines.push('; ASM source file created by ZXDraw');
     asmLines.push('');
     asmLines.push(';GRAPHIC DATA:');
     asmLines.push(`;Pixel Size:      (${String(imgWidth).padStart(FW)}, ${String(imgHeight).padStart(FW)})`);
