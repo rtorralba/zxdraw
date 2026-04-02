@@ -77,6 +77,11 @@
   "anim.fps": "FPS",
   "anim.no_selection": "Copia una selección para previsualizar"
   ,
+  "status.coords": "X: {x} Y: {y}",
+  "status.block": "Bloque: {bx}, {by}",
+  "status.size": "Tamaño: {w}x{h}",
+  "status.selection_empty": "Selección: -",
+  "status.selection_fmt": "Selección: {px}x{py} px ({cw}x{ch} caracteres)",
   "modal.text.placeholder": "Hola Mundo",
   "modal.text.bold": "Negrita",
   "modal.text.italic": "Cursiva",

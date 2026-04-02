@@ -77,6 +77,11 @@
   "anim.fps": "FPS",
   "anim.no_selection": "Copy a selection to preview"
   ,
+  "status.coords": "X: {x} Y: {y}",
+  "status.block": "Block: {bx}, {by}",
+  "status.size": "Size: {w}x{h}",
+  "status.selection_empty": "Selection: -",
+  "status.selection_fmt": "Selection: {px}x{py} px ({cw}x{ch} chars)",
   "modal.text.placeholder": "Hello World",
   "modal.text.bold": "Bold",
   "modal.text.italic": "Italic",

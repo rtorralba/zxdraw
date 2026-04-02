@@ -1148,6 +1148,12 @@ class ZXDraw {
                 el.textContent = txt;
             }
         });
+        // Refresh status texts to use new locale (use last known mouse coords if available)
+        try {
+            const lx = (this._lastMouseX !== undefined) ? this._lastMouseX : 0;
+            const ly = (this._lastMouseY !== undefined) ? this._lastMouseY : 0;
+            this.updateStatus(lx, ly);
+        } catch (e) { /* ignore */ }
     }
 
     getAnimParams() {
@@ -1442,11 +1448,51 @@ class ZXDraw {
     }
 
     updateStatus(x, y) {
-        document.getElementById('status-coords').innerText = `X: ${x} Y: ${y}`;
+        // remember last coords so UI can be refreshed when language changes
+        this._lastMouseX = x;
+        this._lastMouseY = y;
+        // Use localized templates when available
+        const map = this._currentLocaleMap || {};
+        const coordsTpl = map['status.coords'] || 'X: {x} Y: {y}';
+        const blockTpl = map['status.block'] || 'Block: {bx}, {by}';
+        const sizeTpl = map['status.size'] || 'Size: {w}x{h}';
+
         const bx = Math.floor(x / 8);
         const by = Math.floor(y / 8);
-        document.getElementById('status-block').innerText = `Block: ${bx}, ${by}`;
-        document.getElementById('status-size').innerText = `Size: ${this.width}x${this.height}`;
+
+        const coordsText = coordsTpl.replace('{x}', x).replace('{y}', y);
+        const blockText = blockTpl.replace('{bx}', bx).replace('{by}', by);
+        const sizeText = sizeTpl.replace('{w}', this.width).replace('{h}', this.height);
+
+        document.getElementById('status-coords').innerText = coordsText;
+        document.getElementById('status-block').innerText = blockText;
+        document.getElementById('status-size').innerText = sizeText;
+
+        // Update selection size: show pixels and character blocks (8x8) using localized formats
+        try {
+            const selEl = document.getElementById('status-selection');
+            if (!selEl) return;
+
+            let selWpx = 0, selHpx = 0, selWchars = 0, selHchars = 0;
+            if (this.isPasting && this.clipboard) {
+                selWchars = this.clipboard.w || 0;
+                selHchars = this.clipboard.h || 0;
+                selWpx = selWchars * 8;
+                selHpx = selHchars * 8;
+            } else if (this.selection) {
+                selWchars = this.selection.w || 0;
+                selHchars = this.selection.h || 0;
+                selWpx = selWchars * 8;
+                selHpx = selHchars * 8;
+            }
+
+            if (selWchars > 0 && selHchars > 0) {
+                const fmt = map['status.selection_fmt'] || 'Selection: {px}x{py} px ({cw}x{ch} chars)';
+                selEl.innerText = fmt.replace('{px}', selWpx).replace('{py}', selHpx).replace('{cw}', selWchars).replace('{ch}', selHchars);
+            } else {
+                selEl.innerText = map['status.selection_empty'] || 'Selection: -';
+            }
+        } catch (e) { /* ignore UI update errors */ }
     }
 
     drawGrid() {
