@@ -101,5 +101,7 @@
   ,
   "about.tagline": "ZX Spectrum-inspired pixel art editor",
   "about.version": "Version",
-  "btn.close": "Close"
+  "btn.close": "Close",
+  "tool.edit_mask": "Edit Mask",
+  "modal.mask_editor.title": "Edit Mask"
 }

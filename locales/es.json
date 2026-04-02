@@ -102,5 +102,7 @@
   "about.tagline": "Editor inspirado en ZX Spectrum",
   "about.version": "Versión"
   ,
-  "btn.close": "Cerrar"
+  "btn.close": "Cerrar",
+  "tool.edit_mask": "Editar Máscara",
+  "modal.mask_editor.title": "Editar Máscara"
 }

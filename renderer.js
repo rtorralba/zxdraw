@@ -350,6 +350,8 @@ class ZXDraw {
 
         // Masks
         document.getElementById('generate-masks-btn').onclick = () => this.openMasksModal();
+        const editMaskBtn = document.getElementById('edit-mask-btn');
+        if (editMaskBtn) editMaskBtn.onclick = () => this.openMaskEditor();
 
         // Canvas Painting
         let isDrawing = false;
@@ -2306,6 +2308,169 @@ class ZXDraw {
         this.render();
         this.drawGrid();
     }
+
+    // ── Mask Editor ──────────────────────────────────────────────────────────
+
+    openMaskEditor() {
+        if (!this.selection) {
+            alert('Select an area first: sprite columns on the left, mask columns on the right.');
+            return;
+        }
+        const { x, y, w, h } = this.selection; // in blocks
+        if (w < 2 || w % 2 !== 0) {
+            alert('Selection width must be even and at least 2 blocks (sprite + mask side by side).');
+            return;
+        }
+
+        const halfW    = w / 2;          // sprite width in blocks
+        const spritePixW = halfW * 8;    // sprite width in pixels
+        const spritePixH = h    * 8;    // sprite/mask height in pixels
+        const spriteX    = x    * 8;    // pixel X start of sprite in canvas
+        const maskX      = (x + halfW) * 8; // pixel X start of mask in canvas
+        const spriteY    = y    * 8;    // pixel Y start
+
+        // Build working copy of mask pixels
+        const maskPixels = new Uint8Array(spritePixW * spritePixH);
+        for (let py = 0; py < spritePixH; py++) {
+            for (let px = 0; px < spritePixW; px++) {
+                const sx = maskX + px;
+                const sy = spriteY + py;
+                if (sx < this.width && sy < this.height) {
+                    maskPixels[py * spritePixW + px] = this.pixels[sy * this.width + sx];
+                }
+            }
+        }
+
+        // Calculate zoom: fill ~80% of viewport (minus modal chrome ~160px vertical)
+        const availW = Math.floor(window.innerWidth  * 0.85);
+        const availH = Math.floor(window.innerHeight * 0.80) - 160;
+        const zoomByW = Math.floor(availW / spritePixW);
+        const zoomByH = Math.floor(availH / spritePixH);
+        const zoom = Math.max(2, Math.min(24, zoomByW, zoomByH));
+
+        this._maskEditData = { x, y, w, h, halfW, spritePixW, spritePixH, spriteX, maskX, spriteY, maskPixels, zoom };
+
+        // Set up canvas (rendered at actual display resolution — no CSS scaling)
+        const canvas = document.getElementById('mask-editor-canvas');
+        canvas.width  = spritePixW * zoom;
+        canvas.height = spritePixH * zoom;
+
+        this.renderMaskEditor();
+
+        const modal = document.getElementById('mask-editor-modal');
+        modal.classList.remove('hidden');
+
+        // ── Painting logic ──
+        let isPainting = false;
+
+        const paintAt = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const { spritePixW, spritePixH, maskPixels, zoom } = this._maskEditData;
+            const px = Math.floor((e.clientX - rect.left) / zoom);
+            const py = Math.floor((e.clientY - rect.top)  / zoom);
+            if (px < 0 || px >= spritePixW || py < 0 || py >= spritePixH) return;
+            const val = (e.buttons & 1) ? 1 : 0; // L = transparent(1), R = opaque(0)
+            maskPixels[py * spritePixW + px] = val;
+            this.renderMaskEditor();
+        };
+
+        const onMouseUp = () => { isPainting = false; };
+        this._maskEditorCleanup = () => {
+            canvas.onmousedown = null;
+            canvas.onmousemove = null;
+            canvas.oncontextmenu = null;
+            window.removeEventListener('mouseup', onMouseUp);
+        };
+
+        canvas.onmousedown = (e) => {
+            e.preventDefault();
+            isPainting = true;
+            paintAt(e);
+        };
+        canvas.onmousemove = (e) => { if (isPainting) paintAt(e); };
+        canvas.oncontextmenu = (e) => e.preventDefault();
+        window.addEventListener('mouseup', onMouseUp);
+
+        document.getElementById('mask-editor-cancel').onclick = () => {
+            this._maskEditorCleanup && this._maskEditorCleanup();
+            modal.classList.add('hidden');
+        };
+        document.getElementById('mask-editor-apply').onclick = () => {
+            this._maskEditorCleanup && this._maskEditorCleanup();
+            this.applyMaskEdit();
+            modal.classList.add('hidden');
+        };
+    }
+
+    renderMaskEditor() {
+        const canvas = document.getElementById('mask-editor-canvas');
+        const ctx    = canvas.getContext('2d');
+        const { spritePixW, spritePixH, spriteX, spriteY, maskPixels, zoom } = this._maskEditData;
+
+        // Redraw at actual display resolution
+        canvas.width  = spritePixW * zoom;
+        canvas.height = spritePixH * zoom;
+
+        // ── 1. Render sprite pixels ──
+        for (let py = 0; py < spritePixH; py++) {
+            for (let px = 0; px < spritePixW; px++) {
+                const sx = spriteX + px;
+                const sy = spriteY + py;
+                const bx = Math.floor(sx / 8);
+                const by = Math.floor(sy / 8);
+                const attr   = this.attributes[by * (this.width / 8) + bx];
+                const bright = (attr >> 6) & 1;
+                const ink    =  attr       & 7;
+                const paper  = (attr >> 3) & 7;
+                const isSet  = this.pixels[sy * this.width + sx];
+                ctx.fillStyle = SPECTRUM_PALETTE[bright][isSet ? ink : paper];
+                ctx.fillRect(px * zoom, py * zoom, zoom, zoom);
+            }
+        }
+
+        // ── 2. Red overlay where mask is transparent (1) ──
+        ctx.fillStyle = 'rgba(220, 30, 30, 0.55)';
+        for (let py = 0; py < spritePixH; py++) {
+            for (let px = 0; px < spritePixW; px++) {
+                if (maskPixels[py * spritePixW + px] === 1) {
+                    ctx.fillRect(px * zoom, py * zoom, zoom, zoom);
+                }
+            }
+        }
+
+        // ── 3. Subtle 8×8 char-cell grid ──
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 1;
+        for (let gx = 0; gx <= spritePixW; gx += 8) {
+            ctx.beginPath();
+            ctx.moveTo(gx * zoom + 0.5, 0);
+            ctx.lineTo(gx * zoom + 0.5, spritePixH * zoom);
+            ctx.stroke();
+        }
+        for (let gy = 0; gy <= spritePixH; gy += 8) {
+            ctx.beginPath();
+            ctx.moveTo(0, gy * zoom + 0.5);
+            ctx.lineTo(spritePixW * zoom, gy * zoom + 0.5);
+            ctx.stroke();
+        }
+    }
+
+    applyMaskEdit() {
+        this.saveHistory();
+        const { maskX, spriteY, spritePixW, spritePixH, maskPixels } = this._maskEditData;
+        for (let py = 0; py < spritePixH; py++) {
+            for (let px = 0; px < spritePixW; px++) {
+                const sx = maskX + px;
+                const sy = spriteY + py;
+                if (sx < this.width && sy < this.height) {
+                    this.pixels[sy * this.width + sx] = maskPixels[py * spritePixW + px];
+                }
+            }
+        }
+        this.render();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
 }
 
 window.onload = () => {
