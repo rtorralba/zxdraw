@@ -177,8 +177,8 @@ aside {
     backdrop-filter: blur(10px);
     display: flex;
     flex-direction: column;
-    padding: 10px;
-    gap: 20px;
+    padding: 8px;
+    gap: 12px;
     border-right: 1px solid var(--border);
     overflow-y: auto;
 }
@@ -195,7 +195,17 @@ aside {
 .tool-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+}
+
+/* Tighter/equalized spacing for left toolbar only */
+#toolbar-left {
+    padding: 6px 8px;
+    gap: 10px; /* space between groups */
+}
+
+#toolbar-left .tool-group {
+    gap: 6px; /* space between buttons inside group */
 }
 
 button.tool {
