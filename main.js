@@ -111,7 +111,8 @@ function buildMenuTemplate(t) {
                 { label: t['menu.export_boriel_gusprites'] || 'GuSprites…', click: () => mainWindow.webContents.send('menu-export-boriel-gusprites') }
               ]
             },
-            { label: t['menu.export_data'] || 'Export Data…', click: () => mainWindow.webContents.send('menu-export-data') }
+                { label: t['menu.export_data'] || 'Export Data…', click: () => mainWindow.webContents.send('menu-export-data') },
+                { label: t['menu.export_scr'] || 'Export SCR…', click: () => mainWindow.webContents.send('menu-export-scr') }
           ],
         },
         { type: 'separator' },

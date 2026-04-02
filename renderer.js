@@ -607,6 +607,7 @@ class ZXDraw {
         window.electronAPI.onMenuEvent('menu-export-boriel-putchars', () => this.exportBorielPutChars());
         window.electronAPI.onMenuEvent('menu-export-boriel-gusprites', () => this.exportBorielGuSprites());
         window.electronAPI.onMenuEvent('menu-export-data', () => this.exportData());
+        window.electronAPI.onMenuEvent('menu-export-scr', () => this.exportScr());
 
         // Shortcuts
         window.onkeydown = (e) => {
@@ -1780,6 +1781,67 @@ class ZXDraw {
     async exportPng() {
         const dataURL = this.canvas.toDataURL('image/png');
         await window.electronAPI.exportPng(dataURL);
+    }
+
+    async exportScr() {
+        // Only support standard Spectrum 256x192 .scr files
+        if (this.width !== 256 || this.height !== 192) {
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_scr_size']) ? this._currentLocaleMap['alert.export_scr_size'] : 'Export to .scr requires a 256x192 canvas.';
+            alert(msg);
+            return;
+        }
+
+        try {
+            // Build bitmap 6144 bytes in Spectrum memory layout
+            const bmp = new Uint8Array(6144);
+            const bytesPerLine = this.width / 8; // 32
+            for (let y = 0; y < 192; y++) {
+                const block = ((y & 0xC0) >> 6); // 0..2
+                const rowInBlock = (y & 0x38) >> 3; // 0..7
+                const lineInChar = y & 0x07; // 0..7
+                for (let xb = 0; xb < bytesPerLine; xb++) {
+                    let val = 0;
+                    const bx = xb * 8;
+                    for (let b = 0; b < 8; b++) {
+                        const px = bx + b;
+                        if (this.pixels[y * this.width + px]) val |= (1 << (7 - b));
+                    }
+                    // Spectrum screen memory layout (inverse of importFromSCR):
+                    // third(block)*2048 + pixelRow(lineInChar)*256 + charRow(rowInBlock)*32 + colByte(xb)
+                    const addr = block * 2048 + lineInChar * 256 + rowInBlock * 32 + xb;
+                    bmp[addr] = val;
+                }
+            }
+
+            // Build attributes 768 bytes (24 rows x 32 cols)
+            const attrBuf = new Uint8Array(768);
+            const attrCols = this.width / 8; //32
+            const attrRows = this.height / 8; //24
+            for (let by = 0; by < attrRows; by++) {
+                for (let bx = 0; bx < attrCols; bx++) {
+                    const idx = by * attrCols + bx;
+                    attrBuf[idx] = this.attributes[idx] || 0;
+                }
+            }
+
+            // Combine into .scr (6144 + 768 = 6912)
+            const scr = new Uint8Array(6912);
+            scr.set(bmp, 0);
+            scr.set(attrBuf, 6144);
+
+            // Use preload helper to write binary
+            if (window.electronAPI && typeof window.electronAPI.exportBin === 'function') {
+                await window.electronAPI.exportBin(scr, 'screen.scr');
+            } else {
+                // Fallback: save via saveFile (base64) — convert to string of bytes
+                const s = Array.from(scr).map(b => String.fromCharCode(b)).join('');
+                await window.electronAPI.saveFile(s, 'screen.scr');
+            }
+        } catch (e) {
+            console.error('exportScr failed', e);
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_scr_failed']) ? this._currentLocaleMap['alert.export_scr_failed'] : 'Export to .scr failed.';
+            alert(msg);
+        }
     }
 
     exportBorielPutChars() {

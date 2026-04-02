@@ -31,6 +31,7 @@
   "menu.saveas": "Guardar como…",
   "menu.export": "Exportar",
   "menu.export_png": "PNG…",
+  "menu.export_scr": "Exportar SCR…",
   "menu.quit": "Salir",
   "menu.edit": "Editar",
   "menu.undo": "Deshacer",
@@ -73,6 +74,8 @@
   "alert.no_content_copied": "No hay contenido copiado. Selecciona un área y pulsa Ctrl+C.",
   "alert.invalid_scr": "Archivo .scr inválido (debe tener 6912 bytes).",
   "alert.invalid_zxp": "Archivo .zxp inválido.",
+  "alert.export_scr_size": "Exportar a .scr requiere un canvas de 256x192.",
+  "alert.export_scr_failed": "La exportación a .scr ha fallado.",
   "anim.framew": "Ancho de frame",
   "anim.fps": "FPS",
   "anim.no_selection": "Copia una selección para previsualizar"
