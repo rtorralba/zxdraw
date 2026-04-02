@@ -1,4 +1,4 @@
-# ZXDraw v1.0.20 — Novedades
+# ZXDraw v1.0.21 — Novedades
 
 ## Nuevas funcionalidades
 
@@ -10,6 +10,9 @@ Nueva herramienta que permite editar los píxeles de máscara de forma manual so
 - Se incluye rejilla 8×8 como referencia de caracteres.
 - Compatible con deshacer/rehacer.
 
+### Información de selección en el pie
+El pie de estado ahora muestra el tamaño de la selección activa tanto en píxeles como en caracteres (bloques 8×8). Esto facilita ver rápidamente el tamaño exacto antes de copiar/pegar o exportar.
+
 ## Correcciones
 
 ### Pegado clampeado al canvas
@@ -20,7 +23,7 @@ Al pulsar Ctrl+V en una instancia que ya había pegado algo antes, ahora siempre
 
 ---
 
-# ZXDraw v1.0.20 — Changelog
+# ZXDraw v1.0.21 — Changelog
 
 ## New features
 
@@ -32,6 +35,9 @@ New tool for manually editing mask pixels directly on the sprite. Select an area
 - An 8×8 character grid is shown for reference.
 - Supports undo/redo.
 
+### Status bar selection info
+The status bar now displays the active selection size both in pixels and in character blocks (8×8). This makes it easier to see exact selection dimensions before copying/pasting or exporting.
+
 ## Bug fixes
 
 ### Paste clamped to canvas bounds
@@ -42,7 +48,7 @@ Pressing Ctrl+V in an instance that had previously pasted something would reuse 
 
 ---
 
-# ZXDraw v1.0.20 — Novidades
+# ZXDraw v1.0.21 — Novidades
 
 ## Novas funcionalidades
 
@@ -54,6 +60,9 @@ Nova ferramenta que permite editar os pixels de máscara manualmente sobre o pr�
 - Inclui grelha 8×8 como referência de caracteres.
 - Compatível com desfazer/refazer.
 
+### Informação da seleção na barra de estado
+A barra de estado agora mostra o tamanho da seleção ativa tanto em pixels quanto em blocos de caracteres (8×8). Facilita ver as dimensões antes de copiar/colar ou exportar.
+
 ## Correções
 
 ### Colagem limitada aos limites do canvas
@@ -61,4 +70,3 @@ Ao colar uma seleção larga (por exemplo, 8 sprites de 16×16) perto da borda d
 
 ### Copiar e colar entre instâncias: clipboard sempre atualizado
 Ao pressionar Ctrl+V numa instância que já tinha colado algo antes, agora utiliza sempre o conteúdo mais recente da área de transferência partilhada, em vez do clipboard local anterior. Garante que o que é copiado numa janela é exatamente o que é colado em qualquer outra.
-
