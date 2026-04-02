@@ -103,5 +103,12 @@
   "about.version": "Version",
   "btn.close": "Close",
   "tool.edit_mask": "Edit Mask",
-  "modal.mask_editor.title": "Edit Mask"
+  "modal.mask_editor.title": "Edit Mask",
+  "modal.mask_editor.red_transparent": "Red = Transparent",
+  "modal.mask_editor.left_click": "Left click",
+  "modal.mask_editor.click_transparent": "= transparent",
+  "modal.mask_editor.right_click": "Right click",
+  "modal.mask_editor.click_opaque": "= opaque",
+  "alert.mask_editor.no_selection": "Select an area first: sprite columns on the left, mask columns on the right.",
+  "alert.mask_editor.invalid_width": "Selection width must be even and at least 2 blocks (sprite + mask side by side)."
 }

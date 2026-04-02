@@ -367,7 +367,7 @@ class ZXDraw {
 
                 if (this.isPasting && this.clipboard) {
                     this.saveHistory();
-                    this.executePaste(bx, by);
+                    this.executePaste(this.pastePos.bx, this.pastePos.by);
                     isDrawing = false; // Stop drawing after paste
                     return;
                 }
@@ -429,7 +429,13 @@ class ZXDraw {
             const y = Math.floor((e.clientY - rect.top) / this.zoom);
 
             if (this.isPasting) {
-                this.pastePos = { bx: Math.floor(x / 8), by: Math.floor(y / 8) };
+                let bx = Math.floor(x / 8);
+                let by = Math.floor(y / 8);
+                if (this.clipboard) {
+                    bx = Math.max(0, Math.min(bx, Math.floor(this.width / 8) - this.clipboard.w));
+                    by = Math.max(0, Math.min(by, Math.floor(this.height / 8) - this.clipboard.h));
+                }
+                this.pastePos = { bx, by };
                 this.drawSelection();
             }
 
@@ -1583,8 +1589,10 @@ class ZXDraw {
     }
 
     async startPaste() {
-        // If no local clipboard, try to load from shared clipboard (cross-instance)
-        if (!this.clipboard && window.electronAPI && typeof window.electronAPI.getClipboard === 'function') {
+        // Always try to load from shared clipboard (cross-instance) so that
+        // content copied in another window is picked up even when a local
+        // clipboard already exists from a previous copy in this instance.
+        if (window.electronAPI && typeof window.electronAPI.getClipboard === 'function') {
             try {
                 const shared = await window.electronAPI.getClipboard();
                 if (shared) {
@@ -2313,12 +2321,14 @@ class ZXDraw {
 
     openMaskEditor() {
         if (!this.selection) {
-            alert('Select an area first: sprite columns on the left, mask columns on the right.');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.mask_editor.no_selection']) ? this._currentLocaleMap['alert.mask_editor.no_selection'] : 'Select an area first: sprite columns on the left, mask columns on the right.';
+            alert(msg);
             return;
         }
         const { x, y, w, h } = this.selection; // in blocks
         if (w < 2 || w % 2 !== 0) {
-            alert('Selection width must be even and at least 2 blocks (sprite + mask side by side).');
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.mask_editor.invalid_width']) ? this._currentLocaleMap['alert.mask_editor.invalid_width'] : 'Selection width must be even and at least 2 blocks (sprite + mask side by side).';
+            alert(msg);
             return;
         }
 

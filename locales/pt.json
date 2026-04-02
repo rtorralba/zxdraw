@@ -78,7 +78,15 @@
   "import.title": "Importar imagem → ZX Spectrum"
   ,
   "about.tagline": "Editor inspirado no ZX Spectrum",
-  "about.version": "Versão"
-  ,
-  "btn.close": "Fechar"
+  "about.version": "Versão",
+  "btn.close": "Fechar",
+  "tool.edit_mask": "Editar Máscara",
+  "modal.mask_editor.title": "Editar Máscara",
+  "modal.mask_editor.red_transparent": "Vermelho = Transparente",
+  "modal.mask_editor.left_click": "Clique esquerdo",
+  "modal.mask_editor.click_transparent": "= transparente",
+  "modal.mask_editor.right_click": "Clique direito",
+  "modal.mask_editor.click_opaque": "= opaco",
+  "alert.mask_editor.no_selection": "Selecione uma área primeiro: colunas de sprite à esquerda, colunas de máscara à direita.",
+  "alert.mask_editor.invalid_width": "A largura da seleção deve ser par e ter pelo menos 2 blocos (sprite + máscara lado a lado)."
 }

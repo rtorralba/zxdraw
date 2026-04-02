@@ -97,12 +97,17 @@
   "modal.masks.rows": "Filas:",
   "modal.masks.cols": "Columnas:",
   "modal.masks.hint": "Esto duplicará el ancho del lienzo y creará máscaras invertidas al lado de cada sprite.",
-  "btn.generate": "Generar"
-  ,
+  "btn.generate": "Generar",
   "about.tagline": "Editor inspirado en ZX Spectrum",
-  "about.version": "Versión"
-  ,
+  "about.version": "Versión",
   "btn.close": "Cerrar",
   "tool.edit_mask": "Editar Máscara",
-  "modal.mask_editor.title": "Editar Máscara"
+  "modal.mask_editor.title": "Editar Máscara",
+  "modal.mask_editor.red_transparent": "Rojo = Transparente",
+  "modal.mask_editor.left_click": "Click izquierdo",
+  "modal.mask_editor.click_transparent": "= transparente",
+  "modal.mask_editor.right_click": "Click derecho",
+  "modal.mask_editor.click_opaque": "= opaco",
+  "alert.mask_editor.no_selection": "Selecciona un área primero: columnas de sprite a la izquierda, columnas de máscara a la derecha.",
+  "alert.mask_editor.invalid_width": "El ancho de la selección debe ser par y de al menos 2 bloques (sprite + máscara lado a lado)."
 }

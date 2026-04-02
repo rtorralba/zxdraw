@@ -552,11 +552,10 @@
         <div id="mask-editor-modal" class="modal hidden">
             <div class="modal-content" style="width:fit-content;min-width:420px;max-width:92vw;max-height:90vh;display:flex;flex-direction:column;align-items:center;overflow:hidden">
                 <h2 data-i18n="modal.mask_editor.title">Edit Mask</h2>
-                <p style="color:#a0a0a0;font-size:12px;margin:0 0 14px;text-align:center;line-height:1.6">
-                    <span style="display:inline-block;width:12px;height:12px;background:rgba(255,50,50,0.6);border:1px solid #ff6b6b;vertical-align:middle;margin-right:4px;"></span>Red = Transparent &nbsp;·&nbsp;
-                    <span style="display:inline-block;width:12px;height:12px;background:#111;border:1px solid #666;vertical-align:middle;margin-right:4px;"></span>Black = Opaque<br>
-                    <kbd style="background:#333;border:1px solid #555;border-radius:3px;padding:1px 5px;font-size:11px">Left click</kbd> = transparent &nbsp;
-                    <kbd style="background:#333;border:1px solid #555;border-radius:3px;padding:1px 5px;font-size:11px">Right click</kbd> = opaque
+                <p style="color:#a0a0a0;font-size:12px;margin:0 0 14px;text-align:center;line-height:1.8">
+                    <span style="display:inline-block;width:12px;height:12px;background:rgba(255,50,50,0.6);border:1px solid #ff6b6b;vertical-align:middle;margin-right:4px;"></span><span data-i18n="modal.mask_editor.red_transparent">Red = Transparent</span><br>
+                    <kbd style="background:#333;border:1px solid #555;border-radius:3px;padding:1px 5px;font-size:11px" data-i18n="modal.mask_editor.left_click">Left click</kbd> <span data-i18n="modal.mask_editor.click_transparent">= transparent</span> &nbsp;
+                    <kbd style="background:#333;border:1px solid #555;border-radius:3px;padding:1px 5px;font-size:11px" data-i18n="modal.mask_editor.right_click">Right click</kbd> <span data-i18n="modal.mask_editor.click_opaque">= opaque</span>
                 </p>
                 <div style="overflow:auto;max-height:calc(90vh - 160px);display:flex;justify-content:center">
                     <canvas id="mask-editor-canvas" style="display:block;cursor:crosshair;flex-shrink:0"></canvas>
@@ -569,6 +568,7 @@
                 </div>
             </div>
         </div>
+
 
     <script src="export/putchars.js"></script>
     <script src="export/gusprites.js"></script>
