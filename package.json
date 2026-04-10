@@ -9,6 +9,9 @@
     "build": "node build-bundle.js",
     "build:bundle": "node build-bundle.js",
     "build:win": "node build-bundle.js --win",
+    "build:win-portable": "node build-bundle.js --win --x64 --config.win.target=portable",
+    "build:win-portable-ia32": "node build-bundle.js --win --ia32 --config.win.target=portable",
+    "build:win-portables": "npm run build:win-portable && npm run build:win-portable-ia32",
     "build:mac": "node build-bundle.js --mac",
     "build:linux": "node build-bundle.js --linux",
     "test:gusprites": "node tests/gusprites.test.js",
@@ -42,10 +45,15 @@
       }
     ],
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis",
+        "portable",
+        "zip"
+      ],
       "icon": "icon.png"
     },
     "nsis": {
+      "artifactName": "ZXDraw-${version}-nsis-${os}-${arch}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
@@ -54,10 +62,23 @@
       "menuCategory": "ZXDraw",
       "installerHeaderIcon": "icon.png"
     },
+    "portable": {
+      "artifactName": "ZXDraw-${version}-portable-${os}-${arch}.${ext}"
+    },
     "mac": {
       "target": [
-        { "target": "zip", "arch": ["x64"] },
-        { "target": "zip", "arch": ["arm64"] }
+        {
+          "target": "zip",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
       ],
       "icon": "icon.png"
     },
