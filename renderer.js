@@ -298,12 +298,29 @@ class ZXDraw {
 
         document.getElementById('canvas-container').addEventListener('wheel', (e) => {
             e.preventDefault();
+            const container = document.getElementById('canvas-container');
+            const rect = container.getBoundingClientRect();
+            
+            // Calculate absolute mouse position relative to the canvas content
+            const mouseX = e.clientX - rect.left + container.scrollLeft;
+            const mouseY = e.clientY - rect.top + container.scrollTop;
+            
+            const oldZoom = this.zoom;
+
             if (e.deltaY < 0) {
                 this.zoom = Math.min(16, this.zoom + 1);
             } else {
                 this.zoom = Math.max(1, this.zoom - 1);
             }
-            this.updateZoom();
+            
+            if (this.zoom !== oldZoom) {
+                this.updateZoom();
+                
+                // Adjust scroll position to keep the content under the mouse cursor
+                const zoomRatio = this.zoom / oldZoom;
+                container.scrollLeft = mouseX * zoomRatio - (e.clientX - rect.left);
+                container.scrollTop = mouseY * zoomRatio - (e.clientY - rect.top);
+            }
         }, { passive: false });
         
         // Tools
