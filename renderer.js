@@ -116,11 +116,10 @@ class ZXDraw {
                             if (file) {
                                 if (file.type === 'scr') {
                                     this.importFromSCR(file.content);
-                                    this.currentFilePath = null;
-                                } else {
-                                    this.importFromZXP(file.content);
-                                    this.currentFilePath = file.filePath;
-                                }
+                } else {
+                    this.importFromZXP(file.content);
+                }
+                this.currentFilePath = file.filePath;
                                 this.render();
                                 try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
                             }
@@ -147,11 +146,10 @@ class ZXDraw {
                     if (file) {
                         if (file.type === 'scr') {
                             this.importFromSCR(file.content);
-                            this.currentFilePath = null;
-                        } else {
-                            this.importFromZXP(file.content);
-                            this.currentFilePath = file.filePath;
-                        }
+                } else {
+                    this.importFromZXP(file.content);
+                }
+                this.currentFilePath = file.filePath;
                         this.render();
                         this.addRecentFile(val);
                     } else {
@@ -516,11 +514,21 @@ class ZXDraw {
         document.getElementById('import-image-btn').onclick = () => this.triggerImageImport();
 
         document.getElementById('save-btn').onclick = async () => {
-            const zxpContent = this.exportToZXP();
             if (this.currentFilePath) {
-                await window.electronAPI.saveFileDirect(this.currentFilePath, zxpContent);
-                try { this.addRecentFile(this.currentFilePath); window.electronAPI.addRecentFile(this.currentFilePath); } catch(e) {}
+                try {
+                    if (this.currentFilePath.toLowerCase().endsWith('.scr')) {
+                        const scrBytes = this.generateScrBytes();
+                        await window.electronAPI.saveFileDirect(this.currentFilePath, Array.from(scrBytes));
+                    } else {
+                        const zxpContent = this.exportToZXP();
+                        await window.electronAPI.saveFileDirect(this.currentFilePath, zxpContent);
+                    }
+                    try { this.addRecentFile(this.currentFilePath); window.electronAPI.addRecentFile(this.currentFilePath); } catch(e) {}
+                } catch (e) {
+                    alert(e.message || 'Save failed.');
+                }
             } else {
+                const zxpContent = this.exportToZXP();
                 const filePath = await window.electronAPI.saveFile(zxpContent, 'my_graphic.zxp');
                 if (filePath) this.currentFilePath = filePath;
                 try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
@@ -539,11 +547,10 @@ class ZXDraw {
             if (file) {
                 if (file.type === 'scr') {
                     this.importFromSCR(file.content);
-                    this.currentFilePath = null;
                 } else {
                     this.importFromZXP(file.content);
-                    this.currentFilePath = file.filePath;
                 }
+                this.currentFilePath = file.filePath;
                 this.render();
                 try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             }
@@ -587,11 +594,10 @@ class ZXDraw {
                 if (!file) return;
                 if (file.type === 'scr') {
                     this.importFromSCR(file.content);
-                    this.currentFilePath = null;
                 } else {
                     this.importFromZXP(file.content);
-                    this.currentFilePath = file.filePath;
                 }
+                this.currentFilePath = file.filePath;
                 this.render();
                 try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             } catch (e) { console.warn('menu-open-file handler failed', e); }
@@ -1783,51 +1789,53 @@ class ZXDraw {
         await window.electronAPI.exportPng(dataURL);
     }
 
-    async exportScr() {
+    generateScrBytes() {
         // Only support standard Spectrum 256x192 .scr files
         if (this.width !== 256 || this.height !== 192) {
-            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_scr_size']) ? this._currentLocaleMap['alert.export_scr_size'] : 'Export to .scr requires a 256x192 canvas.';
-            alert(msg);
-            return;
+            throw new Error((this._currentLocaleMap && this._currentLocaleMap['alert.export_scr_size']) ? this._currentLocaleMap['alert.export_scr_size'] : 'Export to .scr requires a 256x192 canvas.');
         }
 
+        // Build bitmap 6144 bytes in Spectrum memory layout
+        const bmp = new Uint8Array(6144);
+        const bytesPerLine = this.width / 8; // 32
+        for (let y = 0; y < 192; y++) {
+            const block = ((y & 0xC0) >> 6); // 0..2
+            const rowInBlock = (y & 0x38) >> 3; // 0..7
+            const lineInChar = y & 0x07; // 0..7
+            for (let xb = 0; xb < bytesPerLine; xb++) {
+                let val = 0;
+                const bx = xb * 8;
+                for (let b = 0; b < 8; b++) {
+                    const px = bx + b;
+                    if (this.pixels[y * this.width + px]) val |= (1 << (7 - b));
+                }
+                const addr = block * 2048 + lineInChar * 256 + rowInBlock * 32 + xb;
+                bmp[addr] = val;
+            }
+        }
+
+        // Build attributes 768 bytes (24 rows x 32 cols)
+        const attrBuf = new Uint8Array(768);
+        const attrCols = this.width / 8; //32
+        const attrRows = this.height / 8; //24
+        for (let by = 0; by < attrRows; by++) {
+            for (let bx = 0; bx < attrCols; bx++) {
+                const idx = by * attrCols + bx;
+                attrBuf[idx] = this.attributes[idx] || 0;
+            }
+        }
+
+        // Combine into .scr (6144 + 768 = 6912)
+        const scr = new Uint8Array(6912);
+        scr.set(bmp, 0);
+        scr.set(attrBuf, 6144);
+        
+        return scr;
+    }
+
+    async exportScr() {
         try {
-            // Build bitmap 6144 bytes in Spectrum memory layout
-            const bmp = new Uint8Array(6144);
-            const bytesPerLine = this.width / 8; // 32
-            for (let y = 0; y < 192; y++) {
-                const block = ((y & 0xC0) >> 6); // 0..2
-                const rowInBlock = (y & 0x38) >> 3; // 0..7
-                const lineInChar = y & 0x07; // 0..7
-                for (let xb = 0; xb < bytesPerLine; xb++) {
-                    let val = 0;
-                    const bx = xb * 8;
-                    for (let b = 0; b < 8; b++) {
-                        const px = bx + b;
-                        if (this.pixels[y * this.width + px]) val |= (1 << (7 - b));
-                    }
-                    // Spectrum screen memory layout (inverse of importFromSCR):
-                    // third(block)*2048 + pixelRow(lineInChar)*256 + charRow(rowInBlock)*32 + colByte(xb)
-                    const addr = block * 2048 + lineInChar * 256 + rowInBlock * 32 + xb;
-                    bmp[addr] = val;
-                }
-            }
-
-            // Build attributes 768 bytes (24 rows x 32 cols)
-            const attrBuf = new Uint8Array(768);
-            const attrCols = this.width / 8; //32
-            const attrRows = this.height / 8; //24
-            for (let by = 0; by < attrRows; by++) {
-                for (let bx = 0; bx < attrCols; bx++) {
-                    const idx = by * attrCols + bx;
-                    attrBuf[idx] = this.attributes[idx] || 0;
-                }
-            }
-
-            // Combine into .scr (6144 + 768 = 6912)
-            const scr = new Uint8Array(6912);
-            scr.set(bmp, 0);
-            scr.set(attrBuf, 6144);
+            const scr = this.generateScrBytes();
 
             // Use preload helper to write binary
             if (window.electronAPI && typeof window.electronAPI.exportBin === 'function') {
@@ -1840,7 +1848,7 @@ class ZXDraw {
         } catch (e) {
             console.error('exportScr failed', e);
             const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_scr_failed']) ? this._currentLocaleMap['alert.export_scr_failed'] : 'Export to .scr failed.';
-            alert(msg);
+            alert(e.message || msg);
         }
     }
 

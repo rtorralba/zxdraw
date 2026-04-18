@@ -269,11 +269,16 @@ ipcMain.handle('export-bin', async (event, buffer, defaultName) => {
 ipcMain.handle('save-file-direct', async (event, filePath, content) => {
   try {
     const ext = path.extname(filePath).toLowerCase();
-    let out = content;
-    if (ext === '.zxp' && typeof out === 'string') {
-      out = out.replace(/\r?\n/g, '\r\n');
+    
+    if (Buffer.isBuffer(content) || content instanceof Uint8Array || Array.isArray(content)) {
+      fs.writeFileSync(filePath, Buffer.from(content));
+    } else {
+      let out = content;
+      if (ext === '.zxp' && typeof out === 'string') {
+        out = out.replace(/\r?\n/g, '\r\n');
+      }
+      fs.writeFileSync(filePath, out, 'utf8');
     }
-    fs.writeFileSync(filePath, out, 'utf8');
     return filePath;
   } catch (e) {
     console.error('save-file-direct write error', e);
