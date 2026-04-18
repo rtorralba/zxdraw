@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, nativeTheme } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -168,6 +168,7 @@ function createWindow() {
 // Each launch or 'Open with' will now open a new window in its own instance.
 
 app.whenReady().then(() => {
+  nativeTheme.themeSource = 'dark';
   createWindow();
 
   // If app started with a file argument (Windows "Open with"), open it now
