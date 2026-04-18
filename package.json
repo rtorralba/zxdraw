@@ -1,6 +1,6 @@
 {
   "name": "zx-draw",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "Simplified ZX Spectrum graphics editor with .zxp support.",
   "main": "main.js",
   "author": "Raül Torralba",
