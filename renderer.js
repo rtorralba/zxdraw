@@ -119,13 +119,21 @@ class ZXDraw {
                             if (file) {
                                 if (file.type === 'scr') {
                                     this.importFromSCR(file.content);
-                } else {
+                                    this.currentFilePath = file.filePath;
+                                    this.setDirty(false);
+                                    this.render();
+                                    try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
+                                } else if (file.type === 'bas') {
+                                    this._pendingBasContent = file.content;
+                                    this._pendingBasFilePath = file.filePath;
+                                    this.openImportBasModal();
+                                } else {
                     this.importFromZXP(file.content);
-                }
                 this.currentFilePath = file.filePath;
                 this.setDirty(false);
-                                this.render();
-                                try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
+                                    this.render();
+                                    try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
+                                }
                             }
                             // open only first supported file by default
                             break;
@@ -598,13 +606,21 @@ class ZXDraw {
             if (file) {
                 if (file.type === 'scr') {
                     this.importFromSCR(file.content);
+                    this.currentFilePath = file.filePath;
+                    this.setDirty(false);
+                    this.render();
+                    try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
+                } else if (file.type === 'bas') {
+                    this._pendingBasContent = file.content;
+                    this._pendingBasFilePath = file.filePath;
+                    this.openImportBasModal();
                 } else {
                     this.importFromZXP(file.content);
+                    this.currentFilePath = file.filePath;
+                    this.setDirty(false);
+                    this.render();
+                    try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
                 }
-                this.currentFilePath = file.filePath;
-                this.setDirty(false);
-                this.render();
-                try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             }
         };
 
@@ -638,6 +654,7 @@ class ZXDraw {
 
         // Native menu events from main process
         window.electronAPI.onMenuEvent('menu-import-image', () => this.triggerImageImport());
+        window.electronAPI.onMenuEvent('menu-import-boriel-putchars', () => this.triggerBasImport());
         window.electronAPI.onMenuEvent('menu-new',    () => document.getElementById('new-btn').click());
         window.electronAPI.onMenuEvent('menu-open',   () => document.getElementById('load-btn').click());
         // File opened from Recent menu
@@ -646,13 +663,21 @@ class ZXDraw {
                 if (!file) return;
                 if (file.type === 'scr') {
                     this.importFromSCR(file.content);
+                    this.currentFilePath = file.filePath;
+                    this.setDirty(false);
+                    this.render();
+                    try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
+                } else if (file.type === 'bas') {
+                    this._pendingBasContent = file.content;
+                    this._pendingBasFilePath = file.filePath;
+                    this.openImportBasModal();
                 } else {
                     this.importFromZXP(file.content);
+                    this.currentFilePath = file.filePath;
+                    this.setDirty(false);
+                    this.render();
+                    try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
                 }
-                this.currentFilePath = file.filePath;
-                this.setDirty(false);
-                this.render();
-                try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             } catch (e) { console.warn('menu-open-file handler failed', e); }
         });
         window.electronAPI.onMenuEvent('menu-save',   () => document.getElementById('save-btn').click());
@@ -1978,6 +2003,74 @@ class ZXDraw {
         await window.electronAPI.exportBas(finalOutput, `${name}.bas`);
     }
 
+    openImportBasModal() {
+        const modal = document.getElementById('import-bas-modal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
+
+        // Pre-fill with sensible defaults: try to auto-detect count from comments
+        if (this._pendingBasContent) {
+            const countMatch = this._pendingBasContent.match(/'\s*Count:\s*(\d+)/);
+            const sizeMatch = this._pendingBasContent.match(/'\s*Size:\s*(\d+)x(\d+)/);
+            if (sizeMatch) {
+                document.getElementById('import-bas-width').value = parseInt(sizeMatch[1]);
+            }
+            if (countMatch) {
+                const count = parseInt(countMatch[1]);
+                // Default layout: single row
+                document.getElementById('import-bas-cols').value = count;
+                document.getElementById('import-bas-rows').value = 1;
+            }
+        }
+
+        document.getElementById('import-bas-cancel').onclick = () => {
+            modal.classList.add('hidden');
+            this._pendingBasContent = null;
+            this._pendingBasFilePath = null;
+        };
+
+        document.getElementById('import-bas-apply').onclick = () => {
+            const tileW = parseInt(document.getElementById('import-bas-width').value);
+            const rows = parseInt(document.getElementById('import-bas-rows').value);
+            const cols = parseInt(document.getElementById('import-bas-cols').value);
+
+            if (tileW % 8 !== 0 || tileW < 8) {
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.size_multiple']) ? this._currentLocaleMap['alert.size_multiple'] : 'Tile width must be a multiple of 8.';
+                alert(msg);
+                return;
+            }
+
+            modal.classList.add('hidden');
+            if (this._pendingBasContent) {
+                this.importFromBas(this._pendingBasContent, tileW, cols, rows, this._pendingBasFilePath);
+            }
+            this._pendingBasContent = null;
+            this._pendingBasFilePath = null;
+        };
+    }
+
+    importFromBas(text, tileW, cols, rows, filePath) {
+        if (!window.ZXImportBas) {
+            console.error('ZXImportBas module not found.');
+            return;
+        }
+        const result = window.ZXImportBas(text, tileW, cols, rows);
+        if (!result) {
+            alert('Failed to parse .bas file. Make sure it was exported with "Export as Matrix" option from ZXDraw.');
+            return;
+        }
+        const { pixels, attributes, canvasWidth, canvasHeight } = result;
+        this.resetData(canvasWidth, canvasHeight);
+        this.pixels = pixels;
+        this.attributes = attributes;
+        if (filePath) this.currentFilePath = null; // .bas is not a native save format
+        this.setDirty(false);
+        this.undoStack = [];
+        this.redoStack = [];
+        this.render();
+        try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
+    }
+
     exportBorielGuSprites() {
         const modal = document.getElementById('gusprites-modal');
         modal.classList.remove('hidden');
@@ -2194,6 +2287,16 @@ class ZXDraw {
     triggerImageImport() {
         window.electronAPI.loadImage().then(dataUrl => {
             if (dataUrl) this.openImageImportModal(dataUrl);
+        });
+    }
+
+    triggerBasImport() {
+        window.electronAPI.loadFileBas().then(file => {
+            if (file && file.type === 'bas') {
+                this._pendingBasContent = file.content;
+                this._pendingBasFilePath = file.filePath;
+                this.openImportBasModal();
+            }
         });
     }
 

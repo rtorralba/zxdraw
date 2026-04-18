@@ -22,7 +22,9 @@
   "menu.file": "Arquivo",
   "menu.new": "Novo",
   "menu.open": "Abrir…",
-  "menu.import_image": "Importar imagem…",
+  "menu.import": "Importar",
+  "menu.import_image": "Imagem…",
+  "menu.import_boriel_putchars": "Boriel Basic (PutChars)…",
   "menu.save": "Salvar",
   "menu.saveas": "Salvar como…",
   "menu.export": "Exportar",
@@ -101,5 +103,11 @@
   "dialog.close.title": "Alterações não guardadas",
   "dialog.close.message": "Tem alterações não guardadas. Fechar sem guardar?",
   "dialog.close.discard": "Descartar alterações",
-  "dialog.close.cancel": "Cancelar"
+  "dialog.close.cancel": "Cancelar",
+  "modal.import_bas.title": "Importar de Boriel Basic (.bas)",
+  "modal.import_bas.hint": "Use as mesmas configurações que utilizou ao exportar.",
+  "modal.import_bas.hint2": "A largura do tile deve ser múltiplo de 8.",
+  "modal.import_bas.width": "Largura do tile:",
+  "modal.import_bas.rows": "Linhas:",
+  "modal.import_bas.cols": "Colunas:"
 }

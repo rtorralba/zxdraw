@@ -96,7 +96,13 @@ function buildMenuTemplate(t) {
         { label: t['menu.new'] || 'New', accelerator: 'CmdOrCtrl+N', click: () => mainWindow.webContents.send('menu-new') },
         { label: t['menu.open'] || 'Open…', accelerator: 'CmdOrCtrl+O', click: () => mainWindow.webContents.send('menu-open') },
         { label: t['menu.recent'] || 'Recent', submenu: recentSub },
-        { label: t['menu.import_image'] || 'Import Image…', click: () => mainWindow.webContents.send('menu-import-image') },
+        {
+          label: t['menu.import'] || 'Import',
+          submenu: [
+            { label: t['menu.import_image'] || 'Image…', click: () => mainWindow.webContents.send('menu-import-image') },
+            { label: t['menu.import_boriel_putchars'] || 'Boriel Basic (PutChars)…', click: () => mainWindow.webContents.send('menu-import-boriel-putchars') }
+          ]
+        },
         { type: 'separator' },
         { label: t['menu.save'] || 'Save', accelerator: 'CmdOrCtrl+S', click: () => mainWindow.webContents.send('menu-save') },
         { label: t['menu.saveas'] || 'Save As…', accelerator: 'CmdOrCtrl+Shift+S', click: () => mainWindow.webContents.send('menu-saveas') },
@@ -394,6 +400,22 @@ ipcMain.handle('load-file-path', async (event, filePath) => {
     console.error('load-file-path error', e);
     return null;
   }
+});
+
+ipcMain.handle('load-file-bas', async () => {
+  const { filePaths } = await dialog.showOpenDialog({
+    title: 'Import Boriel Basic',
+    filters: [
+      { name: 'Boriel Basic (.bas)', extensions: ['bas'] },
+    ],
+    properties: ['openFile'],
+  });
+
+  if (filePaths && filePaths.length > 0) {
+    const content = fs.readFileSync(filePaths[0], 'utf8');
+    return { content, filePath: filePaths[0], type: 'bas' };
+  }
+  return null;
 });
 
 // Rebuild menu when renderer requests language change

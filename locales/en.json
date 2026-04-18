@@ -27,7 +27,9 @@
   "menu.file": "File",
   "menu.new": "New",
   "menu.open": "Open…",
-  "menu.import_image": "Import Image…",
+  "menu.import": "Import",
+  "menu.import_image": "Image…",
+  "menu.import_boriel_putchars": "Boriel Basic (PutChars)…",
   "menu.save": "Save",
   "menu.saveas": "Save As…",
   "menu.export": "Export",
@@ -123,5 +125,11 @@
   "dialog.close.title": "Unsaved changes",
   "dialog.close.message": "You have unsaved changes. Close without saving?",
   "dialog.close.discard": "Discard changes",
-  "dialog.close.cancel": "Cancel"
+  "dialog.close.cancel": "Cancel",
+  "modal.import_bas.title": "Import from Boriel Basic (.bas)",
+  "modal.import_bas.hint": "Use the same settings that were used when exporting.",
+  "modal.import_bas.hint2": "Tile Width must be a multiple of 8.",
+  "modal.import_bas.width": "Tile Width:",
+  "modal.import_bas.rows": "Rows:",
+  "modal.import_bas.cols": "Cols:"
 }

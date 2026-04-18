@@ -576,6 +576,43 @@
         </div>
 
 
+        <!-- Import .bas Modal -->
+        <div id="import-bas-modal" class="modal hidden">
+            <div class="modal-content" style="width:520px;max-width:95vw">
+                <h2 data-i18n="modal.import_bas.title">Import from Boriel Basic (.bas)</h2>
+                <p class="hint" data-i18n="modal.import_bas.hint">Use the same settings that were used when exporting.</p>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.import_bas.width">Tile Width:</label>
+                            <input type="number" id="import-bas-width" value="8" step="8" min="8" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:12px">
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.import_bas.rows">Rows:</label>
+                            <input type="number" id="import-bas-rows" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                    <div style="flex:1">
+                        <div class="input-row">
+                            <label data-i18n="modal.import_bas.cols">Cols:</label>
+                            <input type="number" id="import-bas-cols" value="1" min="1" style="width: 80px">
+                        </div>
+                    </div>
+                </div>
+                <p class="hint" data-i18n="modal.import_bas.hint2">Tile Width must be a multiple of 8.</p>
+                <div class="modal-actions">
+                    <button id="import-bas-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="import-bas-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.import">Import</span></button>
+                </div>
+            </div>
+        </div>
+
+
+    <script src="import/bas.js"></script>
     <script src="export/putchars.js"></script>
     <script src="export/gusprites.js"></script>
     <script src="export/data.js"></script>

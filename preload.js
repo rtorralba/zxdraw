@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   exportBin: (buffer, defaultName) => ipcRenderer.invoke('export-bin', buffer, defaultName),
   exportPng: (dataURL) => ipcRenderer.invoke('export-png', dataURL),
   loadFile: () => ipcRenderer.invoke('load-file'),
+  loadFileBas: () => ipcRenderer.invoke('load-file-bas'),
   loadFilePath: (filePath) => ipcRenderer.invoke('load-file-path', filePath),
   addRecentFile: (filePath) => ipcRenderer.send('add-recent-file', filePath),
   loadImage: () => ipcRenderer.invoke('load-image'),
