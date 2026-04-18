@@ -217,20 +217,36 @@ ipcMain.on('open-devtools', () => {
 // IPC Handlers for File I/O
 ipcMain.handle('save-file', async (event, content, defaultName) => {
   const { filePath } = await dialog.showSaveDialog({
-    title: 'Save .zxp Image',
+    title: 'Save Image',
     defaultPath: defaultName || 'image.zxp',
-    filters: [{ name: 'ZX-Paintbrush (.zxp)', extensions: ['zxp'] }],
+    filters: [
+      { name: 'ZX-Paintbrush (.zxp)', extensions: ['zxp'] },
+      { name: 'ZX Spectrum Screen (.scr)', extensions: ['scr'] }
+    ],
   });
 
   if (filePath) {
     try {
       const ext = path.extname(filePath).toLowerCase();
       let out = content;
-      if (ext === '.zxp' && typeof out === 'string') {
-        // Normalize to CRLF as required for .zxp files
-        out = out.replace(/\r?\n/g, '\r\n');
+
+      if (content && typeof content === 'object' && !Array.isArray(content) && !Buffer.isBuffer(content)) {
+        if (ext === '.scr' && content.scr) {
+          fs.writeFileSync(filePath, Buffer.from(content.scr));
+          return filePath;
+        } else if (content.zxp) {
+          out = content.zxp;
+        }
       }
-      fs.writeFileSync(filePath, out, 'utf8');
+
+      if (ext === '.zxp' && typeof out === 'string') {
+        out = out.replace(/\r?\n/g, '\r\n');
+        fs.writeFileSync(filePath, out, 'utf8');
+      } else if (Buffer.isBuffer(out) || out instanceof Uint8Array || Array.isArray(out)) {
+        fs.writeFileSync(filePath, Buffer.from(out));
+      } else {
+        fs.writeFileSync(filePath, out, 'utf8');
+      }
     } catch (e) {
       console.error('save-file write error', e);
       throw e;

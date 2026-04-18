@@ -513,6 +513,15 @@ class ZXDraw {
         // File I/O
         document.getElementById('import-image-btn').onclick = () => this.triggerImageImport();
 
+        const buildSavePayload = () => {
+            let scrBytes = null;
+            try { scrBytes = Array.from(this.generateScrBytes()); } catch(e) {}
+            return {
+                zxp: this.exportToZXP(),
+                scr: scrBytes
+            };
+        };
+
         document.getElementById('save-btn').onclick = async () => {
             if (this.currentFilePath) {
                 try {
@@ -528,16 +537,14 @@ class ZXDraw {
                     alert(e.message || 'Save failed.');
                 }
             } else {
-                const zxpContent = this.exportToZXP();
-                const filePath = await window.electronAPI.saveFile(zxpContent, 'my_graphic.zxp');
+                const filePath = await window.electronAPI.saveFile(buildSavePayload(), 'my_graphic.zxp');
                 if (filePath) this.currentFilePath = filePath;
                 try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
             }
         };
 
         document.getElementById('saveas-btn').onclick = async () => {
-            const zxpContent = this.exportToZXP();
-            const filePath = await window.electronAPI.saveFile(zxpContent, this.currentFilePath || 'my_graphic.zxp');
+            const filePath = await window.electronAPI.saveFile(buildSavePayload(), this.currentFilePath || 'my_graphic.zxp');
             if (filePath) this.currentFilePath = filePath;
             try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
         };
