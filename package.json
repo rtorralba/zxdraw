@@ -45,11 +45,7 @@
       }
     ],
     "win": {
-      "target": [
-        "nsis",
-        "portable",
-        "zip"
-      ],
+      "target": ["nsis", "portable", "zip"],
       "icon": "icon.png"
     },
     "nsis": {
@@ -67,18 +63,8 @@
     },
     "mac": {
       "target": [
-        {
-          "target": "zip",
-          "arch": [
-            "x64"
-          ]
-        },
-        {
-          "target": "zip",
-          "arch": [
-            "arm64"
-          ]
-        }
+        { "target": "zip", "arch": ["x64"] },
+        { "target": "zip", "arch": ["arm64"] }
       ],
       "icon": "icon.png"
     },
