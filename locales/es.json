@@ -118,5 +118,9 @@
   "modal.mask_editor.right_click": "Click derecho",
   "modal.mask_editor.click_opaque": "= opaco",
   "alert.mask_editor.no_selection": "Selecciona un área primero: columnas de sprite a la izquierda, columnas de máscara a la derecha.",
-  "alert.mask_editor.invalid_width": "El ancho de la selección debe ser par y de al menos 2 bloques (sprite + máscara lado a lado)."
+  "alert.mask_editor.invalid_width": "El ancho de la selección debe ser par y de al menos 2 bloques (sprite + máscara lado a lado).",
+  "dialog.close.title": "Cambios sin guardar",
+  "dialog.close.message": "Tienes cambios sin guardar. ¿Cerrar sin guardar?",
+  "dialog.close.discard": "Descartar cambios",
+  "dialog.close.cancel": "Cancelar"
 }

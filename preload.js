@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadFilePath: (filePath) => ipcRenderer.invoke('load-file-path', filePath),
   addRecentFile: (filePath) => ipcRenderer.send('add-recent-file', filePath),
   loadImage: () => ipcRenderer.invoke('load-image'),
+  setDocumentDirty: (isDirty) => ipcRenderer.send('set-document-dirty', isDirty),
+  closeWindow: () => ipcRenderer.send('close-window'),
   onMenuEvent: (channel, cb) => ipcRenderer.on(channel, cb),
   openDevTools: () => ipcRenderer.send('open-devtools'),
   // Synchronous locale via IPC — guaranteed available before DOMContentLoaded,

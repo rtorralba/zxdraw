@@ -4,6 +4,7 @@ const fs = require('fs');
 
 let mainWindow;
 let currentTranslations = {};
+let isDocumentDirty = false;
 
 const RECENT_STORE = () => path.join(app.getPath('userData') || __dirname, 'recent.json');
 
@@ -162,6 +163,28 @@ function createWindow() {
   const menuTpl = buildMenuTemplate(translations);
   const menu = Menu.buildFromTemplate(menuTpl);
   Menu.setApplicationMenu(menu);
+
+  // Intercept window close to ask about unsaved changes
+  mainWindow.on('close', async (e) => {
+    if (!isDocumentDirty) return;
+    e.preventDefault();
+    const t = currentTranslations;
+    const { response } = await dialog.showMessageBox(mainWindow, {
+      type: 'question',
+      buttons: [
+        t['dialog.close.discard'] || 'Discard changes',
+        t['dialog.close.cancel'] || 'Cancel',
+      ],
+      defaultId: 1,
+      cancelId: 1,
+      title: t['dialog.close.title'] || 'Unsaved changes',
+      message: t['dialog.close.message'] || 'You have unsaved changes. Close without saving?',
+    });
+    if (response === 0) {
+      isDocumentDirty = false;
+      mainWindow.destroy();
+    }
+  });
 }
 
 // Single instance lock removed to allow multiple simultaneous instances.
@@ -388,6 +411,16 @@ ipcMain.on('set-language', (event, lang) => {
 // Renderer notifies main that a file was opened/saved and should be added to recent list
 ipcMain.on('add-recent-file', (event, filePath) => {
   try { addRecentFile(filePath); } catch (e) { console.warn('add-recent-file ipc failed', e); }
+});
+
+// Track document dirty state from renderer
+ipcMain.on('set-document-dirty', (event, isDirty) => {
+  isDocumentDirty = isDirty;
+});
+
+// Renderer-initiated close (e.g. from menu)
+ipcMain.on('close-window', () => {
+  if (mainWindow) mainWindow.close();
 });
 
 // Cross-instance clipboard sharing via a shared JSON file in userData

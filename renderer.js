@@ -123,6 +123,7 @@ class ZXDraw {
                     this.importFromZXP(file.content);
                 }
                 this.currentFilePath = file.filePath;
+                this.setDirty(false);
                                 this.render();
                                 try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
                             }
@@ -523,6 +524,7 @@ class ZXDraw {
                     this.undoStack = [];
                     this.redoStack = [];
                     this.currentFilePath = null;
+                    this.setDirty(false);
                 } else {
                     // Resize (same behavior as before)
                     this.resetData(w, h);
@@ -573,20 +575,21 @@ class ZXDraw {
                         const zxpContent = this.exportToZXP();
                         await window.electronAPI.saveFileDirect(this.currentFilePath, zxpContent);
                     }
+                    this.setDirty(false);
                     try { this.addRecentFile(this.currentFilePath); window.electronAPI.addRecentFile(this.currentFilePath); } catch(e) {}
                 } catch (e) {
                     alert(e.message || 'Save failed.');
                 }
             } else {
                 const filePath = await window.electronAPI.saveFile(buildSavePayload(), 'my_graphic.zxp');
-                if (filePath) this.currentFilePath = filePath;
+                if (filePath) { this.currentFilePath = filePath; this.setDirty(false); }
                 try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
             }
         };
 
         document.getElementById('saveas-btn').onclick = async () => {
             const filePath = await window.electronAPI.saveFile(buildSavePayload(), this.currentFilePath || 'my_graphic.zxp');
-            if (filePath) this.currentFilePath = filePath;
+            if (filePath) { this.currentFilePath = filePath; this.setDirty(false); }
             try { if (filePath) { this.addRecentFile(filePath); window.electronAPI.addRecentFile(filePath); } } catch(e) {}
         };
 
@@ -599,6 +602,7 @@ class ZXDraw {
                     this.importFromZXP(file.content);
                 }
                 this.currentFilePath = file.filePath;
+                this.setDirty(false);
                 this.render();
                 try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             }
@@ -646,6 +650,7 @@ class ZXDraw {
                     this.importFromZXP(file.content);
                 }
                 this.currentFilePath = file.filePath;
+                this.setDirty(false);
                 this.render();
                 try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
             } catch (e) { console.warn('menu-open-file handler failed', e); }
@@ -1361,6 +1366,12 @@ class ZXDraw {
         });
         if (this.undoStack.length > MAX) this.undoStack.shift();
         this.redoStack = [];
+        this.setDirty(true);
+    }
+
+    setDirty(isDirty) {
+        this._isDirty = isDirty;
+        try { window.electronAPI.setDocumentDirty(isDirty); } catch(e) {}
     }
 
     undo() {

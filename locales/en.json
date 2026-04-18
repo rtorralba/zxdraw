@@ -119,5 +119,9 @@
   "modal.mask_editor.right_click": "Right click",
   "modal.mask_editor.click_opaque": "= opaque",
   "alert.mask_editor.no_selection": "Select an area first: sprite columns on the left, mask columns on the right.",
-  "alert.mask_editor.invalid_width": "Selection width must be even and at least 2 blocks (sprite + mask side by side)."
+  "alert.mask_editor.invalid_width": "Selection width must be even and at least 2 blocks (sprite + mask side by side).",
+  "dialog.close.title": "Unsaved changes",
+  "dialog.close.message": "You have unsaved changes. Close without saving?",
+  "dialog.close.discard": "Discard changes",
+  "dialog.close.cancel": "Cancel"
 }
