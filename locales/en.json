@@ -8,6 +8,7 @@
   "tool.invert.pixels": "Invert Pixels",
   "tool.invert.attrs": "Invert Attributes (swap ink/paper)",
   "tool.grid": "Grid",
+  "label.use_current_attr": "Use current attr",
   "label.ink": "Ink Color",
   "label.paper": "Paper Color",
   "label.bright": "Bright",

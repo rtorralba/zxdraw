@@ -63,6 +63,9 @@ class ZXDraw {
         this.bright = 0;
         this.flash = 0;
 
+        this.useCurrentAttr = false;
+        this.savedAttr = { ink: 7, paper: 0, bright: 0, flash: 0 };
+
         // DOM elements
         this.canvas = document.getElementById('main-canvas');
         this.ctx = this.canvas.getContext('2d');
@@ -319,6 +322,27 @@ class ZXDraw {
         };
 
         // Mods
+        // Use Current Attributes Toggle
+        const useCurrentAttrToggle = document.getElementById('use-current-attr-toggle');
+        if (useCurrentAttrToggle) {
+            useCurrentAttrToggle.onchange = (e) => {
+                this.useCurrentAttr = e.target.checked;
+                if (this.useCurrentAttr) {
+                    this.savedAttr = { ink: this.ink, paper: this.paper, bright: this.bright, flash: this.flash };
+                    this.ink = null;
+                    this.paper = null;
+                    this.bright = null;
+                    this.flash = null;
+                } else {
+                    this.ink = this.savedAttr.ink;
+                    this.paper = this.savedAttr.paper;
+                    this.bright = this.savedAttr.bright;
+                    this.flash = this.savedAttr.flash;
+                }
+                this.updateUI();
+            };
+        }
+
         // 3-position selects: keep / on / off
         document.getElementById('bright-toggle').onchange = (e) => {
             const v = e.target.value;
@@ -1459,6 +1483,23 @@ class ZXDraw {
         const flashToggle = document.getElementById('flash-toggle');
         if (brightToggle) brightToggle.value = (this.bright === 1) ? '1' : (this.bright === 0 ? '0' : 'keep');
         if (flashToggle) flashToggle.value = (this.flash === 1) ? '1' : (this.flash === 0 ? '0' : 'keep');
+
+        const useAttrToggle = document.getElementById('use-current-attr-toggle');
+        if (useAttrToggle) useAttrToggle.checked = this.useCurrentAttr;
+
+        const inkPalette = document.getElementById('ink-palette');
+        const paperPalette = document.getElementById('paper-palette');
+        if (this.useCurrentAttr) {
+            if (inkPalette) { inkPalette.style.pointerEvents = 'none'; inkPalette.style.opacity = '0.4'; }
+            if (paperPalette) { paperPalette.style.pointerEvents = 'none'; paperPalette.style.opacity = '0.4'; }
+            if (brightToggle) brightToggle.disabled = true;
+            if (flashToggle) flashToggle.disabled = true;
+        } else {
+            if (inkPalette) { inkPalette.style.pointerEvents = ''; inkPalette.style.opacity = '1'; }
+            if (paperPalette) { paperPalette.style.pointerEvents = ''; paperPalette.style.opacity = '1'; }
+            if (brightToggle) brightToggle.disabled = false;
+            if (flashToggle) flashToggle.disabled = false;
+        }
     }
 
     updateStatus(x, y) {

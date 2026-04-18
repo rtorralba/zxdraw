@@ -8,6 +8,7 @@
   "tool.invert.pixels": "Inverter Pixels",
   "tool.invert.attrs": "Inverter Atributos (trocar tinta/papel)",
   "tool.grid": "Grade",
+  "label.use_current_attr": "Usar atributos atuais",
   "label.ink": "Cor de tinta",
   "label.paper": "Cor de papel",
   "label.bright": "Brilho",
