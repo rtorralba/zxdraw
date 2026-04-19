@@ -1,4 +1,4 @@
-# ZXDraw v1.0.19 — Novedades
+# ZXDrawer v1.0.19 — Novedades
 
 ## Nuevas funcionalidades
 
@@ -26,10 +26,10 @@ Se añaden los botones **Anterior** y **Siguiente** al panel de animación. Cada
 - Resalta el sprite correspondiente en el canvas principal con un rectángulo de selección.
 
 ### Múltiples instancias
-ZXDraw puede abrirse en varias ventanas simultáneamente.
+ZXDrawer puede abrirse en varias ventanas simultáneamente.
 
 ### Copiar y pegar entre instancias
-El portapapeles ahora se comparte entre todas las ventanas abiertas de ZXDraw. Copia una selección en una instancia y pégala en cualquier otra, sin archivos intermedios.
+El portapapeles ahora se comparte entre todas las ventanas abiertas de ZXDrawer. Copia una selección en una instancia y pégala en cualquier otra, sin archivos intermedios.
 
 ### Rejilla de píxel (1×1)
 Se añade un nuevo botón de rejilla junto al existente de caracteres. Cuando está activo, superpone una rejilla fina de 1×1 píxel sobre el canvas (en gris semitransparente), facilitando el trabajo a nivel de píxel. Ambas rejillas son independientes y combinables. La rejilla de píxel también se muestra en el visor de animación.
@@ -54,7 +54,7 @@ Gracias a **Jaime Tejedor (Metalbrain)** por su editor gráfico **Sevenup**, cuy
 
 ---
 
-# ZXDraw v1.0.19 — Changelog
+# ZXDrawer v1.0.19 — Changelog
 
 ## New features
 
@@ -82,10 +82,10 @@ Added **Previous** and **Next** buttons to the animation panel. Each click:
 - Highlights the corresponding sprite in the main canvas with a selection rectangle.
 
 ### Multiple instances
-ZXDraw can now be launched in multiple windows simultaneously.
+ZXDrawer can now be launched in multiple windows simultaneously.
 
 ### Copy & paste between instances
-Clipboard data is now shared across all open ZXDraw windows. Copy a selection in one instance and paste it in any other — no intermediate file needed.
+Clipboard data is now shared across all open ZXDrawer windows. Copy a selection in one instance and paste it in any other — no intermediate file needed.
 
 ### Pixel grid (1×1)
 A new grid button has been added next to the existing character grid toggle. When active, it overlays a fine 1×1 pixel grid on the canvas (rendered in semi-transparent grey), making it easier to work at the pixel level. Both grids are independent and can be combined. The pixel grid is also shown in the animation preview.
@@ -110,7 +110,7 @@ Thanks to **Jaime Tejedor (Metalbrain)** for his graphic editor **Sevenup**, who
 
 ---
 
-# ZXDraw v1.0.19 — Novidades
+# ZXDrawer v1.0.19 — Novidades
 
 ## Novas funcionalidades
 
@@ -138,10 +138,10 @@ Adicionados os botões **Anterior** e **Próximo** ao painel de animação. Cada
 - Destaca o sprite correspondente no canvas principal com um retângulo de seleção.
 
 ### Múltiplas instâncias
-O ZXDraw pode agora ser aberto em várias janelas em simultâneo.
+O ZXDrawer pode agora ser aberto em várias janelas em simultâneo.
 
 ### Copiar e colar entre instâncias
-A área de transferência é agora partilhada entre todas as janelas abertas do ZXDraw. Copie uma seleção numa instância e cole-a noutra — sem ficheiros intermediários.
+A área de transferência é agora partilhada entre todas as janelas abertas do ZXDrawer. Copie uma seleção numa instância e cole-a noutra — sem ficheiros intermediários.
 
 ### Grelha de pixel (1×1)
 Adicionado um novo botão de grelha junto ao existente de caracteres. Quando ativo, sobrepõe uma grelha fina de 1×1 pixel sobre o canvas (em cinzento semitransparente), facilitando o trabalho ao nível do pixel. Ambas as grelhas são independentes e combináveis. A grelha de pixel também é mostrada no visualizador de animação.

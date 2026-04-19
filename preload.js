@@ -29,8 +29,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   }
   ,
   setAppLanguage: (lang) => ipcRenderer.send('set-language', lang),
-  setClipboard: (data) => ipcRenderer.invoke('zxdraw-clipboard-set', data),
-  getClipboard: () => ipcRenderer.invoke('zxdraw-clipboard-get')
+  setClipboard: (data) => ipcRenderer.invoke('zxdrawer-clipboard-set', data),
+  getClipboard: () => ipcRenderer.invoke('zxdrawer-clipboard-get')
   ,
   getAppVersion: () => {
     try {

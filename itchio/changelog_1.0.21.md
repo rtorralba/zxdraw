@@ -1,4 +1,4 @@
-# ZXDraw v1.0.21 — Novedades
+# ZXDrawer v1.0.21 — Novedades
 
 ## Nuevas funcionalidades
 
@@ -23,7 +23,7 @@ Al pulsar Ctrl+V en una instancia que ya había pegado algo antes, ahora siempre
 
 ---
 
-# ZXDraw v1.0.21 — Changelog
+# ZXDrawer v1.0.21 — Changelog
 
 ## New features
 
@@ -48,7 +48,7 @@ Pressing Ctrl+V in an instance that had previously pasted something would reuse 
 
 ---
 
-# ZXDraw v1.0.21 — Novidades
+# ZXDrawer v1.0.21 — Novidades
 
 ## Novas funcionalidades
 

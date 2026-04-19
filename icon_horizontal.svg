@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   viewBox="0 0 512 200"
+   viewBox="0 0 512 180"
    version="1.1"
    id="svg7"
    sodipodi:docname="icon_horizontal.svg"
@@ -9,7 +9,7 @@
    inkscape:export-ydpi="192"
    inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
    width="512"
-   height="200"
+   height="180"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -23,11 +23,11 @@
      borderopacity="0.25"
      inkscape:showpageshadow="2"
      inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
+     inkscape:pagecheckerboard="false"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.1145218"
-     inkscape:cx="92.864938"
-     inkscape:cy="199.63719"
+     inkscape:zoom="6.3046874"
+     inkscape:cx="462.11649"
+     inkscape:cy="95.087982"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -36,14 +36,14 @@
      inkscape:current-layer="svg7"
      showguides="true">
     <sodipodi:guide
-       position="534.2057,120.22801"
+       position="13.164808,116.0793"
        orientation="1,0"
-       id="guide9"
+       id="guide3"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="-22.655456,133.52595"
+       position="498.67659,127.49938"
        orientation="1,0"
-       id="guide10"
+       id="guide4"
        inkscape:locked="false" />
   </sodipodi:namedview>
   <rect
@@ -51,79 +51,75 @@
      id="rect8"
      width="581.02795"
      height="205.66624"
-     x="-41.492908"
-     y="-3.8800852" />
+     x="-1.1168481"
+     y="273.36887" />
   <!-- Background -->
   <!-- ZX Spectrum stripe accent -->
   <!-- "ZX" text -->
   <!-- "Draw" text -->
   <!-- Pixel art dot accent (top-right corner) -->
+  <rect
+     x="13.135228"
+     y="134.34592"
+     width="485.39038"
+     height="4.8087192"
+     fill="#ff0044"
+     id="rect3"
+     style="stroke-width:1.23271" />
   <g
-     id="g10"
-     transform="matrix(0.90909495,0,0,0.90909495,23.271693,-3.2217779)">
-    <rect
-       x="-22.47781"
-       y="176"
-       width="556.74182"
-       height="6.6344485"
+     id="g2"
+     transform="matrix(0.72107011,0,0,0.72107011,41.89782,8.8661392)">
+    <text
+       x="7.2871342"
+       y="161.92212"
+       font-family="'Segoe UI', Arial, sans-serif"
+       font-weight="800"
+       font-size="167.767px"
+       letter-spacing="-4"
+       fill="#ffffff"
+       id="text3"
+       style="stroke-width:1.31068">ZX</text>
+    <text
+       x="208.79494"
+       y="160.37819"
+       font-family="'Segoe UI', Arial, sans-serif"
+       font-weight="800"
+       font-size="126.479px"
+       letter-spacing="-1"
        fill="#ff0044"
-       id="rect3"
-       style="stroke-width:1.55072" />
+       id="text4"
+       style="stroke-width:1.85996">Drawer</text>
     <g
-       id="g9"
-       transform="translate(17.24069)">
-      <text
-         x="7.2871342"
-         y="161.92212"
-         font-family="'Segoe UI', Arial, sans-serif"
-         font-weight="800"
-         font-size="167.767px"
-         letter-spacing="-4"
-         fill="#ffffff"
-         id="text3"
-         style="stroke-width:1.31068">ZX</text>
-      <text
-         x="208.79494"
-         y="160.37819"
-         font-family="'Segoe UI', Arial, sans-serif"
-         font-weight="800"
-         font-size="126.479px"
-         letter-spacing="-1"
+       id="g7"
+       transform="matrix(1.3106751,0,0,1.3106751,-314.96027,20.86072)">
+      <rect
+         x="210"
+         y="18"
+         width="16"
+         height="16"
          fill="#ff0044"
-         id="text4"
-         style="stroke-width:1.85996">Draw</text>
-      <g
-         id="g7"
-         transform="matrix(1.3106751,0,0,1.3106751,-314.96027,20.86072)">
-        <rect
-           x="210"
-           y="18"
-           width="16"
-           height="16"
-           fill="#ff0044"
-           id="rect4" />
-        <rect
-           x="230"
-           y="18"
-           width="16"
-           height="16"
-           fill="#ff0044"
-           id="rect5" />
-        <rect
-           x="210"
-           y="38"
-           width="16"
-           height="16"
-           fill="#ff0044"
-           id="rect6" />
-        <rect
-           x="230"
-           y="38"
-           width="16"
-           height="16"
-           fill="#1a1a1a"
-           id="rect7" />
-      </g>
+         id="rect4" />
+      <rect
+         x="230"
+         y="18"
+         width="16"
+         height="16"
+         fill="#ff0044"
+         id="rect5" />
+      <rect
+         x="210"
+         y="38"
+         width="16"
+         height="16"
+         fill="#ff0044"
+         id="rect6" />
+      <rect
+         x="230"
+         y="38"
+         width="16"
+         height="16"
+         fill="#1a1a1a"
+         id="rect7" />
     </g>
   </g>
 </svg>

@@ -24,7 +24,7 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="3.1523438"
-     inkscape:cx="128"
+     inkscape:cx="128.31722"
      inkscape:cy="128"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
@@ -71,10 +71,10 @@
      y="230"
      font-family="'Segoe UI', Arial, sans-serif"
      font-weight="800"
-     font-size="68"
+     font-size="68px"
      letter-spacing="-1"
      fill="#ff0044"
-     id="text4">Draw</text>
+     id="text4">Drawer</text>
   <!-- Pixel art dot accent (top-right corner) -->
   <rect
      x="210"

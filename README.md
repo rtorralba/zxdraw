@@ -1,7 +1,7 @@
-ZXDraw
+ZXDrawer
 ======
 
-**ZXDraw** is a modern, feature-rich pixel art editor specifically designed for the **ZX Spectrum**. Built as a cross-platform desktop application using Electron, it provides a streamlined workflow for retro game developers and pixel artists who want to create graphics while strictly respecting the hardware constraints of the Sinclair machine.
+**ZXDrawer** is a modern, feature-rich pixel art editor specifically designed for the **ZX Spectrum**. Built as a cross-platform desktop application using Electron, it provides a streamlined workflow for retro game developers and pixel artists who want to create graphics while strictly respecting the hardware constraints of the Sinclair machine.
 
 Key Features
 ------------
@@ -32,7 +32,7 @@ Copyright
 
 Privacy Policy
 --------------
-ZXDraw does not collect, store, or transmit any personal data or usage information. All files created or edited remain local to your device.
+ZXDrawer does not collect, store, or transmit any personal data or usage information. All files created or edited remain local to your device.
 
 Quick start
 -----------

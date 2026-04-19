@@ -139,7 +139,7 @@ function buildMenuTemplate(t) {
     {
       label: t['menu.help'] || 'Help',
       submenu: [
-        { label: t['menu.about'] || 'About ZXDraw', click: () => mainWindow.webContents.send('menu-about') },
+        { label: t['menu.about'] || 'About ZXDrawer', click: () => mainWindow.webContents.send('menu-about') },
       ],
     },
   ];
@@ -149,7 +149,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 900,
-    title: 'ZXDraw',
+    title: 'ZXDrawer',
     icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -448,18 +448,18 @@ ipcMain.on('close-window', () => {
 // Cross-instance clipboard sharing via a shared JSON file in userData
 const CLIPBOARD_STORE = () => path.join(app.getPath('userData'), 'clipboard.json');
 
-ipcMain.handle('zxdraw-clipboard-set', (event, data) => {
+ipcMain.handle('zxdrawer-clipboard-set', (event, data) => {
   try {
     fs.writeFileSync(CLIPBOARD_STORE(), JSON.stringify(data), 'utf8');
-  } catch (e) { console.warn('zxdraw-clipboard-set failed', e); }
+  } catch (e) { console.warn('zxdrawer-clipboard-set failed', e); }
 });
 
-ipcMain.handle('zxdraw-clipboard-get', () => {
+ipcMain.handle('zxdrawer-clipboard-get', () => {
   try {
     const p = CLIPBOARD_STORE();
     if (fs.existsSync(p)) {
       return JSON.parse(fs.readFileSync(p, 'utf8'));
     }
-  } catch (e) { console.warn('zxdraw-clipboard-get failed', e); }
+  } catch (e) { console.warn('zxdrawer-clipboard-get failed', e); }
   return null;
 });

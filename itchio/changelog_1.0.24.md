@@ -1,4 +1,4 @@
-# ZXDraw: Mejoras de usabilidad, Modo Oscuro e Importador de Boriel Basic · v1.0.24
+# ZXDrawer: Mejoras de usabilidad, Modo Oscuro e Importador de Boriel Basic · v1.0.24
 
 ---
 

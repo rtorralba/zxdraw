@@ -1,5 +1,5 @@
 /**
- * ZXDraw Renderer Logic
+ * ZXDrawer Renderer Logic
  */
 
 const SPECTRUM_PALETTE = [
@@ -28,7 +28,7 @@ const FALLBACK_TRANSLATIONS = {
     }
 };
 
-class ZXDraw {
+class ZXDrawer {
     constructor() {
         this.zoom = 4;
         this.gridVisible = true;
@@ -177,7 +177,7 @@ class ZXDraw {
 
     getRecentFiles() {
         try {
-            const raw = localStorage.getItem('zxdraw_recent_files');
+            const raw = localStorage.getItem('zxdrawer_recent_files');
             if (!raw) return [];
             const arr = JSON.parse(raw);
             if (!Array.isArray(arr)) return [];
@@ -186,7 +186,7 @@ class ZXDraw {
     }
 
     saveRecentFiles(arr) {
-        try { localStorage.setItem('zxdraw_recent_files', JSON.stringify(arr)); } catch (e) {}
+        try { localStorage.setItem('zxdrawer_recent_files', JSON.stringify(arr)); } catch (e) {}
     }
 
     addRecentFile(filePath) {
@@ -1142,14 +1142,14 @@ class ZXDraw {
     setupI18n() {
         const select = document.getElementById('lang-select');
         if (!select) return;
-        const saved = localStorage.getItem('zxdraw_lang') || (navigator.language || 'en').slice(0,2);
+        const saved = localStorage.getItem('zxdrawer_lang') || (navigator.language || 'en').slice(0,2);
         const lang = ['en','es','pt'].includes(saved) ? saved : 'en';
         select.value = lang;
 
         // Wire language selector (works for both sync and async paths)
         select.onchange = (e) => {
             const l = e.target.value;
-            localStorage.setItem('zxdraw_lang', l);
+            localStorage.setItem('zxdrawer_lang', l);
             this.loadLocale(l).then(map => {
                 this.applyTranslationsMap(map);
                 try { if (window.electronAPI && typeof window.electronAPI.setAppLanguage === 'function') window.electronAPI.setAppLanguage(l); } catch (err) { console.warn('setAppLanguage failed', err); }
@@ -2056,7 +2056,7 @@ class ZXDraw {
         }
         const result = window.ZXImportBas(text, tileW, cols, rows);
         if (!result) {
-            alert('Failed to parse .bas file. Make sure it was exported with "Export as Matrix" option from ZXDraw.');
+            alert('Failed to parse .bas file. Make sure it was exported with "Export as Matrix" option from ZXDrawer.');
             return;
         }
         const { pixels, attributes, canvasWidth, canvasHeight } = result;
@@ -2779,5 +2779,5 @@ class ZXDraw {
 }
 
 window.onload = () => {
-    window.zxDraw = new ZXDraw();
+    window.zxDraw = new ZXDrawer();
 };

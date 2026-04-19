@@ -1,5 +1,5 @@
 /**
- * Standard Data Exporter for ZXDraw
+ * Standard Data Exporter for ZXDrawer
  * SevenuP-compatible: full 5-priority loop system, mask support,
  * attribute mask, zigzag, z88dk, flexible interleave.
  *
@@ -201,7 +201,7 @@ window.ZXExportData = function(pixels, attributes, imgWidth, imgHeight, options)
     const PER_LINE = 8;
 
     const asmLines = [];
-    asmLines.push('; ASM source file created by ZXDraw');
+    asmLines.push('; ASM source file created by ZXDrawer');
     asmLines.push('');
     asmLines.push(';GRAPHIC DATA:');
     asmLines.push(`;Pixel Size:      (${String(imgWidth).padStart(FW)}, ${String(imgHeight).padStart(FW)})`);
