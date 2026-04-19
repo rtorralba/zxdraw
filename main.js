@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, nativeTheme } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, nativeTheme, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -158,7 +158,18 @@ function createWindow() {
       sandbox: false,
       // disable DevTools in packaged (production) builds
       devTools: !app.isPackaged,
+      // Security hardening
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      backgroundThrottling: false,
     },
+  });
+
+  // Block all permission requests (Geolocation, Camera, Microphone, etc.)
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+    console.log(`Permission request for ${permission} was automatically denied.`);
+    return callback(false);
   });
 
   mainWindow.loadFile('index.html');
