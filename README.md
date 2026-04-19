@@ -58,11 +58,6 @@ Build (bundle + obfuscate + package):
 npm run build
 ```
 
-Notes
------
-- The build process bundles `renderer.js` and `preload.js` and applies a fast obfuscation step before packaging. The generated installers/artifacts are placed in the `dist/` folder.
-- `.zxp` files saved by the app are normalized to CRLF line endings.
-
 Contributing
 ------------
 Contributions are welcome under the terms of the AGPLv3. Please open issues or PRs on the repository.
