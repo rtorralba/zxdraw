@@ -1,6 +1,6 @@
 {
   "name": "zx-draw",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Simplified ZX Spectrum graphics editor with .zxp support.",
   "main": "main.js",
   "author": "Raül Torralba",
@@ -23,7 +23,7 @@
   "build": {
     "appId": "com.zxdraw.app",
     "productName": "ZXDraw",
-    "artifactName": "ZXDraw-${version}-${os}-${arch}.${ext}",
+    "artifactName": "ZXDraw-${os}-${arch}.${ext}",
     "forceCodeSigning": false,
     "asar": true,
     "files": [
@@ -53,7 +53,7 @@
       "icon": "icon.png"
     },
     "nsis": {
-      "artifactName": "ZXDraw-${version}-nsis-${os}-${arch}.${ext}",
+      "artifactName": "ZXDraw-nsis-${os}-${arch}.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
@@ -63,7 +63,7 @@
       "installerHeaderIcon": "icon.png"
     },
     "portable": {
-      "artifactName": "ZXDraw-${version}-portable-${os}-${arch}.${ext}"
+      "artifactName": "ZXDraw-portable-${os}-${arch}.${ext}"
     },
     "mac": {
       "target": [
