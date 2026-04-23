@@ -122,7 +122,7 @@ function buildMenuTemplate(t) {
                 { label: t['menu.export_data'] || 'Export Data…', click: () => mainWindow.webContents.send('menu-export-data') },
                 { label: t['menu.export_scr'] || 'Export SCR…', click: () => mainWindow.webContents.send('menu-export-scr') },
                 { label: t['menu.export_chr'] || 'Export CHR…', click: () => mainWindow.webContents.send('menu-export-chr') },
-                { label: t['menu.export_cyd_json'] || 'Export CYD JSON…', click: () => mainWindow.webContents.send('menu-export-cyd-json') }
+                { label: t['menu.export_cyd_json'] || 'Export CYD Charset (json)\u2026', click: () => mainWindow.webContents.send('menu-export-cyd-json') }
           ],
         },
         { type: 'separator' },
