@@ -131,5 +131,16 @@
   "modal.import_bas.hint2": "Tile Width must be a multiple of 8.",
   "modal.import_bas.width": "Tile Width:",
   "modal.import_bas.rows": "Rows:",
-  "modal.import_bas.cols": "Cols:"
+  "modal.import_bas.cols": "Cols:",
+  "menu.import_chr": "CHR Font/Tiles…",
+  "menu.export_chr": "Export CHR…",
+  "alert.invalid_chr": "Invalid .chr file (size must be a multiple of 8).",
+  "alert.export_chr_failed": "Export to .chr failed.",
+  "menu.export_cyd_json": "Export CYD JSON…",
+  "modal.cyd.title": "Export CYD JSON",
+  "modal.cyd.start_id": "First Character ID:",
+  "modal.cyd.char_width": "Character Width:",
+  "modal.cyd.auto_width": "Auto-detect proportional width",
+  "modal.cyd.hint": "Exports each 8×8 tile as one character entry. Auto-detect calculates each character's display width from its pixel content.",
+  "alert.export_cyd_failed": "Export to CYD JSON failed."
 }

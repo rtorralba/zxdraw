@@ -130,5 +130,16 @@
   "modal.import_bas.hint2": "El ancho del tile debe ser múltiplo de 8.",
   "modal.import_bas.width": "Ancho de tile:",
   "modal.import_bas.rows": "Filas:",
-  "modal.import_bas.cols": "Columnas:"
+  "modal.import_bas.cols": "Columnas:",
+  "menu.import_chr": "Fuente/Tiles CHR…",
+  "menu.export_chr": "Exportar CHR…",
+  "alert.invalid_chr": "Archivo .chr inválido (el tamaño debe ser múltiplo de 8).",
+  "alert.export_chr_failed": "Error al exportar a .chr.",
+  "menu.export_cyd_json": "Exportar CYD JSON…",
+  "modal.cyd.title": "Exportar CYD JSON",
+  "modal.cyd.start_id": "ID del primer carácter:",
+  "modal.cyd.char_width": "Ancho del carácter:",
+  "modal.cyd.auto_width": "Detectar ancho proporcional automáticamente",
+  "modal.cyd.hint": "Exporta cada tile 8×8 como una entrada de carácter. La detección automática calcula el ancho de visualización a partir del contenido de píxeles.",
+  "alert.export_cyd_failed": "Error al exportar a CYD JSON."
 }

@@ -576,6 +576,32 @@
         </div>
 
 
+        <!-- CYD JSON Export Modal -->
+        <div id="cyd-modal" class="modal hidden">
+            <div class="modal-content" style="width:440px;max-width:95vw">
+                <h2 data-i18n="modal.cyd.title">Export CYD JSON</h2>
+                <div class="input-row">
+                    <label data-i18n="modal.cyd.start_id">First Character ID:</label>
+                    <input type="number" id="cyd-start-id" value="0" min="0" max="255" style="width: 80px">
+                </div>
+                <div class="input-row">
+                    <label data-i18n="modal.cyd.char_width">Character Width:</label>
+                    <input type="number" id="cyd-char-width" value="8" min="1" max="8" style="width: 80px">
+                </div>
+                <div class="input-row" style="justify-content:flex-start">
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="cyd-auto-width">
+                        <span data-i18n="modal.cyd.auto_width">Auto-detect proportional width</span>
+                    </label>
+                </div>
+                <p class="hint" data-i18n="modal.cyd.hint">Exports each 8×8 tile as one character entry. Auto-detect calculates each character's display width from its pixel content.</p>
+                <div class="modal-actions">
+                    <button id="cyd-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="cyd-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.export">Export</span></button>
+                </div>
+            </div>
+        </div>
+
         <!-- Import .bas Modal -->
         <div id="import-bas-modal" class="modal hidden">
             <div class="modal-content" style="width:520px;max-width:95vw">

@@ -46,9 +46,9 @@ function openFilePathAndSend(filePath) {
   try {
     if (!filePath) return;
     const ext = path.extname(filePath).toLowerCase();
-    if (ext === '.scr') {
+    if (ext === '.scr' || ext === '.chr') {
       const buffer = fs.readFileSync(filePath);
-      if (mainWindow && mainWindow.webContents) mainWindow.webContents.send('menu-open-file', { content: Array.from(buffer), filePath, type: 'scr' });
+      if (mainWindow && mainWindow.webContents) mainWindow.webContents.send('menu-open-file', { content: Array.from(buffer), filePath, type: ext.slice(1) });
     } else {
       const content = fs.readFileSync(filePath, 'utf8');
       if (mainWindow && mainWindow.webContents) mainWindow.webContents.send('menu-open-file', { content, filePath, type: 'zxp' });
@@ -61,7 +61,7 @@ function findFileArg(argv) {
   if (!argv || argv.length === 0) return null;
   for (let i = 0; i < argv.length; i++) {
     const a = String(argv[i]);
-    if (a && (a.toLowerCase().endsWith('.zxp') || a.toLowerCase().endsWith('.scr'))) return a;
+    if (a && (a.toLowerCase().endsWith('.zxp') || a.toLowerCase().endsWith('.scr') || a.toLowerCase().endsWith('.chr'))) return a;
   }
   return null;
 }
@@ -100,7 +100,8 @@ function buildMenuTemplate(t) {
           label: t['menu.import'] || 'Import',
           submenu: [
             { label: t['menu.import_image'] || 'Image…', click: () => mainWindow.webContents.send('menu-import-image') },
-            { label: t['menu.import_boriel_putchars'] || 'Boriel Basic (PutChars)…', click: () => mainWindow.webContents.send('menu-import-boriel-putchars') }
+            { label: t['menu.import_boriel_putchars'] || 'Boriel Basic (PutChars)…', click: () => mainWindow.webContents.send('menu-import-boriel-putchars') },
+            { label: t['menu.import_chr'] || 'CHR Font/Tiles…', click: () => mainWindow.webContents.send('menu-import-chr') }
           ]
         },
         { type: 'separator' },
@@ -119,7 +120,9 @@ function buildMenuTemplate(t) {
               ]
             },
                 { label: t['menu.export_data'] || 'Export Data…', click: () => mainWindow.webContents.send('menu-export-data') },
-                { label: t['menu.export_scr'] || 'Export SCR…', click: () => mainWindow.webContents.send('menu-export-scr') }
+                { label: t['menu.export_scr'] || 'Export SCR…', click: () => mainWindow.webContents.send('menu-export-scr') },
+                { label: t['menu.export_chr'] || 'Export CHR…', click: () => mainWindow.webContents.send('menu-export-chr') },
+                { label: t['menu.export_cyd_json'] || 'Export CYD JSON…', click: () => mainWindow.webContents.send('menu-export-cyd-json') }
           ],
         },
         { type: 'separator' },
@@ -343,6 +346,32 @@ ipcMain.handle('save-file-direct', async (event, filePath, content) => {
   }
 });
 
+ipcMain.handle('export-cyd-json', async (event, content, defaultName) => {
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Export CYD JSON',
+    defaultPath: defaultName || 'charset.json',
+    filters: [{ name: 'CYD JSON Charset', extensions: ['json'] }, { name: 'All Files', extensions: ['*'] }],
+  });
+  if (filePath) {
+    fs.writeFileSync(filePath, content, 'utf8');
+    return filePath;
+  }
+  return null;
+});
+
+ipcMain.handle('export-chr', async (event, buffer, defaultName) => {
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Export CHR Font/Tiles',
+    defaultPath: defaultName || 'export.chr',
+    filters: [{ name: 'CHR Font/Tiles', extensions: ['chr'] }, { name: 'All Files', extensions: ['*'] }],
+  });
+  if (filePath) {
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+    return filePath;
+  }
+  return null;
+});
+
 ipcMain.handle('export-png', async (event, dataURL) => {
   const { filePath } = await dialog.showSaveDialog({
     title: 'Export as PNG',
@@ -376,18 +405,19 @@ ipcMain.handle('load-file', async () => {
   const { filePaths } = await dialog.showOpenDialog({
     title: 'Open Image',
     filters: [
-      { name: 'ZX Images', extensions: ['zxp', 'scr'] },
+      { name: 'ZX Images', extensions: ['zxp', 'scr', 'chr'] },
       { name: 'ZX-Paintbrush (.zxp)', extensions: ['zxp'] },
       { name: 'ZX Spectrum Screen (.scr)', extensions: ['scr'] },
+      { name: 'CHR Font/Tiles (.chr)', extensions: ['chr'] },
     ],
     properties: ['openFile'],
   });
 
   if (filePaths && filePaths.length > 0) {
     const ext = path.extname(filePaths[0]).toLowerCase();
-    if (ext === '.scr') {
+    if (ext === '.scr' || ext === '.chr') {
       const buffer = fs.readFileSync(filePaths[0]);
-      return { content: Array.from(buffer), filePath: filePaths[0], type: 'scr' };
+      return { content: Array.from(buffer), filePath: filePaths[0], type: ext.slice(1) };
     } else {
       const content = fs.readFileSync(filePaths[0], 'utf8');
       return { content, filePath: filePaths[0], type: 'zxp' };
@@ -400,9 +430,9 @@ ipcMain.handle('load-file-path', async (event, filePath) => {
   try {
     if (!filePath) return null;
     const ext = path.extname(filePath).toLowerCase();
-    if (ext === '.scr') {
+    if (ext === '.scr' || ext === '.chr') {
       const buffer = fs.readFileSync(filePath);
-      return { content: Array.from(buffer), filePath: filePath, type: 'scr' };
+      return { content: Array.from(buffer), filePath: filePath, type: ext.slice(1) };
     } else {
       const content = fs.readFileSync(filePath, 'utf8');
       return { content, filePath: filePath, type: 'zxp' };

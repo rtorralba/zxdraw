@@ -114,11 +114,17 @@ class ZXDrawer {
                         const p = f.path || f.name;
                         if (!p) continue;
                         const lower = p.toLowerCase();
-                        if (lower.endsWith('.zxp') || lower.endsWith('.scr')) {
+                        if (lower.endsWith('.zxp') || lower.endsWith('.scr') || lower.endsWith('.chr')) {
                             const file = await window.electronAPI.loadFilePath(p);
                             if (file) {
                                 if (file.type === 'scr') {
                                     this.importFromSCR(file.content);
+                                    this.currentFilePath = file.filePath;
+                                    this.setDirty(false);
+                                    this.render();
+                                    try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
+                                } else if (file.type === 'chr') {
+                                    this.importFromCHR(file.content);
                                     this.currentFilePath = file.filePath;
                                     this.setDirty(false);
                                     this.render();
@@ -158,6 +164,8 @@ class ZXDrawer {
                     if (file) {
                         if (file.type === 'scr') {
                             this.importFromSCR(file.content);
+                        } else if (file.type === 'chr') {
+                            this.importFromCHR(file.content);
                 } else {
                     this.importFromZXP(file.content);
                 }
@@ -579,6 +587,9 @@ class ZXDrawer {
                     if (this.currentFilePath.toLowerCase().endsWith('.scr')) {
                         const scrBytes = this.generateScrBytes();
                         await window.electronAPI.saveFileDirect(this.currentFilePath, Array.from(scrBytes));
+                    } else if (this.currentFilePath.toLowerCase().endsWith('.chr')) {
+                        const chrBytes = this.generateChrBytes();
+                        await window.electronAPI.saveFileDirect(this.currentFilePath, Array.from(chrBytes));
                     } else {
                         const zxpContent = this.exportToZXP();
                         await window.electronAPI.saveFileDirect(this.currentFilePath, zxpContent);
@@ -606,6 +617,12 @@ class ZXDrawer {
             if (file) {
                 if (file.type === 'scr') {
                     this.importFromSCR(file.content);
+                    this.currentFilePath = file.filePath;
+                    this.setDirty(false);
+                    this.render();
+                    try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
+                } else if (file.type === 'chr') {
+                    this.importFromCHR(file.content);
                     this.currentFilePath = file.filePath;
                     this.setDirty(false);
                     this.render();
@@ -667,6 +684,12 @@ class ZXDrawer {
                     this.setDirty(false);
                     this.render();
                     try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
+                } else if (file.type === 'chr') {
+                    this.importFromCHR(file.content);
+                    this.currentFilePath = file.filePath;
+                    this.setDirty(false);
+                    this.render();
+                    try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
                 } else if (file.type === 'bas') {
                     this._pendingBasContent = file.content;
                     this._pendingBasFilePath = file.filePath;
@@ -692,6 +715,9 @@ class ZXDrawer {
         window.electronAPI.onMenuEvent('menu-export-boriel-gusprites', () => this.exportBorielGuSprites());
         window.electronAPI.onMenuEvent('menu-export-data', () => this.exportData());
         window.electronAPI.onMenuEvent('menu-export-scr', () => this.exportScr());
+        window.electronAPI.onMenuEvent('menu-export-chr', () => this.exportToCHR());
+        window.electronAPI.onMenuEvent('menu-export-cyd-json', () => this.exportToCYDJson());
+        window.electronAPI.onMenuEvent('menu-import-chr', () => document.getElementById('load-btn').click());
 
         // Shortcuts
         window.onkeydown = (e) => {
@@ -1951,6 +1977,132 @@ class ZXDrawer {
             const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_scr_failed']) ? this._currentLocaleMap['alert.export_scr_failed'] : 'Export to .scr failed.';
             alert(e.message || msg);
         }
+    }
+
+    // .chr Format Logic (raw 8×8 character/tile bitmaps, no attributes)
+    importFromCHR(bytes) {
+        if (!bytes || bytes.length === 0 || bytes.length % 8 !== 0) {
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.invalid_chr']) || 'Invalid .chr file (size must be a multiple of 8).';
+            alert(msg);
+            return;
+        }
+        const numChars = bytes.length / 8;
+        const charsPerRow = 16;
+        const cols = Math.min(numChars, charsPerRow);
+        const rows = Math.ceil(numChars / charsPerRow);
+        const w = cols * 8;
+        const h = rows * 8;
+        this.resetData(w, h);
+        for (let ci = 0; ci < numChars; ci++) {
+            const cx = (ci % charsPerRow) * 8;
+            const cy = Math.floor(ci / charsPerRow) * 8;
+            for (let row = 0; row < 8; row++) {
+                const b = bytes[ci * 8 + row];
+                for (let bit = 0; bit < 8; bit++) {
+                    this.pixels[(cy + row) * w + cx + bit] = (b >> (7 - bit)) & 1;
+                }
+            }
+        }
+    }
+
+    generateChrBytes() {
+        const charsX = this.width / 8;
+        const charsY = this.height / 8;
+        const out = new Uint8Array(charsX * charsY * 8);
+        for (let cy = 0; cy < charsY; cy++) {
+            for (let cx = 0; cx < charsX; cx++) {
+                const ci = cy * charsX + cx;
+                for (let row = 0; row < 8; row++) {
+                    let b = 0;
+                    for (let bit = 0; bit < 8; bit++) {
+                        if (this.pixels[(cy * 8 + row) * this.width + cx * 8 + bit]) b |= (1 << (7 - bit));
+                    }
+                    out[ci * 8 + row] = b;
+                }
+            }
+        }
+        return out;
+    }
+
+    async exportToCHR() {
+        try {
+            const chr = this.generateChrBytes();
+            await window.electronAPI.exportChr(Array.from(chr), 'export.chr');
+        } catch (e) {
+            console.error('exportToCHR failed', e);
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_chr_failed']) || 'Export to .chr failed.';
+            alert(e.message || msg);
+        }
+    }
+
+    exportToCYDJson() {
+        const modal = document.getElementById('cyd-modal');
+        modal.classList.remove('hidden');
+
+        document.getElementById('cyd-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        document.getElementById('cyd-apply').onclick = async () => {
+            const startId = parseInt(document.getElementById('cyd-start-id').value) || 0;
+            const charWidth = Math.max(1, Math.min(8, parseInt(document.getElementById('cyd-char-width').value) || 8));
+            const autoWidth = document.getElementById('cyd-auto-width').checked;
+
+            const charsX = this.width / 8;
+            const charsY = this.height / 8;
+            const result = [];
+
+            for (let cy = 0; cy < charsY; cy++) {
+                for (let cx = 0; cx < charsX; cx++) {
+                    const ci = cy * charsX + cx;
+                    const bytes = [];
+                    for (let row = 0; row < 8; row++) {
+                        let b = 0;
+                        for (let bit = 0; bit < 8; bit++) {
+                            if (this.pixels[(cy * 8 + row) * this.width + cx * 8 + bit]) b |= (1 << (7 - bit));
+                        }
+                        bytes.push(b);
+                    }
+
+                    let width = charWidth;
+                    if (autoWidth) {
+                        let lastSetCol = -1;
+                        for (let row = 0; row < 8; row++) {
+                            for (let bit = 0; bit < 8; bit++) {
+                                if (this.pixels[(cy * 8 + row) * this.width + cx * 8 + bit]) {
+                                    if (bit > lastSetCol) lastSetCol = bit;
+                                }
+                            }
+                        }
+                        // advance width = last occupied column + 1 (pixel) + 1 (gap), capped at charWidth
+                        width = lastSetCol >= 0 ? Math.min(lastSetCol + 2, charWidth) : Math.max(1, Math.floor(charWidth / 2));
+                    }
+
+                    result.push({ Id: startId + ci, Character: bytes, Width: width });
+                }
+            }
+
+            // Format matching the CYD new_charset.json style: Character array on one line
+            const lines = ['['];
+            result.forEach((entry, i) => {
+                lines.push('\t{');
+                lines.push(`\t\t"Id": ${entry.Id},`);
+                lines.push(`\t\t"Character": [${entry.Character.join(', ')}],`);
+                lines.push(`\t\t"Width": ${entry.Width}`);
+                lines.push(i < result.length - 1 ? '\t},' : '\t}');
+            });
+            lines.push(']');
+            const jsonStr = lines.join('\n');
+
+            modal.classList.add('hidden');
+            try {
+                await window.electronAPI.exportCydJson(jsonStr, 'charset.json');
+            } catch (e) {
+                console.error('exportToCYDJson failed', e);
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_cyd_failed']) || 'Export to CYD JSON failed.';
+                alert(e.message || msg);
+            }
+        };
     }
 
     exportBorielPutChars() {

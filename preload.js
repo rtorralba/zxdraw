@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveFileDirect: (filePath, content) => ipcRenderer.invoke('save-file-direct', filePath, content),
   exportBas: (content, defaultName) => ipcRenderer.invoke('export-bas', content, defaultName),
   exportBin: (buffer, defaultName) => ipcRenderer.invoke('export-bin', buffer, defaultName),
+  exportChr: (buffer, defaultName) => ipcRenderer.invoke('export-chr', buffer, defaultName),
+  exportCydJson: (content, defaultName) => ipcRenderer.invoke('export-cyd-json', content, defaultName),
   exportPng: (dataURL) => ipcRenderer.invoke('export-png', dataURL),
   loadFile: () => ipcRenderer.invoke('load-file'),
   loadFileBas: () => ipcRenderer.invoke('load-file-bas'),
