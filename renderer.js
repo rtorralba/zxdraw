@@ -656,13 +656,12 @@ class ZXDrawer {
             document.getElementById('about-modal').classList.add('hidden');
         };
         try {
-            const supporterLink = document.getElementById('supporter-endaraues');
-            if (supporterLink) {
-                supporterLink.onclick = (e) => {
+            document.querySelectorAll('#about-modal a[id^="supporter-"]').forEach(link => {
+                link.onclick = (e) => {
                     e.preventDefault();
-                    window.electronAPI.openExternal('https://endaraues.itch.io/');
+                    window.electronAPI.openExternal(e.currentTarget.href);
                 };
-            }
+            });
         } catch(e) {}
         // Populate about modal version when opened
         const aboutModal = document.getElementById('about-modal');
