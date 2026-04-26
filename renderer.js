@@ -655,6 +655,15 @@ class ZXDrawer {
         document.getElementById('about-close').onclick = () => {
             document.getElementById('about-modal').classList.add('hidden');
         };
+        try {
+            const supporterLink = document.getElementById('supporter-endaraues');
+            if (supporterLink) {
+                supporterLink.onclick = (e) => {
+                    e.preventDefault();
+                    window.electronAPI.openExternal('https://endaraues.itch.io/');
+                };
+            }
+        } catch(e) {}
         // Populate about modal version when opened
         const aboutModal = document.getElementById('about-modal');
         const showAbout = () => {

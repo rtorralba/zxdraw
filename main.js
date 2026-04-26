@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, nativeTheme, session } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, nativeTheme, session, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -374,6 +374,10 @@ ipcMain.handle('export-chr', async (event, buffer, defaultName) => {
     return filePath;
   }
   return null;
+});
+
+ipcMain.handle('open-external', async (event, url) => {
+  await shell.openExternal(url);
 });
 
 ipcMain.handle('export-sp1-asm', async (event, content, defaultName) => {
