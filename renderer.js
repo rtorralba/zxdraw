@@ -114,7 +114,7 @@ class ZXDrawer {
                         const p = f.path || f.name;
                         if (!p) continue;
                         const lower = p.toLowerCase();
-                        if (lower.endsWith('.zxp') || lower.endsWith('.scr') || lower.endsWith('.chr')) {
+                        if (lower.endsWith('.zxp') || lower.endsWith('.scr') || lower.endsWith('.chr') || lower.endsWith('.ch8')) {
                             const file = await window.electronAPI.loadFilePath(p);
                             if (file) {
                                 if (file.type === 'scr') {
@@ -123,7 +123,7 @@ class ZXDrawer {
                                     this.setDirty(false);
                                     this.render();
                                     try { if (p) { this.addRecentFile(p); window.electronAPI.addRecentFile(p); } } catch(e) {}
-                                } else if (file.type === 'chr') {
+                                } else if (file.type === 'chr' || file.type === 'ch8') {
                                     this.importFromCHR(file.content);
                                     this.currentFilePath = file.filePath;
                                     this.setDirty(false);
@@ -164,7 +164,7 @@ class ZXDrawer {
                     if (file) {
                         if (file.type === 'scr') {
                             this.importFromSCR(file.content);
-                        } else if (file.type === 'chr') {
+                        } else if (file.type === 'chr' || file.type === 'ch8') {
                             this.importFromCHR(file.content);
                 } else {
                     this.importFromZXP(file.content);
@@ -587,7 +587,7 @@ class ZXDrawer {
                     if (this.currentFilePath.toLowerCase().endsWith('.scr')) {
                         const scrBytes = this.generateScrBytes();
                         await window.electronAPI.saveFileDirect(this.currentFilePath, Array.from(scrBytes));
-                    } else if (this.currentFilePath.toLowerCase().endsWith('.chr')) {
+                    } else if (this.currentFilePath.toLowerCase().endsWith('.chr') || this.currentFilePath.toLowerCase().endsWith('.ch8')) {
                         const chrBytes = this.generateChrBytes();
                         await window.electronAPI.saveFileDirect(this.currentFilePath, Array.from(chrBytes));
                     } else {
@@ -621,7 +621,7 @@ class ZXDrawer {
                     this.setDirty(false);
                     this.render();
                     try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
-                } else if (file.type === 'chr') {
+                } else if (file.type === 'chr' || file.type === 'ch8') {
                     this.importFromCHR(file.content);
                     this.currentFilePath = file.filePath;
                     this.setDirty(false);
@@ -684,7 +684,7 @@ class ZXDrawer {
                     this.setDirty(false);
                     this.render();
                     try { if (file.filePath) { this.addRecentFile(file.filePath); window.electronAPI.addRecentFile(file.filePath); } } catch(e) {}
-                } else if (file.type === 'chr') {
+                } else if (file.type === 'chr' || file.type === 'ch8') {
                     this.importFromCHR(file.content);
                     this.currentFilePath = file.filePath;
                     this.setDirty(false);
@@ -716,8 +716,10 @@ class ZXDrawer {
         window.electronAPI.onMenuEvent('menu-export-data', () => this.exportData());
         window.electronAPI.onMenuEvent('menu-export-scr', () => this.exportScr());
         window.electronAPI.onMenuEvent('menu-export-chr', () => this.exportToCHR());
+        window.electronAPI.onMenuEvent('menu-export-ch8', () => this.exportToCH8());
         window.electronAPI.onMenuEvent('menu-export-cyd-json', () => this.exportToCYDJson());
         window.electronAPI.onMenuEvent('menu-import-chr', () => document.getElementById('load-btn').click());
+        window.electronAPI.onMenuEvent('menu-import-ch8', () => document.getElementById('load-btn').click());
 
         // Shortcuts
         window.onkeydown = (e) => {
@@ -2031,6 +2033,17 @@ class ZXDrawer {
         } catch (e) {
             console.error('exportToCHR failed', e);
             const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_chr_failed']) || 'Export to .chr failed.';
+            alert(e.message || msg);
+        }
+    }
+
+    async exportToCH8() {
+        try {
+            const ch8 = this.generateChrBytes();
+            await window.electronAPI.exportCh8(Array.from(ch8), 'export.ch8');
+        } catch (e) {
+            console.error('exportToCH8 failed', e);
+            const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_ch8_failed']) || 'Export to .ch8 failed.';
             alert(e.message || msg);
         }
     }
