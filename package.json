@@ -17,7 +17,8 @@
     "test:gusprites": "node tests/gusprites.test.js",
     "test:putchars": "node tests/putchars.test.js",
     "test:data": "node tests/data_export.test.js",
-    "test": "npm run test:gusprites && npm run test:putchars && npm run test:data",
+    "test:sp1": "node tests/sp1.test.js",
+    "test": "npm run test:gusprites && npm run test:putchars && npm run test:data && npm run test:sp1",
     "prepare": "git config core.hooksPath .githooks"
   },
   "build": {

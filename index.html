@@ -578,6 +578,32 @@
 
 
         <!-- CYD JSON Export Modal -->
+        <!-- Export SP1 Sprite Modal -->
+        <div id="sp1-modal" class="modal hidden">
+            <div class="modal-content" style="width:440px;max-width:95vw">
+                <h2 data-i18n="modal.sp1.title">Export SP1 Sprite (z88dk)</h2>
+                <div class="input-row">
+                    <label data-i18n="modal.sp1.id">Sprite identifier:</label>
+                    <input type="text" id="sp1-id" value="sprite" style="width:160px">
+                </div>
+                <div class="input-row">
+                    <label data-i18n="modal.sp1.section">Section:</label>
+                    <input type="text" id="sp1-section" value="rodata_user" style="width:160px">
+                </div>
+                <div class="input-row" style="justify-content:flex-start">
+                    <label style="color:#e0e0e0;display:flex;align-items:center;gap:6px">
+                        <input type="checkbox" id="sp1-mask" checked>
+                        <span data-i18n="modal.sp1.use_mask">Include mask (transparent background)</span>
+                    </label>
+                </div>
+                <p class="hint" data-i18n="modal.sp1.hint">Exports the sprite in SP1 column format. Each 8-pixel-wide column becomes a PUBLIC label. Unset pixels are treated as transparent.</p>
+                <div class="modal-actions">
+                    <button id="sp1-cancel"><span data-i18n="btn.cancel">Cancel</span></button>
+                    <button id="sp1-apply" style="background:var(--accent);border-color:var(--accent)"><span data-i18n="btn.export">Export</span></button>
+                </div>
+            </div>
+        </div>
+
         <div id="cyd-modal" class="modal hidden">
             <div class="modal-content" style="width:440px;max-width:95vw">
                 <h2 data-i18n="modal.cyd.title">Export CYD JSON</h2>
@@ -643,6 +669,7 @@
     <script src="export/putchars.js"></script>
     <script src="export/gusprites.js"></script>
     <script src="export/data.js"></script>
+    <script src="export/sp1.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

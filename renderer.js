@@ -717,6 +717,7 @@ class ZXDrawer {
         window.electronAPI.onMenuEvent('menu-export-scr', () => this.exportScr());
         window.electronAPI.onMenuEvent('menu-export-chr', () => this.exportToCHR());
         window.electronAPI.onMenuEvent('menu-export-ch8', () => this.exportToCH8());
+        window.electronAPI.onMenuEvent('menu-export-sp1', () => this.exportToSP1());
         window.electronAPI.onMenuEvent('menu-export-cyd-json', () => this.exportToCYDJson());
         window.electronAPI.onMenuEvent('menu-import-chr', () => document.getElementById('load-btn').click());
         window.electronAPI.onMenuEvent('menu-import-ch8', () => document.getElementById('load-btn').click());
@@ -2061,6 +2062,32 @@ class ZXDrawer {
             const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_ch8_failed']) || 'Export to .ch8 failed.';
             alert(e.message || msg);
         }
+    }
+
+    exportToSP1() {
+        const modal = document.getElementById('sp1-modal');
+        modal.classList.remove('hidden');
+
+        document.getElementById('sp1-cancel').onclick = () => {
+            modal.classList.add('hidden');
+        };
+
+        document.getElementById('sp1-apply').onclick = async () => {
+            const spriteName = (document.getElementById('sp1-id').value || 'sprite').trim();
+            const section = (document.getElementById('sp1-section').value || 'rodata_user').trim();
+            const useMask = document.getElementById('sp1-mask').checked;
+
+            modal.classList.add('hidden');
+            try {
+                const asm = window.ZXExportSP1(this.pixels, this.width, this.height, spriteName, section, useMask);
+                const defaultName = spriteName + '.asm';
+                await window.electronAPI.exportSp1Asm(asm, defaultName);
+            } catch (e) {
+                console.error('exportToSP1 failed', e);
+                const msg = (this._currentLocaleMap && this._currentLocaleMap['alert.export_sp1_failed']) || 'Export to SP1 ASM failed.';
+                alert(e.message || msg);
+            }
+        };
     }
 
     exportToCYDJson() {

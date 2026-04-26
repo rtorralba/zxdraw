@@ -124,5 +124,12 @@
   "modal.cyd.char_width": "Largura do caractere:",
   "modal.cyd.auto_width": "Detectar largura proporcional automaticamente",
   "modal.cyd.hint": "Exporta cada tile 8×8 como uma entrada de caractere. A deteção automática calcula a largura de exibição pelo conteúdo dos pixels.",
-  "alert.export_cyd_failed": "Falha ao exportar para CYD JSON."
+  "alert.export_cyd_failed": "Falha ao exportar para CYD JSON.",
+  "menu.export_sp1": "Exportar Sprite SP1 (z88dk)…",
+  "modal.sp1.title": "Exportar Sprite SP1 (z88dk)",
+  "modal.sp1.id": "Identificador do sprite:",
+  "modal.sp1.section": "Secção:",
+  "modal.sp1.use_mask": "Incluir máscara (fundo transparente)",
+  "modal.sp1.hint": "Exporta o sprite no formato de colunas SP1 compatível com z88dk. Cada coluna de 8 pixels de largura torna-se uma etiqueta PUBLIC. Os pixels não ativos são tratados como transparentes.",
+  "alert.export_sp1_failed": "Falha ao exportar para ASM SP1."
 }

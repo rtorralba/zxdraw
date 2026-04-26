@@ -146,5 +146,12 @@
   "modal.cyd.char_width": "Character Width:",
   "modal.cyd.auto_width": "Auto-detect proportional width",
   "modal.cyd.hint": "Exports each 8×8 tile as one character entry. Auto-detect calculates each character's display width from its pixel content.",
-  "alert.export_cyd_failed": "Export to CYD JSON failed."
+  "alert.export_cyd_failed": "Export to CYD JSON failed.",
+  "menu.export_sp1": "Export SP1 Sprite (z88dk)…",
+  "modal.sp1.title": "Export SP1 Sprite (z88dk)",
+  "modal.sp1.id": "Sprite identifier:",
+  "modal.sp1.section": "Section:",
+  "modal.sp1.use_mask": "Include mask (transparent background)",
+  "modal.sp1.hint": "Exports the sprite in SP1 column format compatible with z88dk. Each 8-pixel-wide column becomes a PUBLIC label. Unset pixels are treated as transparent.",
+  "alert.export_sp1_failed": "Export to SP1 ASM failed."
 }

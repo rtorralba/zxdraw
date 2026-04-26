@@ -125,6 +125,7 @@ function buildMenuTemplate(t) {
                 { label: t['menu.export_scr'] || 'Export SCR…', click: () => mainWindow.webContents.send('menu-export-scr') },
                 { label: t['menu.export_chr'] || 'Export CHR…', click: () => mainWindow.webContents.send('menu-export-chr') },
                 { label: t['menu.export_ch8'] || 'Export CH8…', click: () => mainWindow.webContents.send('menu-export-ch8') },
+                { label: t['menu.export_sp1'] || 'Export SP1 Sprite (z88dk)…', click: () => mainWindow.webContents.send('menu-export-sp1') },
                 { label: t['menu.export_cyd_json'] || 'Export CYD Charset (json)\u2026', click: () => mainWindow.webContents.send('menu-export-cyd-json') }
           ],
         },
@@ -370,6 +371,19 @@ ipcMain.handle('export-chr', async (event, buffer, defaultName) => {
   });
   if (filePath) {
     fs.writeFileSync(filePath, Buffer.from(buffer));
+    return filePath;
+  }
+  return null;
+});
+
+ipcMain.handle('export-sp1-asm', async (event, content, defaultName) => {
+  const { filePath } = await dialog.showSaveDialog({
+    title: 'Export SP1 Sprite',
+    defaultPath: defaultName || 'sprite.asm',
+    filters: [{ name: 'ASM Source', extensions: ['asm'] }, { name: 'All Files', extensions: ['*'] }],
+  });
+  if (filePath) {
+    fs.writeFileSync(filePath, content, 'utf8');
     return filePath;
   }
   return null;

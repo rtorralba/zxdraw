@@ -145,5 +145,12 @@
   "modal.cyd.char_width": "Ancho del carácter:",
   "modal.cyd.auto_width": "Detectar ancho proporcional automáticamente",
   "modal.cyd.hint": "Exporta cada tile 8×8 como una entrada de carácter. La detección automática calcula el ancho de visualización a partir del contenido de píxeles.",
-  "alert.export_cyd_failed": "Error al exportar a CYD JSON."
+  "alert.export_cyd_failed": "Error al exportar a CYD JSON.",
+  "menu.export_sp1": "Exportar Sprite SP1 (z88dk)…",
+  "modal.sp1.title": "Exportar Sprite SP1 (z88dk)",
+  "modal.sp1.id": "Identificador del sprite:",
+  "modal.sp1.section": "Sección:",
+  "modal.sp1.use_mask": "Incluir máscara (fondo transparente)",
+  "modal.sp1.hint": "Exporta el sprite en formato de columnas SP1 compatible con z88dk. Cada columna de 8 píxeles de ancho se convierte en una etiqueta PUBLIC. Los píxeles no activos se tratan como transparentes.",
+  "alert.export_sp1_failed": "Error al exportar a ASM SP1."
 }
