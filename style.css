@@ -394,6 +394,17 @@ footer {
     color: var(--text-dim);
 }
 
+#status-filepath {
+    margin-left: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 50%;
+    direction: rtl;
+    text-align: left;
+    opacity: 0.75;
+}
+
 /* Modals */
 .modal {
     position: fixed;

@@ -1425,6 +1425,21 @@ class ZXDrawer {
     setDirty(isDirty) {
         this._isDirty = isDirty;
         try { window.electronAPI.setDocumentDirty(isDirty); } catch(e) {}
+        this.updateFilepathStatus();
+    }
+
+    updateFilepathStatus() {
+        try {
+            const el = document.getElementById('status-filepath');
+            if (!el) return;
+            if (this.currentFilePath) {
+                el.textContent = this.currentFilePath;
+                el.title = this.currentFilePath;
+            } else {
+                el.textContent = '';
+                el.title = '';
+            }
+        } catch(e) {}
     }
 
     undo() {
