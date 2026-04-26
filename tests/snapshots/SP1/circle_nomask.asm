@@ -29,5 +29,3 @@ PUBLIC _circle1
  defb @00000000
  defb @00000000
  defb @00000000
- defb @00000000
-

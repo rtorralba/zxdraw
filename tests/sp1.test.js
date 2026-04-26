@@ -73,9 +73,6 @@ function runCase(label, result, snapshotFile) {
                 break;
             }
         }
-        const actualPath = snapshotPath.replace('.asm', '_actual.asm');
-        fs.writeFileSync(actualPath, normalResult, 'utf8');
-        console.error(`    Actual output written to: ${actualPath}`);
         failed++;
     }
 }
@@ -149,7 +146,7 @@ function testSpriteNameInLabels() {
 
 // ---------------------------------------------------------------------------
 // Test 6: rotation table counts
-// Header must have exactly 7 rotation lines; each column's trailing table 8.
+// Header must have exactly 7 rotation lines; each column's trailing table 7.
 // Use the circle sprite so pixel rows produce different output from rotation rows.
 // ---------------------------------------------------------------------------
 function testRotationTableCounts() {
@@ -160,12 +157,12 @@ function testRotationTableCounts() {
     const publicIdx = allLines.indexOf('PUBLIC _sp1');
     const headerCount = allLines.slice(0, publicIdx).filter(l => l === rotLine).length;
     const trailingCount = allLines.slice(publicIdx).filter(l => l === rotLine).length;
-    if (headerCount === 7 && trailingCount === 8) {
-        console.log('  PASSED: rotation table counts (7 header, 8 trailing)');
+    if (headerCount === 7 && trailingCount === 7) {
+        console.log('  PASSED: rotation table counts (7 header, 7 trailing)');
         passed++;
     } else {
         console.error('  FAILED: rotation table counts');
-        console.error(`    header: ${headerCount} (expected 7), trailing: ${trailingCount} (expected 8)`);
+        console.error(`    header: ${headerCount} (expected 7), trailing: ${trailingCount} (expected 7)`);
         failed++;
     }
 }
@@ -174,7 +171,7 @@ function testRotationTableCounts() {
 // Run all tests
 // ---------------------------------------------------------------------------
 console.log('Running SP1 Exporter Tests...');
-console.log('(Pixel data based on png2sp1sprite sample: https://github.com/jsmolina/png2sp1sprite/tree/master/sample)');
+console.log('(Pixel data based on png2sp1sprite sample fixed by @jorgegv1: https://github.com/jsmolina/png2sp1sprite/tree/master/sample)');
 console.log('');
 
 testCircleWithMask();

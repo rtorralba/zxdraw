@@ -8,7 +8,7 @@
  * Format: each 8-pixel-wide column of the sprite becomes a PUBLIC label.
  * With mask enabled, each pixel row outputs: defb @maskByte, @spriteByte
  * where maskByte is the bitwise inverse of spriteByte (0=opaque, 1=transparent).
- * A 7-line rotation table header and an 8-line trailing table are added per column.
+ * A 7-line rotation table header and a 7-line trailing table are added per column.
  */
 
 window.ZXExportSP1 = function(pixels, imgWidth, imgHeight, spriteName, section, useMask) {
@@ -50,8 +50,8 @@ window.ZXExportSP1 = function(pixels, imgWidth, imgHeight, spriteName, section, 
         }
 
         lines.push('');
-        // 8-line trailing rotation table
-        for (let i = 0; i < 8; i++) {
+        // 7-line trailing rotation table (max offset within a char is 7; offset 8 = next char at offset 0)
+        for (let i = 0; i < 7; i++) {
             lines.push(useMask ? ' defb @11111111, @00000000' : ' defb @00000000');
         }
         lines.push('');
