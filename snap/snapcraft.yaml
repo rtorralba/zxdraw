@@ -1,0 +1,74 @@
+name: zx-drawer
+base: core22
+version: 1.0.32
+summary: ZX Drawer — editor gráfico para ZX Spectrum
+description: |
+  Gracias / Thanks / Obrigado:
+  - Ariel Endaraues (https://endaraues.itch.io/)
+  - El SPECTRUMERO Javi Ortiz (https://www.youtube.com/@ElSpectrumeroJaviOrtiz)
+  - Mananuk (https://mananuk.itch.io/)
+  - Andrés Hirunatan (https://xarxa.cloud/@hirunatan)
+
+  Editor simple inspirado en ZX Spectrum para crear y editar gráficos compatibles
+  con formatos clásicos (.zxp, .scr). Ideal para juegos de ZX Spectrum.
+
+  Funcionalidades principales: apertura/guardado de .zxp/.scr; importación de
+  PNG/JPG con conversión a paleta Spectrum y previsualización; edición por
+  bloques 8×8 con atributos (ink/paper/bright/flash); herramientas (lápiz,
+  selección, texto, invertir, flip); exportación a PNG y a datos (ASM/BIN),
+  exportadores PutChars/GuSprites, generación de máscaras, vista previa de
+  animación, presets de tamaño, y soporte CHR/CH8.
+
+  Formato .scr: soporte para archivos de 6912 bytes (6144 bitmap + 768
+  atributos) respetando el layout de memoria del Spectrum.
+title: ZXDrawer
+contact: https://github.com/rtorralba/zxdrawer/issues
+license: AGPL-3.0-or-later
+donation: https://juntelart.itch.io/zxdrawer
+issues: https://github.com/rtorralba/zxdrawer/issues
+source-code: https://github.com/rtorralba/zxdrawer
+website: https://juntelart.itch.io/zxdrawer
+grade: stable
+confinement: strict
+
+apps:
+  zx-drawer:
+    command: opt/zx-drawer/run.sh
+    extensions: [gnome]
+    plugs: [desktop, desktop-legacy, x11, wayland, opengl, home, network]
+
+parts:
+  zx-drawer:
+    plugin: npm
+    source: .
+    npm-include-node: true
+    npm-node-version: '20.18.3'
+    source-subdir: .
+    build-environment:
+      - NODE_ENV: development
+    override-build: |
+      craftctl default
+      # Install devDependencies (electron, etc.)
+      npm ci --include=dev
+      # Copy app files into install dir
+      cp -r package.json index.html main.js preload.js renderer.js style.css run.sh locales icon.png node_modules "$SNAPCRAFT_PART_INSTALL/"
+      chmod +x "$SNAPCRAFT_PART_INSTALL/run.sh"
+      # Clean up unnecessary dev dependencies that contain cross-arch binaries
+      rm -rf "$SNAPCRAFT_PART_INSTALL/node_modules/7zip-bin"
+      rm -rf "$SNAPCRAFT_PART_INSTALL/node_modules/app-builder-bin"
+      rm -rf "$SNAPCRAFT_PART_INSTALL/node_modules/electron-builder"
+      # Ensure the real Electron binary is executable
+      if [ -f "$SNAPCRAFT_PART_INSTALL/node_modules/electron/dist/electron" ]; then
+        chmod +x "$SNAPCRAFT_PART_INSTALL/node_modules/electron/dist/electron"
+      fi
+    organize:
+      "*": opt/zx-drawer/
+    stage:
+      - -snap
+      - -'*.md'
+      - -tests
+      - -dist
+      - -itchio
+      - -'*.snap'
+    build-packages: []
+    stage-packages: []
